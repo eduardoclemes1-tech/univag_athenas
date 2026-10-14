@@ -1,0 +1,553 @@
+/* ================= CONFIGURAÇÕES GLOBAIS ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body {
+    background-color: #0f172a;
+    color: #1e293b;
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
+
+/* ================= BARRA DE NAVEGAÇÃO (NAVBAR) ================= */
+.navbar-container {
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 12px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.navbar-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-img {
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(1.1);
+}
+
+.navbar-search {
+    position: relative;
+    width: 400px;
+}
+
+.navbar-search input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    background-color: #334155;
+    border: 1px solid #475569;
+    border-radius: 24px;
+    font-size: 14px;
+    color: #f8fafc;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.navbar-search input::placeholder {
+    color: #94a3b8;
+}
+
+.navbar-search input:focus {
+    background-color: #475569;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.nav-icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f8fafc;
+    text-decoration: none;
+    font-size: 16px;
+    position: relative;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.nav-icon-btn:hover {
+    background-color: #475569;
+    transform: translateY(-2px);
+}
+
+.badge-btn {
+    background-color: #334155;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid #1e293b;
+}
+
+.nav-divider {
+    width: 1px;
+    height: 28px;
+    background-color: #475569;
+    margin: 0 6px;
+}
+
+.nav-user-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.nav-user-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #60a5fa;
+}
+
+.dropdown-arrow {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* ================= ESTRUTURA E LAYOUT CENTRALIZADO ================= */
+.page-container {
+    max-width: 1280px;
+    margin: 30px auto 0 auto;
+    padding: 0 20px;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+/* ================= BANNER DE PERFIL ================= */
+.profile-header-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.profile-avatar-container {
+    position: relative;
+}
+
+.profile-avatar {
+    width: 96px;
+    height: 96px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status-dot-online {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 18px;
+    height: 18px;
+    background-color: #22c55e;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+}
+
+.profile-info-main {
+    flex: 1;
+}
+
+.profile-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.profile-title-row h2 {
+    font-size: 26px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge-green {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.badge-gray {
+    background-color: #475569;
+    color: #ffffff;
+}
+
+.profile-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #475569;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 6px;
+}
+
+.profile-slogan {
+    font-size: 14px;
+    color: #64748b;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.btn-outline-blue {
+    border: 1px solid #3b82f6;
+    background-color: #eff6ff;
+    color: #2563eb;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-outline-blue:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* ================= MÉTRICAS RÁPIDAS ================= */
+.metrics-card {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    padding: 20px 28px;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-right: 1px solid #e2e8f0;
+    padding-right: 20px;
+}
+
+.metric-item:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+
+.metric-icon {
+    font-size: 32px;
+    color: #1e293b;
+}
+
+.yellow-star {
+    color: #eab308;
+}
+
+.metric-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 20px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.metric-subtext {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ================= GRID DE CONTEÚDO (3 COLUNAS) ================= */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.card-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #0f172a;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 8px;
+}
+
+.section-title i {
+    color: #3b82f6;
+    font-size: 18px;
+}
+
+.section-title h3 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.about-text {
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.margin-top-md {
+    margin-top: 24px;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-pill {
+    background-color: #334155;
+    color: #f8fafc;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.experience-subgrid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #f8fafc;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.exp-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.exp-icon {
+    font-size: 20px;
+    color: #2563eb;
+    width: 28px;
+    text-align: center;
+}
+
+.exp-item strong {
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.block-sub {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ================= FEEDBACKS ================= */
+.feedback-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.feedback-box {
+    background-color: #f8fafc;
+    padding: 14px;
+    border-radius: 10px;
+    display: flex;
+    gap: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.feedback-user-icon {
+    width: 36px;
+    height: 36px;
+    background-color: #cbd5e1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #334155;
+    flex-shrink: 0;
+}
+
+.stars {
+    color: #eab308;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.feedback-quote {
+    font-size: 13px;
+    color: #1e293b;
+    font-weight: 600;
+    margin: 6px 0;
+    line-height: 1.4;
+}
+
+.feedback-author {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ================= HORÁRIOS E AÇÕES ================= */
+.schedule-list {
+    list-style: none;
+}
+
+.schedule-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.schedule-list li:last-child {
+    border-bottom: none;
+}
+
+.text-green { color: #16a34a; }
+.text-gray { color: #64748b; }
+.text-xs { font-size: 8px; }
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.btn-solid-blue {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s ease;
+}
+
+.btn-solid-blue:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-light-blue {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-light-blue:hover {
+    background-color: #dbeafe;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    .metrics-card {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    .metric-item {
+        border-right: none;
+    }
+    
+}

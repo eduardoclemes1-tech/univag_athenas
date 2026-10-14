@@ -1,0 +1,247 @@
+/* ================= BARRA DE NAVEGAÇÃO (NAVBAR GLOBAL) ================= */
+.navbar-container {
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 12px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.navbar-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-img {
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(1.1);
+}
+
+/* ================= BARRA DE PESQUISA & DROPDOWN EXPLORAR ================= */
+.navbar-search-wrapper {
+    position: relative;
+    width: 420px;
+}
+
+.navbar-search {
+    position: relative;
+    width: 100%;
+}
+
+.navbar-search input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    background-color: #334155;
+    border: 1px solid #475569;
+    border-radius: 24px;
+    font-size: 14px;
+    color: #f8fafc;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.navbar-search input::placeholder {
+    color: #94a3b8;
+}
+
+.navbar-search input:focus {
+    background-color: #475569;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+/* Modal Card "Explorar" (Estilo Figma) */
+.search-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    width: 420px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    border: 1px solid #cbd5e1;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.search-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.dropdown-header h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.dropdown-header p {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.btn-close-dropdown {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.btn-close-dropdown:hover {
+    color: #0f172a;
+    background-color: #f1f5f9;
+}
+
+.dropdown-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.category-card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.category-card:hover {
+    background-color: #3b82f6;
+    border-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.2);
+}
+
+.category-icon {
+    font-size: 22px;
+    color: #1e293b;
+    transition: color 0.2s ease;
+}
+
+.category-card span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    transition: color 0.2s ease;
+}
+
+.category-card:hover .category-icon,
+.category-card:hover span {
+    color: #ffffff;
+}
+
+/* ================= ÍCONES E AÇÕES DA NAVBAR ================= */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.nav-icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f8fafc;
+    text-decoration: none;
+    font-size: 16px;
+    position: relative;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.nav-icon-btn:hover {
+    background-color: #475569;
+    transform: translateY(-2px);
+}
+
+.badge-btn {
+    background-color: #334155;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid #1e293b;
+}
+
+.nav-divider {
+    width: 1px;
+    height: 28px;
+    background-color: #475569;
+    margin: 0 6px;
+}
+
+.nav-user-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.nav-user-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #60a5fa;
+}
+
+.dropdown-arrow {
+    color: #94a3b8;
+    font-size: 12px;
+}

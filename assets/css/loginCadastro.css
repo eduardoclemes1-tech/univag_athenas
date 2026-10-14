@@ -1,0 +1,288 @@
+/* ================= CONFIGURAÇÕES GLOBAIS ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-image: url("../img/fundo.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ================= CAMADA DE OVERLAY DINÂMICA ================= */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Overlay translúcido para a tela do ALUNO */
+    background-color: rgba(15, 23, 42, 0.45);
+    transition: background-color 0.5s ease;
+    z-index: 1;
+}
+
+/* Overlay escuro noturno para a tela do MONITOR */
+body.theme-monitor::before {
+    background-color: rgba(15, 23, 42, 0.88);
+}
+
+.login-container {
+    width: 390px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* ================= LOGO UNIVAG ATHENAS ================= */
+.logo {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    margin-bottom: 24px;
+    z-index: 10;
+    filter: drop-shadow(0px 6px 14px rgba(0, 0, 0, 0.6)) brightness(1.1);
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.02);
+}
+
+/* ================= ESTRUTURA DOS FORMULÁRIOS ================= */
+.forms-wrapper {
+    width: 100%;
+    height: 360px;
+    position: relative;
+}
+
+.wrapper-cadastro {
+    height: 420px;
+}
+
+.form {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    padding: 26px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                visibility 0.35s;
+}
+
+.active-form {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    z-index: 2;
+}
+
+.hidden-form {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.94);
+    z-index: 1;
+}
+
+/* ================= CARTÃO DO ALUNO (CLEAN / LIGHT) ================= */
+.form-aluno {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+.form-aluno .titulo-login {
+    color: #0f172a;
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.form-aluno input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #0f172a;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-aluno input::placeholder {
+    color: #64748b;
+}
+
+.form-aluno input:focus {
+    background-color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.form-aluno .btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.form-aluno .btn-submit:hover {
+    background-color: #1d4ed8;
+}
+
+.form-aluno a,
+.form-aluno a:visited {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+.form-aluno a:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.form-aluno .btn-toggle,
+.form-aluno button.btn-toggle {
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: auto;
+    transition: all 0.2s ease;
+}
+
+.form-aluno .btn-toggle:hover,
+.form-aluno button.btn-toggle:hover {
+    background-color: #e2e8f0;
+    border-color: #94a3b8;
+}
+
+/* ================= CARTÃO DO MONITOR (DARK PREMIUM) ================= */
+.form-monitor {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+}
+
+.form-monitor .titulo-login {
+    color: #f8fafc;
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.form-monitor input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    background-color: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #f8fafc;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-monitor input::placeholder {
+    color: #94a3b8;
+}
+
+.form-monitor input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.form-monitor .btn-acessar-monitor {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    transition: opacity 0.2s ease;
+}
+
+.form-monitor .btn-acessar-monitor:hover {
+    opacity: 0.92;
+}
+
+/* CORREÇÃO DOS LINKS NO MONITOR (Alto contraste e legibilidade) */
+.form-monitor a,
+.form-monitor a:visited {
+    color: #a5b4fc !important;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+.form-monitor a:hover {
+    color: #ffffff !important;
+    text-decoration: underline;
+}
+
+/* CORREÇÃO DO BOTÃO "Sou Aluno" */
+.form-monitor .btn-toggle,
+.form-monitor button.btn-toggle {
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    color: #f8fafc !important;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: auto;
+    transition: all 0.2s ease;
+}
+
+.form-monitor .btn-toggle:hover,
+.form-monitor button.btn-toggle:hover {
+    background-color: #334155;
+    border-color: #818cf8;
+    color: #ffffff !important;
+}
