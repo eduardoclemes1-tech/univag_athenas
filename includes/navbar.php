@@ -36,6 +36,10 @@ if ($tipoUsuario === 'aluno') {
 // Rota oficial apontando para o arquivo de Calendário criado em views/agenda/index.php
 $urlAgenda = $basePath . 'views/agenda/index.php';
 
+// Rotas exclusivas da gestão acadêmica do Monitor
+$urlHoras        = $basePath . 'views/monitor/horasComplementares.php';
+$urlCertificados = $basePath . 'views/monitor/certificados.php';
+
 // Ações reais do sistema e assets estáticos
 $urlLogout = $basePath . 'actions/logout.php';
 $urlLogo   = $basePath . 'assets/img/logoAthenas.png';
@@ -245,6 +249,21 @@ $urlEmBreve = 'javascript:void(0);';
                                 <i class="fa-solid fa-id-card"></i> Meu Perfil
                             </a>
                         </li>
+
+                        <?php if ($tipoUsuario === 'monitor'): ?>
+                        <!-- Links de gestão acadêmica exclusivos para a conta de Monitor -->
+                        <li>
+                            <a href="<?php echo htmlspecialchars($urlHoras); ?>">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Horas Complementares
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo htmlspecialchars($urlCertificados); ?>">
+                                <i class="fa-solid fa-file-certificate"></i> Meus Certificados
+                            </a>
+                        </li>
+                        <?php endif; ?>
+
                         <li>
                             <a href="<?php echo $urlEmBreve; ?>">
                                 <i class="fa-solid fa-sliders"></i> Configurações
