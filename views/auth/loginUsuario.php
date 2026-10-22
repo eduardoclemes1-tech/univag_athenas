@@ -23,7 +23,7 @@
                 <button type="submit" class="btn-submit">Acessar</button>
                 
                 <a href="#">Esqueceu a senha?</a>
-                <a href="cadastroUsuario.php">Criar conta</a>
+                <a href="cadastroAluno.php">Criar conta</a>
                 
                 <button type="button" class="btn-toggle" onclick="alternarLogin()">Já é um monitor ?</button>
             </form>
