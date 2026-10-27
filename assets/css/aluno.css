@@ -1,0 +1,373 @@
+:root {
+    color-scheme: light;
+    --aluno-ink: #202b3c;
+    --aluno-muted: #667085;
+    --aluno-border: #dce3eb;
+    --aluno-blue: #075eaa;
+    --aluno-blue-dark: #084b82;
+    --aluno-surface: #ffffff;
+    --aluno-background: #f1f3f6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--aluno-background);
+    color: var(--aluno-ink);
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+}
+
+.aluno-main {
+    padding: 28px 24px 56px;
+}
+
+.aluno-layout {
+    width: min(1356px, 100%);
+    margin: 0 auto;
+}
+
+.aluno-banner {
+    height: 92px;
+    overflow: hidden;
+    border-radius: 10px;
+    background:
+        radial-gradient(ellipse at 82% 120%, #ffffff26 0 12%, transparent 12.5%),
+        radial-gradient(ellipse at 68% -45%, #ffffff1c 0 22%, transparent 22.5%),
+        linear-gradient(110deg, #146eaa 0%, #0879bd 48%, #07528e 100%);
+}
+
+.aluno-content {
+    width: 100%;
+    margin: 20px auto 0;
+    padding: 36px 5.2% 42px;
+    border-radius: 9px;
+    background: var(--aluno-surface);
+}
+
+.aluno-boas-vindas {
+    min-height: 156px;
+    padding: 0 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.aluno-eyebrow {
+    color: var(--aluno-blue);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+.aluno-boas-vindas h1 {
+    margin: 10px 0 8px;
+    color: var(--aluno-ink);
+    font-size: clamp(28px, 4vw, 38px);
+    letter-spacing: -.04em;
+}
+
+.aluno-boas-vindas p {
+    margin: 0;
+    color: var(--aluno-muted);
+    font-size: 15px;
+}
+
+.aluno-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.aluno-botao {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.aluno-botao:hover {
+    transform: translateY(-1px);
+}
+
+.aluno-botao-principal {
+    background: var(--aluno-blue);
+    color: #fff;
+}
+
+.aluno-botao-principal:hover {
+    background: var(--aluno-blue-dark);
+}
+
+.aluno-botao-secundario {
+    border-color: var(--aluno-border);
+    background: #fff;
+    color: var(--aluno-ink);
+}
+
+.aluno-botao-secundario:hover {
+    border-color: #8fb8da;
+    background: #f6faff;
+}
+
+.aluno-hero-icone {
+    width: 138px;
+    height: 138px;
+    flex: 0 0 138px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #dce9f4;
+    border-radius: 50%;
+    background: #f0f6fb;
+    color: var(--aluno-blue);
+    font-size: 48px;
+}
+
+.aluno-resumo {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.aluno-card {
+    border: 1px solid #c9d6e3;
+    border-radius: 6px;
+    background: var(--aluno-surface);
+    box-shadow: none;
+}
+
+.resumo-card {
+    min-height: 124px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.resumo-icone,
+.estado-icone,
+.dica-icone {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+}
+
+.resumo-icone {
+    width: 42px;
+    height: 42px;
+    font-size: 17px;
+}
+
+.icone-azul {
+    background: #eaf3fb;
+    color: #075eaa;
+}
+
+.icone-verde {
+    background: #edf6ef;
+    color: #39834b;
+}
+
+.icone-roxo {
+    background: #f1f3f7;
+    color: #59677a;
+}
+
+.resumo-card > div {
+    min-width: 0;
+}
+
+.resumo-label {
+    display: block;
+    margin: 1px 0 8px;
+    color: var(--aluno-muted);
+    font-size: 12px;
+}
+
+.resumo-card strong {
+    display: block;
+    font-size: 14px;
+}
+
+.resumo-card a,
+.painel-titulo > a,
+.painel-dica > a {
+    color: var(--aluno-blue);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.resumo-card a {
+    display: inline-block;
+    margin-top: 9px;
+}
+
+.resumo-card p {
+    margin: 8px 0 0;
+    color: var(--aluno-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.aluno-paineis {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(250px, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.painel-agenda {
+    min-height: 310px;
+    padding: 24px;
+}
+
+.painel-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.painel-titulo h2,
+.painel-dica h2 {
+    margin: 7px 0 0;
+    font-size: 18px;
+    letter-spacing: -.02em;
+}
+
+.painel-titulo > a {
+    white-space: nowrap;
+}
+
+.aluno-estado-vazio {
+    min-height: 205px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.estado-icone {
+    width: 48px;
+    height: 48px;
+    background: #f0f5f9;
+    color: #667b8f;
+    font-size: 19px;
+}
+
+.aluno-estado-vazio h3 {
+    margin: 13px 0 5px;
+    font-size: 14px;
+}
+
+.aluno-estado-vazio p {
+    margin: 0 0 15px;
+    color: var(--aluno-muted);
+    font-size: 12px;
+}
+
+.painel-dica {
+    padding: 24px;
+    background: #f8fafc;
+}
+
+.dica-icone {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 20px;
+    background: #eaf3fb;
+    color: #075eaa;
+    font-size: 18px;
+}
+
+.painel-dica .aluno-eyebrow {
+    display: block;
+    font-size: 10px;
+}
+
+.painel-dica h2 {
+    margin: 10px 0;
+    line-height: 1.35;
+}
+
+.painel-dica p {
+    margin: 0 0 18px;
+    color: var(--aluno-muted);
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+@media (max-width: 800px) {
+    .aluno-resumo {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .aluno-paineis {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .aluno-main {
+        padding: 20px 14px 36px;
+    }
+
+    .aluno-boas-vindas {
+        min-height: 0;
+        padding: 0 0 22px;
+    }
+
+    .aluno-hero-icone {
+        display: none;
+    }
+
+    .aluno-boas-vindas p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .aluno-acoes {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .aluno-resumo {
+        grid-template-columns: 1fr;
+    }
+
+    .painel-agenda,
+    .painel-dica {
+        padding: 20px;
+    }
+
+    .painel-titulo {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .aluno-content {
+        padding: 24px 18px 30px;
+    }
+
+    .aluno-banner {
+        height: 72px;
+    }
+}

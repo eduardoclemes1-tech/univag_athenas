@@ -1,11 +1,8 @@
 <?php
-/* ===== 1. INICIALIZAÇÃO DE SESSÃO E METADADOS ===== */
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../includes/auth.php';
+exigirUsuarioAutenticado('monitor');
 
 $tituloPagina = "Meus Certificados - UNIVAG ATHENAS";
-$tipoUsuario  = $_SESSION['usuario_tipo'] ?? 'monitor';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

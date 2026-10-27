@@ -1,21 +1,40 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$erro = $_SESSION['erro'] ?? '';
+$sucesso = $_SESSION['sucesso'] ?? '';
+$tipoSelecionado = $_GET['tipo'] ?? 'aluno';
+if (!in_array($tipoSelecionado, ['aluno', 'monitor'], true)) {
+    $tipoSelecionado = 'aluno';
+}
+unset($_SESSION['erro'], $_SESSION['sucesso']);
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Univag Athenas</title>
-    <link rel="stylesheet" href="../../assets/css/loginCadastro.css?v=10">
+    <link rel="stylesheet" href="../../assets/css/loginCadastro.css?v=11">
 </head>
-<body>
+<body<?php echo $tipoSelecionado === 'monitor' ? ' class="theme-monitor"' : ''; ?>>
     <div class="login-container">
         
         <img class="logo" src="../../assets/img/logoAthenas.png" alt="UNIVAG Athenas">
         
         <div class="forms-wrapper">
+            <?php if ($erro !== ''): ?>
+                <p class="auth-feedback auth-feedback-error" role="alert"><?php echo htmlspecialchars($erro, ENT_QUOTES, 'UTF-8'); ?></p>
+            <?php elseif ($sucesso !== ''): ?>
+                <p class="auth-feedback auth-feedback-success" role="status"><?php echo htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8'); ?></p>
+            <?php endif; ?>
             
             <!-- ================= CARTÃO DO ALUNO ================= -->
-            <form class="form form-aluno active-form" id="formAluno" action="../../actions/salvarLoginUsuario.php" method="POST">
+            <form class="form form-aluno <?php echo $tipoSelecionado === 'aluno' ? 'active-form' : 'hidden-form'; ?>" id="formAluno" action="../../actions/salvarLoginUsuario.php" method="POST">
                 <div class="titulo-login">Login Aluno</div>
+                <input type="hidden" name="tipo" value="aluno">
                 
                 <input type="text" name="identificacao" placeholder="Identificação de usuário (CPF ou Email)" required>
                 <input type="password" name="senha" id="senha-aluno" placeholder="Senha" required>
@@ -23,14 +42,15 @@
                 <button type="submit" class="btn-submit">Acessar</button>
                 
                 <a href="#">Esqueceu a senha?</a>
-                <a href="cadastroAluno.php">Criar conta</a>
+                <a href="cadastroUsuario.php">Criar conta</a>
                 
                 <button type="button" class="btn-toggle" onclick="alternarLogin()">Já é um monitor ?</button>
             </form>
 
             <!-- ================= CARTÃO DO MONITOR ================= -->
-            <form class="form form-monitor hidden-form" id="formMonitor" action="../../actions/salvarLoginUsuario.php" method="POST">
+            <form class="form form-monitor <?php echo $tipoSelecionado === 'monitor' ? 'active-form' : 'hidden-form'; ?>" id="formMonitor" action="../../actions/salvarLoginUsuario.php" method="POST">
                 <div class="titulo-login">Login Monitor</div>
+                <input type="hidden" name="tipo" value="monitor">
                 
                 <input type="text" name="identificacao" placeholder="Identificação de usuário (CPF ou Email)" required>
                 <input type="password" name="senha" id="senha-monitor" placeholder="Senha" required>
@@ -70,12 +90,6 @@
             }
         }
 
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('tipo') === 'monitor') {
-                alternarLogin();
-            }
-        }
     </script>
 </body>
 </html>

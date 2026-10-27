@@ -1,13 +1,9 @@
 <?php
-/* ===== 1. INICIALIZAÇÃO DE SESSÃO E VERIFICAÇÃO DE PERMISSÕES ===== */
-// Inicializa a sessão do PHP caso não tenha sido iniciada pela página pai
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../includes/auth.php';
+exigirUsuarioAutenticado('monitor');
 
 // Configura o título da página e recupera o tipo de usuário logado
 $tituloPagina = "Horas Complementares - UNIVAG ATHENAS";
-$tipoUsuario  = $_SESSION['usuario_tipo'] ?? 'monitor';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

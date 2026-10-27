@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Ilustração de banco de dados</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#164e63"/><stop offset="1" stop-color="#118c85"/></linearGradient></defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="530" cy="35" r="125" fill="#d5fff3" opacity=".08"/>
+  <g stroke="#d4fff1" stroke-width="2" opacity=".65"><path d="M98 91h114v46H98zM212 114h84v72h48M155 137v75h-54M335 186h108v53M155 212h181"/><circle cx="212" cy="114" r="5" fill="#d4fff1"/><circle cx="296" cy="114" r="5" fill="#d4fff1"/><circle cx="101" cy="212" r="5" fill="#d4fff1"/><circle cx="336" cy="181" r="5" fill="#d4fff1"/></g>
+  <g transform="translate(382 66)">
+    <ellipse cx="92" cy="28" rx="75" ry="25" fill="#d9fff5"/><path d="M17 28v135c0 14 34 25 75 25s75-11 75-25V28" fill="#c3f5e7"/>
+    <path d="M17 75c0 14 34 25 75 25s75-11 75-25M17 120c0 14 34 25 75 25s75-11 75-25" fill="none" stroke="#36a997" stroke-width="5"/>
+    <ellipse cx="92" cy="28" rx="75" ry="25" fill="#f1fffa" stroke="#36a997" stroke-width="4"/>
+  </g>
+  <text x="320" y="323" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3" text-anchor="middle">DADOS • SQL • RELAÇÕES</text>
+</svg>

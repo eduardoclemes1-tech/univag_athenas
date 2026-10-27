@@ -25,47 +25,18 @@ unset($_SESSION['msn']);
         >
 
         <div class="forms-wrapper wrapper-cadastro">
-
-            <form
-                class="form form-monitor active-form"
-                action="../../actions/salvarCadastroMonitor.php"
-                method="POST"
-            >
+            
+            <!-- Volta dois níveis para encontrar a ação em actions/ -->
+            <form class="form form-monitor active-form" action="../../actions/salvarCadastroMonitor.php" method="POST">
                 <div class="titulo-login">Cadastro Monitor</div>
-
-                <?php if ($mensagem !== ''): ?>
-                    <p class="mensagem" role="status">
-                        <?= htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8') ?>
-                    </p>
-                <?php endif; ?>
-
-                <input
-                    type="text"
-                    name="nome"
-                    placeholder="Nome completo"
-                    required
-                    minlength="3"
-                >
-
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email institucional"
-                    required
-                >
-
-                <input
-                    type="password"
-                    name="senha"
-                    placeholder="Crie uma senha"
-                    required
-                    minlength="6"
-                >
-
-                <button type="submit" class="btn-submit btn-acessar-monitor">
-                    Cadastrar
-                </button>
-
+                
+                <input type="text" name="nome" placeholder="Nome completo" required minlength="3">
+                <input type="email" name="email" placeholder="Email institucional" required>
+                <input type="password" name="senha" placeholder="Crie uma senha" required minlength="6">
+                
+                <button type="submit" class="btn-submit btn-acessar-monitor">Cadastrar</button>
+                
+                <!-- O loginUsuario.php está na mesma pasta (views/auth/), então o caminho é direto -->
                 <a href="loginUsuario.php?tipo=monitor">Já tenho cadastro</a>
             </form>
 

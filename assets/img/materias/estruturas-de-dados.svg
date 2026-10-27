@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Ilustração de estruturas de dados</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#343c78"/><stop offset="1" stop-color="#6674ba"/></linearGradient></defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="546" cy="68" r="130" fill="#fff" opacity=".07"/>
+  <g stroke="#cfe6ff" stroke-width="5" fill="none" stroke-linecap="round">
+    <path d="M320 99v53M320 152l-96 61M320 152l96 61M224 213v45M416 213v45"/>
+  </g>
+  <g fill="#f3f7ff" stroke="#92b1e2" stroke-width="3">
+    <circle cx="320" cy="83" r="28"/><circle cx="224" cy="213" r="25"/><circle cx="416" cy="213" r="25"/>
+    <circle cx="224" cy="274" r="19"/><circle cx="416" cy="274" r="19"/>
+  </g>
+  <g fill="#344879" font-family="Arial,sans-serif" font-size="17" font-weight="700" text-anchor="middle">
+    <text x="320" y="89">A</text><text x="224" y="219">B</text><text x="416" y="219">C</text>
+  </g>
+  <text x="320" y="326" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3" text-anchor="middle">LISTAS • ÁRVORES • ALGORITMOS</text>
+</svg>

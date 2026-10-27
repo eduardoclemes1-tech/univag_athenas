@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    network_mode: "service:db"
+    environment:
+      DB_HOST: 127.0.0.1
+      DB_NAME: athenas
+      DB_USER: athenas_app
+      DB_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD no arquivo .env}
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    command: ["--bind-address=0.0.0.0"]
+    ports:
+      - "8000:80"
+    environment:
+      MYSQL_DATABASE: athenas
+      MYSQL_USER: athenas_app
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD no arquivo .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Configure DB_ROOT_PASSWORD no arquivo .env}
+    volumes:
+      - athenas_db_data:/var/lib/mysql
+      - ./sqlAthenas/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  athenas_db_data:

@@ -1,0 +1,8 @@
+USE athenas;
+
+ALTER TABLE usuarios
+    ADD COLUMN bio VARCHAR(500) NOT NULL DEFAULT '' AFTER tipo,
+    ADD COLUMN curso VARCHAR(120) NOT NULL DEFAULT '' AFTER bio,
+    ADD COLUMN periodo VARCHAR(40) NOT NULL DEFAULT '' AFTER curso,
+    ADD COLUMN foto_perfil MEDIUMBLOB NULL AFTER periodo,
+    ADD COLUMN foto_mime VARCHAR(30) NULL AFTER foto_perfil;

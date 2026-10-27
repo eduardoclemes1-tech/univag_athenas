@@ -1,15 +1,11 @@
 <?php
-/* ===== 1. INICIALIZAÇÃO DE SESSÃO E VERIFICAÇÃO DE PAPEL ===== */
-// Inicializa a sessão do PHP caso não esteja ativa
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../includes/auth.php';
+exigirUsuarioAutenticado();
 
 // Configurações e metadados da página
 $tituloPagina = "Perfil do Monitor - UNIVAG ATHENAS";
 
-// Identifica o tipo de usuário autenticado (fallback para 'monitor' em testes)
-$tipoUsuario = $_SESSION['usuario_tipo'] ?? 'monitor';
+$tipoUsuario = $_SESSION['usuario_tipo'];
 
 // Controla se a visão é do dono da conta (Monitor) ou de um visitante (Aluno)
 $ehDono = ($tipoUsuario === 'monitor');
@@ -53,8 +49,8 @@ $ehDono = ($tipoUsuario === 'monitor');
                                 </button>
                             <?php else: ?>
                                 <!-- Botão de agendamento rápido exibido para Alunos visitantes -->
-                                <button type="button" class="btn-acao-primario" data-modal-target="modalAgendar">
-                                    <i class="fa-solid fa-calendar-plus"></i> Agendar
+                                <button type="button" class="btn-acao-primario" id="btnAgendarMonitoriaPerfil">
+                                    <i class="fa-solid fa-calendar-plus"></i> Solicitar monitoria
                                 </button>
                             <?php endif; ?>
                         </div>
@@ -227,11 +223,11 @@ $ehDono = ($tipoUsuario === 'monitor');
                         <?php if (!$ehDono): ?>
                             <!-- Botões de contato direto exibidos para Alunos -->
                             <div class="container-fale-comigo">
-                                <button type="button" class="btn-acao-primario btn-bloco">
+                                <button type="button" class="btn-acao-primario btn-bloco" id="btnIniciarConversaPerfil">
                                     <i class="fa-solid fa-comments"></i> Iniciar conversa
                                 </button>
-                                <button type="button" class="btn-acao-outline btn-bloco" data-modal-target="modalAgendar">
-                                    <i class="fa-solid fa-calendar-check"></i> Agendar Atendimento
+                                <button type="button" class="btn-acao-outline btn-bloco" id="btnSolicitarMonitoriaPerfil">
+                                    <i class="fa-solid fa-calendar-check"></i> Solicitar monitoria
                                 </button>
                             </div>
                         <?php endif; ?>
@@ -393,35 +389,6 @@ $ehDono = ($tipoUsuario === 'monitor');
             </form>
         </div>
     </div>
-    <?php else: ?>
-    <!-- MODAL DE AGENDAMENTO (EXCLUSIVO PARA O ALUNO VISITANTE) -->
-    <div class="modal-overlay" id="modalAgendar">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-calendar-plus"></i> Agendar Monitoria</h3>
-                <button type="button" class="btn-modal-fechar" data-modal-close><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="formAgendar" class="modal-form">
-                <div class="form-group">
-                    <label for="selectDia">Escolha o Dia</label>
-                    <select id="selectDia" class="form-select" required>
-                        <option value="Segunda (19h às 21h)">Segunda (19h às 21h)</option>
-                        <option value="Terça (19h às 21h)">Terça (19h às 21h)</option>
-                        <option value="Quarta (14h às 16h)">Quarta (14h às 16h)</option>
-                        <option value="Quinta (15h às 18h)">Quinta (15h às 18h)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="inputDuvida">Descreva sua dúvida ou assunto principal</label>
-                    <textarea id="inputDuvida" class="form-textarea" rows="3" placeholder="Ex: Preciso de ajuda para entender comandos JOIN e DER no SQL" required></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancelar" data-modal-close>Cancelar</button>
-                    <button type="submit" class="btn-salvar">Confirmar Agendamento</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <?php endif; ?>
 
     <!-- ===== 9. INTERATIVIDADE JAVASCRIPT ===== -->
@@ -510,14 +477,38 @@ $ehDono = ($tipoUsuario === 'monitor');
             });
         }
 
-        // Form Agendar
-        const formAgendar = document.getElementById('formAgendar');
-        if (formAgendar) {
-            formAgendar.addEventListener('submit', function (e) {
-                e.preventDefault();
-                alert('Solicitação de agendamento enviada com sucesso!');
-                fecharTodosModais();
+        const botaoIniciarConversaPerfil = document.getElementById('btnIniciarConversaPerfil');
+        if (botaoIniciarConversaPerfil) {
+            botaoIniciarConversaPerfil.addEventListener('click', function () {
+                const chatToggle = document.getElementById('btnMessages');
+                if (chatToggle) {
+                    chatToggle.click();
+                    const selectContato = document.getElementById('chatContactSelect');
+                    if (selectContato && !selectContato.value) {
+                        selectContato.focus();
+                    }
+                }
             });
+        }
+
+        const botaoSolicitarMonitoriaPerfil = document.getElementById('btnSolicitarMonitoriaPerfil');
+        const botaoAgendarMonitoriaPerfil = document.getElementById('btnAgendarMonitoriaPerfil');
+        const acaoMonitoriaPerfil = function () {
+            const chatToggle = document.getElementById('btnMessages');
+            if (chatToggle) {
+                chatToggle.click();
+                const abertura = document.getElementById('requestAppointment');
+                if (abertura) {
+                    abertura.click();
+                }
+            }
+        };
+
+        if (botaoSolicitarMonitoriaPerfil) {
+            botaoSolicitarMonitoriaPerfil.addEventListener('click', acaoMonitoriaPerfil);
+        }
+        if (botaoAgendarMonitoriaPerfil) {
+            botaoAgendarMonitoriaPerfil.addEventListener('click', acaoMonitoriaPerfil);
         }
     });
     </script>

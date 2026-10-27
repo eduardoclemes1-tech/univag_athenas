@@ -103,3 +103,23 @@
 .user-menu-links .logout-item{border-top:1px solid var(--s100)}
 .user-menu-links .logout-item a{color:var(--red)}
 .user-menu-links .logout-item a:hover{background:#fef2f2}
+
+/* A área do aluno segue o cabeçalho claro do portal acadêmico. */
+body.aluno-theme .navbar-container{background:#fff;border-bottom:1px solid #e3e7ed;box-shadow:0 2px 8px #1720330b}
+body.aluno-theme .logo-img{filter:brightness(0) saturate(100%) invert(9%) sepia(43%) saturate(2490%) hue-rotate(222deg) brightness(90%)}
+body.aluno-theme .nav-icon-btn{--bg:#fff;--fg:#344054;border:1px solid transparent}
+body.aluno-theme .nav-icon-btn:hover,body.aluno-theme .nav-user-dropdown:hover{background:#f2f5f8}
+body.aluno-theme .nav-divider{background:#e4e7ec}
+body.aluno-theme .notification-badge{border-color:#fff}
+body.aluno-theme .navbar-search input{background:#f8fafc;border-color:#d0d5dd;color:#344054}
+body.aluno-theme .navbar-search input::placeholder{color:#667085}
+body.aluno-theme .navbar-search input:focus{background:#fff;border-color:#3182bd;box-shadow:0 0 0 3px #3182bd24}
+body.aluno-theme .search-icon{color:#667085}
+body.aluno-theme .nav-user-avatar{--bg:#eef1f4;--fg:#344054}
+body.aluno-theme .dropdown-arrow{color:#667085}
+body.aluno-theme .user-role-badge{background:#eef4f8;color:#075eaa}
+body.aluno-theme .category-card:hover{background:#075eaa;border-color:#075eaa}
+body.aluno-theme .result-avatar{--bg:#075eaa}
+body.aluno-theme .result-icon-subject{--bg:#eaf3fb;--fg:#075eaa}
+body.aluno-theme .notif-icon{--bg:#eaf3fb;--fg:#075eaa}
+body.aluno-theme .user-menu-links a:hover{color:#075eaa}

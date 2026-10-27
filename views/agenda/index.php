@@ -1,12 +1,10 @@
 <?php
-/* ===== 1. INICIALIZAÇÃO DE SESSÃO E VERIFICAÇÃO DE PERMISSÕES ===== */
-// Inicializa a sessão do PHP caso não esteja ativa
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../includes/auth.php';
+exigirUsuarioAutenticado();
 
-// Recupera o tipo de usuário logado (fallback para 'monitor' em testes)
-$tipoUsuario  = $_SESSION['usuario_tipo'] ?? 'monitor';$ehMonitor    = ($tipoUsuario === 'monitor');$tituloPagina = "Calendário de Compromissos - UNIVAG ATHENAS";
+$tipoUsuario = $_SESSION['usuario_tipo'];
+$ehMonitor = ($tipoUsuario === 'monitor');
+$tituloPagina = "Calendário de Compromissos - UNIVAG ATHENAS";
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -20,9 +18,9 @@ $tipoUsuario  = $_SESSION['usuario_tipo'] ?? 'monitor';$ehMonitor    = ($tipoUsu
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- CSS Exclusivo do Calendário -->
-    <link rel="stylesheet" href="../../assets/css/calendario.css">
+    <link rel="stylesheet" href="../../assets/css/calendario.css?v=2">
 </head>
-<body>
+<body class="<?php echo $ehMonitor ? 'monitor-theme' : 'aluno-theme'; ?>">
 
     <!-- ===== 3. NAVBAR UNIVERSAL ===== -->
     <?php include '../../includes/navbar.php'; ?>
