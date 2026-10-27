@@ -9,6 +9,9 @@ $tipoSelecionado = $_GET['tipo'] ?? 'aluno';
 if (!in_array($tipoSelecionado, ['aluno', 'monitor'], true)) {
     $tipoSelecionado = 'aluno';
 }
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 unset($_SESSION['erro'], $_SESSION['sucesso']);
 ?>
 <!DOCTYPE html>
@@ -35,14 +38,14 @@ unset($_SESSION['erro'], $_SESSION['sucesso']);
             <form class="form form-aluno <?php echo $tipoSelecionado === 'aluno' ? 'active-form' : 'hidden-form'; ?>" id="formAluno" action="../../actions/salvarLoginUsuario.php" method="POST">
                 <div class="titulo-login">Login Aluno</div>
                 <input type="hidden" name="tipo" value="aluno">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
                 
                 <input type="text" name="identificacao" placeholder="Identificação de usuário (CPF ou Email)" required>
                 <input type="password" name="senha" id="senha-aluno" placeholder="Senha" required>
                 
                 <button type="submit" class="btn-submit">Acessar</button>
                 
-                <a href="#">Esqueceu a senha?</a>
-                <a href="cadastroUsuario.php">Criar conta</a>
+                <a href="CadastroAluno.php">Criar conta</a>
                 
                 <button type="button" class="btn-toggle" onclick="alternarLogin()">Já é um monitor ?</button>
             </form>
@@ -51,13 +54,13 @@ unset($_SESSION['erro'], $_SESSION['sucesso']);
             <form class="form form-monitor <?php echo $tipoSelecionado === 'monitor' ? 'active-form' : 'hidden-form'; ?>" id="formMonitor" action="../../actions/salvarLoginUsuario.php" method="POST">
                 <div class="titulo-login">Login Monitor</div>
                 <input type="hidden" name="tipo" value="monitor">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
                 
                 <input type="text" name="identificacao" placeholder="Identificação de usuário (CPF ou Email)" required>
                 <input type="password" name="senha" id="senha-monitor" placeholder="Senha" required>
                 
                 <button type="submit" class="btn-submit btn-acessar-monitor">Acessar</button>
                 
-                <a href="#">Esqueceu a senha?</a>
                 <a href="cadastroMonitor.php">Criar conta</a>
                 
                 <button type="button" class="btn-toggle btn-voltar" onclick="alternarLogin()">Sou Aluno</button>

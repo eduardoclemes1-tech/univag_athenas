@@ -1,9 +1,11 @@
-
 <?php
 session_start();
 
 $mensagem = $_SESSION['msn'] ?? '';
 unset($_SESSION['msn']);
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,6 +34,7 @@ unset($_SESSION['msn']);
                 method="POST"
             >
                 <div class="titulo-login">Cadastro Aluno</div>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
 
                 <?php if ($mensagem !== ''): ?>
                     <p class="mensagem" role="status">
@@ -61,6 +64,10 @@ unset($_SESSION['msn']);
                     name="cpf"
                     placeholder="CPF"
                     required
+                    inputmode="numeric"
+                    pattern="[0-9]{11}"
+                    minlength="11"
+                    maxlength="11"
                     autocomplete="off"
                 >
 
