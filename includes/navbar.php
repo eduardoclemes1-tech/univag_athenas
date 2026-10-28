@@ -34,9 +34,9 @@ if ($tipoUsuario === 'aluno') {
     $urlPerfil = $basePath . 'views/aluno/perfil.php';
     $urlPainel = $basePath . 'views/aluno/inicio.php';
 } else {
-    $urlHome   = $basePath . 'views/monitor/perfilMonitor.php';
+    $urlHome   = $basePath . 'views/monitor/inicio.php';
     $urlPerfil = $basePath . 'views/monitor/perfilMonitor.php';
-    $urlPainel = $urlPerfil;
+    $urlPainel = $urlHome;
 }
 
 // Rota oficial apontando para o arquivo de Calendário criado em views/agenda/index.php
@@ -203,6 +203,12 @@ $urlEmBreve = 'javascript:void(0);';
                 <i class="fa-solid fa-calendar-days"></i>
             </a>
 
+            <?php if ($tipoUsuario === 'monitor'): ?>
+            <button type="button" class="nav-icon-btn" id="btnScheduleMonitor" title="Agendar monitoria" aria-label="Agendar monitoria">
+                <i class="fa-solid fa-calendar-plus"></i>
+            </button>
+            <?php endif; ?>
+
             <!-- Dropdown Mensagens -->
             <div class="nav-dropdown-wrapper">
                 <button type="button" class="nav-icon-btn" id="btnMessages" title="Mensagens">
@@ -273,13 +279,11 @@ $urlEmBreve = 'javascript:void(0);';
                                 Meu perfil
                             </a>
                         </li>
-                        <?php if ($tipoUsuario === 'aluno'): ?>
                         <li>
                             <a href="<?php echo htmlspecialchars($urlPainel); ?>">
                                 <i class="fa-solid fa-house"></i> Meu painel
                             </a>
                         </li>
-                        <?php endif; ?>
 
                         <?php if ($tipoUsuario === 'monitor'): ?>
                         <!-- Links de gestão acadêmica exclusivos para a conta de Monitor -->
@@ -313,6 +317,58 @@ $urlEmBreve = 'javascript:void(0);';
     </div>
 </nav>
 
+<?php if ($tipoUsuario === 'monitor'): ?>
+<dialog class="chat-schedule-dialog monitor-appointment-dialog" id="monitorAppointmentDialog">
+    <form id="monitorAppointmentForm"
+        data-api="<?php echo htmlspecialchars($basePath . 'actions/chat.php', ENT_QUOTES, 'UTF-8'); ?>"
+        data-csrf="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
+        <div class="chat-schedule-dialog-header">
+            <div>
+                <span>AGENDAMENTO</span>
+                <h2>Agendar monitoria</h2>
+            </div>
+            <button type="button" data-fechar-monitor-agendamento aria-label="Fechar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <label>
+            <span>Aluno</span>
+            <select id="monitorAppointmentStudent" required>
+                <option value="">Carregando alunos...</option>
+            </select>
+        </label>
+        <label>
+            <span>Assunto da monitoria</span>
+            <input type="text" id="monitorAppointmentSubject" maxlength="180" required placeholder="Ex.: dúvidas sobre SQL">
+        </label>
+        <label>
+            <span>Data e horário</span>
+            <input type="datetime-local" id="monitorAppointmentDate" required>
+        </label>
+        <label>
+            <span>Duração</span>
+            <select id="monitorAppointmentDuration" required>
+                <option value="30">30 minutos</option>
+                <option value="45">45 minutos</option>
+                <option value="60" selected>1 hora</option>
+                <option value="90">1 hora e 30 minutos</option>
+            </select>
+        </label>
+        <label>
+            <span>Link da sala no Zoom</span>
+            <input type="url" id="monitorAppointmentZoom" maxlength="500" required placeholder="https://zoom.us/j/...">
+        </label>
+        <p>Se você cadastrou horários no perfil, o agendamento respeitará essa disponibilidade. O convite será confirmado na agenda de ambos, e o aluno receberá uma mensagem e uma notificação com o link.</p>
+        <div id="monitorAppointmentFeedback" role="status" aria-live="polite"></div>
+        <div class="chat-schedule-actions">
+            <button type="button" data-fechar-monitor-agendamento>Cancelar</button>
+            <button type="submit">Agendar e notificar</button>
+        </div>
+    </form>
+</dialog>
+<script src="<?php echo htmlspecialchars($basePath . 'assets/js/agendamentoMonitor.js?v=1', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
+<?php endif; ?>
+
 <section
     class="chat-app"
     id="chatApp"
@@ -320,6 +376,7 @@ $urlEmBreve = 'javascript:void(0);';
     aria-hidden="true"
     data-api="<?php echo htmlspecialchars($basePath . 'actions/chat.php', ENT_QUOTES, 'UTF-8'); ?>"
     data-notifications-api="<?php echo htmlspecialchars($basePath . 'actions/notificacoes.php', ENT_QUOTES, 'UTF-8'); ?>"
+    data-agenda-url="<?php echo htmlspecialchars($urlAgenda, ENT_QUOTES, 'UTF-8'); ?>"
     data-csrf="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>"
     data-user-id="<?php echo (int) ($_SESSION['usuario_id'] ?? 0); ?>"
     data-user-type="<?php echo htmlspecialchars($tipoUsuario, ENT_QUOTES, 'UTF-8'); ?>"
@@ -351,7 +408,7 @@ $urlEmBreve = 'javascript:void(0);';
                 <label class="chat-new-contact">
                     <span>Nova conversa</span>
                     <select id="chatContactSelect">
-                        <option value="">Escolha um monitor</option>
+                        <option value=""><?php echo $tipoUsuario === 'aluno' ? 'Escolha um monitor' : 'Escolha um aluno'; ?></option>
                     </select>
                 </label>
             </div>
@@ -414,7 +471,7 @@ $urlEmBreve = 'javascript:void(0);';
     </dialog>
 </section>
 
-<script src="<?php echo htmlspecialchars($basePath . 'assets/js/mensagens.js?v=2', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
+<script src="<?php echo htmlspecialchars($basePath . 'assets/js/mensagens.js?v=4', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
 
 <!-- ===== 9. LÓGICA DE INTERATIVIDADE JAVASCRIPT ===== -->
 <script>

@@ -322,3 +322,91 @@ body.configuracoes-page {
         width: 100%;
     }
 }
+
+body.configuracoes-page.monitor-theme,
+body.configuracoes-page.monitor-theme .configuracoes-main {
+    background: var(--monitor-background);
+    color: var(--monitor-ink);
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-eyebrow,
+body.configuracoes-page.monitor-theme .configuracoes-voltar:hover {
+    color: var(--monitor-blue);
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-cabecalho p,
+body.configuracoes-page.monitor-theme .configuracoes-card-heading p,
+body.configuracoes-page.monitor-theme .opcao-texto small,
+body.configuracoes-page.monitor-theme .configuracoes-form-rodape > span,
+body.configuracoes-page.monitor-theme .configuracoes-campo small {
+    color: var(--monitor-muted);
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-voltar {
+    border-color: var(--monitor-border-strong);
+    background: var(--monitor-surface-raised);
+    color: var(--monitor-ink);
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-card {
+    border-color: var(--monitor-border);
+    background: var(--monitor-surface);
+    box-shadow: none;
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-card-heading,
+body.configuracoes-page.monitor-theme .configuracao-opcao {
+    border-color: var(--monitor-border);
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-icone {
+    background: #213a59;
+    color: var(--monitor-blue);
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-icone.icone-seguranca {
+    background: #173a39;
+    color: #82d9b0;
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-card-heading h2,
+body.configuracoes-page.monitor-theme .opcao-texto strong,
+body.configuracoes-page.monitor-theme .configuracoes-campo {
+    color: var(--monitor-ink);
+}
+
+body.configuracoes-page.monitor-theme .configuracao-switch {
+    background: #3a506b;
+}
+
+body.configuracoes-page.monitor-theme .configuracao-opcao input:checked + .configuracao-switch,
+body.configuracoes-page.monitor-theme .configuracoes-botao {
+    background: #315d8b;
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-botao:hover {
+    background: #3b6ea3;
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-campo input {
+    border-color: var(--monitor-border-strong);
+    background: var(--monitor-surface-raised);
+    color: var(--monitor-ink);
+}
+
+body.configuracoes-page.monitor-theme .configuracoes-campo input:focus {
+    border-color: var(--monitor-blue);
+    box-shadow: 0 0 0 3px #8ab8eb20;
+}
+
+body.configuracoes-page.monitor-theme .feedback-sucesso {
+    border-color: #28614c;
+    background: #102b2a;
+    color: #b7efd1;
+}
+
+body.configuracoes-page.monitor-theme .feedback-erro {
+    border-color: #75404a;
+    background: #351f2a;
+    color: #ffd1d1;
+}

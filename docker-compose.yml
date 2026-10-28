@@ -7,11 +7,29 @@ services:
       DB_NAME: athenas
       DB_USER: athenas_app
       DB_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD no arquivo .env}
+      MATERIAL_STORAGE_DIR: /var/athenas_uploads
+    volumes:
+      - ./:/var/www/html
+      - athenas_uploads:/var/athenas_uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  reminders:
+    build: .
+    network_mode: "service:db"
+    command: ["php", "actions/workerLembretes.php"]
+    environment:
+      DB_HOST: 127.0.0.1
+      DB_NAME: athenas
+      DB_USER: athenas_app
+      DB_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD no arquivo .env}
     volumes:
       - ./:/var/www/html
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
 
   db:
     image: mysql:8.4
@@ -34,3 +52,4 @@ services:
 
 volumes:
   athenas_db_data:
+  athenas_uploads:

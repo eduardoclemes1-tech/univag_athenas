@@ -20,7 +20,8 @@ unset($_SESSION['erro'], $_SESSION['sucesso']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Univag Athenas</title>
-    <link rel="stylesheet" href="../../assets/css/loginCadastro.css?v=11">
+    <link rel="stylesheet" href="../../assets/css/monitorTheme.css?v=5">
+    <link rel="stylesheet" href="../../assets/css/loginCadastro.css?v=12">
 </head>
 <body<?php echo $tipoSelecionado === 'monitor' ? ' class="theme-monitor"' : ''; ?>>
     <div class="login-container">

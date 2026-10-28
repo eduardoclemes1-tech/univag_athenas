@@ -1,12 +1,12 @@
 /* ===== 1. VARIÁVEIS DO TEMA ESCURO E RESET ===== */
 :root {
-    --bg-page: #0b1528;          /* Fundo azul-marinho oficial do sistema */
-    --bg-card: #ffffff;          /* Fundo branco dos cards internos */
-    --bg-dark-card: #131b2e;     /* Fundo escuro do card hero de horas */
-    --text-primary: #0f172a;     /* Texto escuro principal */
-    --text-secondary: #64748b;   /* Texto cinza secundário */
-    --primary-blue: #2563eb;     /* Azul de destaques e links */
-    --border-color: #e2e8f0;     /* Linhas de borda */
+    --bg-page: var(--monitor-background);
+    --bg-card: var(--monitor-surface);
+    --bg-dark-card: #102038;
+    --text-primary: var(--monitor-ink);
+    --text-secondary: var(--monitor-muted);
+    --primary-blue: var(--monitor-blue);
+    --border-color: var(--monitor-border);
     --status-validado-bg: #dcfce7;
     --status-validado-text: #166534;
     --status-validacao-bg: #fef3c7;
@@ -64,7 +64,7 @@ body {
     align-items: center;
     gap: 32px;
     box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--monitor-border);
     color: #ffffff;
 }
 
@@ -117,7 +117,7 @@ body {
 
 .barra-progresso-preenchimento {
     height: 100%;
-    background: linear-gradient(90deg, #3b82f6, #6366f1);
+    background: linear-gradient(90deg, #5c91c5, #8ab8eb);
     border-radius: 20px;
 }
 
@@ -152,7 +152,7 @@ body {
 }
 
 .link-ver-todas {
-    color: var(--primary-blue);
+    color: var(--monitor-blue);
     font-size: 13px;
     font-weight: 700;
     text-decoration: none;

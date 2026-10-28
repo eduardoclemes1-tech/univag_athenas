@@ -10,7 +10,7 @@ if (empty($_SESSION['csrf_token'])) {
 $tipoUsuario = $_SESSION['usuario_tipo'];
 $urlVoltar = $tipoUsuario === 'aluno'
     ? 'aluno/inicio.php'
-    : 'monitor/perfilMonitor.php';
+    : 'monitor/inicio.php';
 $erros = [];
 $sucesso = match ($_GET['salvo'] ?? '') {
     'senha' => 'Sua senha foi alterada.',
@@ -119,10 +119,12 @@ $ehAluno = $tipoUsuario === 'aluno';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php if ($ehAluno): ?>
         <link rel="stylesheet" href="../assets/css/aluno.css?v=2">
+    <?php else: ?>
+        <link rel="stylesheet" href="../assets/css/monitorTheme.css?v=5">
     <?php endif; ?>
-    <link rel="stylesheet" href="../assets/css/configuracoes.css?v=1">
+    <link rel="stylesheet" href="../assets/css/configuracoes.css?v=2">
 </head>
-<body class="configuracoes-page<?php echo $ehAluno ? ' aluno-theme' : ''; ?>">
+<body class="configuracoes-page<?php echo $ehAluno ? ' aluno-theme' : ' monitor-theme'; ?>">
     <?php include '../includes/navbar.php'; ?>
 
     <main class="configuracoes-main">

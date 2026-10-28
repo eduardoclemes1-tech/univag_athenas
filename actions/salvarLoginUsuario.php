@@ -70,7 +70,7 @@ try {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
     $destino = $tipo === 'monitor'
-        ? '../views/monitor/perfilMonitor.php'
+        ? '../views/monitor/inicio.php'
         : '../views/aluno/inicio.php';
     header('Location: ' . $destino);
     exit;

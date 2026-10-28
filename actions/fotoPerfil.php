@@ -1,12 +1,12 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-exigirUsuarioAutenticado('aluno');
+exigirUsuarioAutenticado();
 
 require_once __DIR__ . '/../config/conexao.php';
 
 try {
     $stmt = $pdo->prepare('SELECT foto_perfil, foto_mime FROM usuarios WHERE id = ? AND tipo = ?');
-    $stmt->execute([$_SESSION['usuario_id'], 'aluno']);
+    $stmt->execute([$_SESSION['usuario_id'], $_SESSION['usuario_tipo']]);
     $foto = $stmt->fetch();
 
     $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];

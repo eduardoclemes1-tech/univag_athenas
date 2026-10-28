@@ -60,6 +60,39 @@ body.aluno-theme .btn-link-sala {
     background-color: #eaf3fb;
 }
 
+body.monitor-theme {
+    --bg-page: var(--monitor-background);
+    --bg-card: var(--monitor-surface);
+    --bg-gray-box: var(--monitor-surface-raised);
+    --text-primary: var(--monitor-ink);
+    --text-secondary: var(--monitor-muted);
+    --primary-blue: var(--monitor-blue);
+    --primary-blue-hover: #a4cdf5;
+    --tag-aula: #b69af7;
+    --tag-reuniao: #8ab8eb;
+    --tag-tarefa: #67d39b;
+    --tag-hoje-bg: var(--monitor-surface-soft);
+    --border-color: var(--monitor-border);
+    --shadow-sm: 0 8px 24px #030b1666;
+}
+
+body.monitor-theme .agenda-aviso {
+    border-color: var(--monitor-border-strong);
+    background: #102038;
+    color: #c1d0e2;
+}
+
+body.monitor-theme .item-legenda.ativo,
+body.monitor-theme .btn-link-sala {
+    background-color: var(--monitor-surface-soft);
+    border-color: var(--monitor-border-strong);
+    color: var(--monitor-blue);
+}
+
+body.monitor-theme .badge-dia-semana {
+    background-color: var(--monitor-surface-soft);
+}
+
 .calendario-main-container { padding: 24px 20px; }
 .calendario-content-wrapper { max-width: 1280px; margin: 0 auto; }
 
@@ -192,7 +225,7 @@ body.aluno-theme .btn-link-sala {
     aspect-ratio: 1;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -241,7 +274,7 @@ body.aluno-theme .btn-link-sala {
 }
 
 .item-legenda.ativo {
-    background-color: #eff6ff;
+    background-color: var(--tag-hoje-bg);
     border-color: var(--primary-blue);
     color: var(--primary-blue);
 }
@@ -289,6 +322,22 @@ body.aluno-theme .btn-link-sala {
     border: 1px solid var(--border-color);
 }
 
+.btn-link-sala {
+    flex: 0 0 auto;
+    padding: 6px 9px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: #eff6ff;
+    color: var(--primary-blue);
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.btn-link-sala:hover {
+    border-color: var(--primary-blue);
+}
+
 .horario-compromisso { font-size: 11px; font-weight: 700; color: var(--text-secondary); width: 85px; }
 .info-compromisso { display: flex; align-items: center; gap: 8px; flex: 1; }
 .dot-compromisso { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -304,10 +353,193 @@ body.aluno-theme .btn-link-sala {
 
 .ilustracao-rodape { text-align: right; font-size: 36px; color: var(--primary-blue); opacity: 0.15; }
 
+.item-compromisso {
+    display: block;
+}
+
+.compromisso-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.compromisso-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 0 93px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.compromisso-status,
+.compromisso-avaliacao {
+    flex: 1 0 100%;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.compromisso-avaliacao {
+    color: var(--primary-blue);
+}
+
+.compromisso-registro {
+    flex: 1 0 100%;
+    padding: 10px;
+    border-left: 3px solid var(--primary-blue);
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.compromisso-registro strong {
+    font-size: 11px;
+}
+
+.compromisso-registro p {
+    margin: 6px 0 0;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.btn-agenda-acao {
+    min-height: 32px;
+    padding: 6px 10px;
+    border: 1px solid var(--primary-blue);
+    border-radius: 5px;
+    background: var(--primary-blue);
+    color: #fff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-agenda-acao:disabled {
+    cursor: wait;
+    opacity: .65;
+}
+
+.btn-agenda-secundario {
+    background: transparent;
+    color: var(--primary-blue);
+}
+
+.material-form,
+.avaliacao-form,
+.registro-form {
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+}
+
+.material-form input,
+.avaliacao-form select,
+.avaliacao-form textarea {
+    min-width: 0;
+    min-height: 32px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 11px;
+}
+
+.registro-form input,
+.registro-form textarea {
+    flex: 1 1 180px;
+}
+
+.material-form input[type="file"] {
+    flex: 1 1 170px;
+}
+
+.material-link-form input {
+    flex: 1 1 130px;
+}
+
+.avaliacao-form select {
+    flex: 0 0 150px;
+}
+
+.avaliacao-form textarea {
+    flex: 1 1 180px;
+    min-height: 32px;
+    resize: vertical;
+}
+
+.compromisso-materiais {
+    display: grid;
+    flex: 1 0 100%;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.compromisso-materiais li {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+}
+
+.compromisso-materiais a {
+    color: var(--primary-blue);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.compromisso-materiais small {
+    color: var(--text-secondary);
+}
+
+body.monitor-theme .btn-agenda-acao {
+    border-color: var(--monitor-blue);
+    background: var(--monitor-blue);
+    color: #0c2038;
+}
+
+body.monitor-theme .btn-agenda-secundario {
+    background: transparent;
+    color: var(--monitor-blue);
+}
+
+body.monitor-theme .material-form input,
+body.monitor-theme .avaliacao-form select,
+body.monitor-theme .avaliacao-form textarea,
+body.monitor-theme .registro-form input,
+body.monitor-theme .registro-form textarea {
+    border-color: var(--monitor-border-strong);
+    background: var(--monitor-surface);
+    color: var(--monitor-ink);
+}
+
 /* ===== 8. RESPONSIVIDADE ===== */
 @media (max-width: 992px) {
     .calendario-grid { grid-template-columns: 1fr; }
     .calendario-header { flex-direction: column; align-items: flex-start; gap: 12px; }
     .controles-topo-wrapper { width: 100%; justify-content: space-between; }
     .legenda-calendario { flex-wrap: wrap; }
+}
+
+@media (max-width: 560px) {
+    .compromisso-cabecalho {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .compromisso-acoes {
+        margin-left: 0;
+    }
 }

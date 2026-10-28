@@ -20,7 +20,7 @@ function exigirUsuarioAutenticado(?string $tipoRequerido = null): void
 
     if ($tipoRequerido !== null && $tipoUsuario !== $tipoRequerido) {
         $paginaInicial = $tipoUsuario === 'monitor'
-            ? 'monitor/perfilMonitor.php'
+            ? 'monitor/inicio.php'
             : 'aluno/inicio.php';
         header('Location: ' . $prefixoAplicacao . '/views/' . $paginaInicial);
         exit;

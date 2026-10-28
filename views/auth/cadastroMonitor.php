@@ -15,7 +15,8 @@ if (empty($_SESSION['csrf_token'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro Monitor - Univag Athenas</title>
 
-    <link rel="stylesheet" href="../../assets/css/loginCadastro.css?v=10">
+    <link rel="stylesheet" href="../../assets/css/monitorTheme.css?v=5">
+    <link rel="stylesheet" href="../../assets/css/loginCadastro.css?v=12">
 </head>
 <body class="theme-monitor">
     <div class="login-container">

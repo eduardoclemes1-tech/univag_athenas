@@ -1,12 +1,12 @@
 /* ===== 1. VARIÁVEIS E RESET ===== */
 :root {
-    --bg-page: #0b1528;
-    --bg-card: #ffffff;
-    --bg-gray-box: #f8fafc;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --primary-blue: #2563eb;
-    --border-color: #e2e8f0;
+    --bg-page: var(--monitor-background);
+    --bg-card: var(--monitor-surface);
+    --bg-gray-box: var(--monitor-surface-raised);
+    --text-primary: var(--monitor-ink);
+    --text-secondary: var(--monitor-muted);
+    --primary-blue: #8ab8eb;
+    --border-color: var(--monitor-border);
     --badge-gold: #f59e0b;
     --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.15);
     --radius-lg: 16px;
@@ -68,7 +68,7 @@ body {
 }
 
 .btn-tab {
-    background-color: #e2e8f0;
+    background-color: var(--monitor-surface-soft);
     color: var(--text-secondary);
     border: none;
     padding: 8px 20px;
@@ -80,7 +80,7 @@ body {
 }
 
 .btn-tab.ativo {
-    background-color: #1e1b4b;
+    background-color: #315d8b;
     color: #ffffff;
 }
 
@@ -98,7 +98,7 @@ body {
     display: flex;
     align-items: center;
     gap: 20px;
-    background-color: #ffffff;
+    background-color: var(--monitor-surface-raised);
 }
 
 .certificado-icone-bloco {

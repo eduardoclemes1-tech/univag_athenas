@@ -16,9 +16,10 @@ $tituloPagina = "Meus Certificados - UNIVAG ATHENAS";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- CSS Exclusivo de Certificados -->
-    <link rel="stylesheet" href="../../assets/css/certificados.css">
+    <link rel="stylesheet" href="../../assets/css/monitorTheme.css?v=5">
+    <link rel="stylesheet" href="../../assets/css/certificados.css?v=2">
 </head>
-<body>
+<body class="monitor-theme">
 
     <!-- ===== 3. NAVBAR UNIVERSAL ===== -->
     <?php include '../../includes/navbar.php'; ?>

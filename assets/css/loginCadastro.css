@@ -36,7 +36,7 @@ body::before {
 
 /* Overlay escuro noturno para a tela do MONITOR */
 body.theme-monitor::before {
-    background-color: rgba(15, 23, 42, 0.88);
+    background-color: rgba(9, 21, 37, 0.9);
 }
 
 .login-container {
@@ -234,12 +234,12 @@ body.theme-monitor .auth-feedback-success {
 
 /* ================= CARTÃO DO MONITOR (DARK PREMIUM) ================= */
 .form-monitor {
-    background-color: #0f172a;
-    border: 1px solid #334155;
+    background-color: var(--monitor-surface);
+    border: 1px solid var(--monitor-border);
 }
 
 .form-monitor .titulo-login {
-    color: #f8fafc;
+    color: var(--monitor-ink);
     font-size: 21px;
     font-weight: 700;
     margin-bottom: 18px;
@@ -249,28 +249,28 @@ body.theme-monitor .auth-feedback-success {
     width: 100%;
     padding: 12px 14px;
     margin-bottom: 12px;
-    background-color: #020617;
-    border: 1px solid #334155;
+    background-color: var(--monitor-background);
+    border: 1px solid var(--monitor-border-strong);
     border-radius: 8px;
-    color: #f8fafc;
+    color: var(--monitor-ink);
     font-size: 14px;
     outline: none;
     transition: all 0.2s ease;
 }
 
 .form-monitor input::placeholder {
-    color: #94a3b8;
+    color: var(--monitor-muted);
 }
 
 .form-monitor input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    border-color: var(--monitor-blue);
+    box-shadow: 0 0 0 3px #8ab8eb33;
 }
 
 .form-monitor .btn-acessar-monitor {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    background: linear-gradient(135deg, #315d8b 0%, #3b6ea3 100%);
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -289,7 +289,7 @@ body.theme-monitor .auth-feedback-success {
 /* CORREÇÃO DOS LINKS NO MONITOR (Alto contraste e legibilidade) */
 .form-monitor a,
 .form-monitor a:visited {
-    color: #a5b4fc !important;
+    color: var(--monitor-blue) !important;
     font-size: 12px;
     font-weight: 500;
     text-decoration: none;
@@ -305,9 +305,9 @@ body.theme-monitor .auth-feedback-success {
 /* CORREÇÃO DO BOTÃO "Sou Aluno" */
 .form-monitor .btn-toggle,
 .form-monitor button.btn-toggle {
-    background-color: #1e293b;
-    border: 1px solid #475569;
-    color: #f8fafc !important;
+    background-color: var(--monitor-surface-soft);
+    border: 1px solid var(--monitor-border-strong);
+    color: var(--monitor-ink) !important;
     padding: 8px 18px;
     border-radius: 20px;
     font-size: 12px;
@@ -319,7 +319,7 @@ body.theme-monitor .auth-feedback-success {
 
 .form-monitor .btn-toggle:hover,
 .form-monitor button.btn-toggle:hover {
-    background-color: #334155;
-    border-color: #818cf8;
+    background-color: var(--monitor-surface-soft);
+    border-color: var(--monitor-blue);
     color: #ffffff !important;
 }

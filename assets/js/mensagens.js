@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const api = app.dataset.api;
     const notificationsApi = app.dataset.notificationsApi;
+    const agendaUrl = app.dataset.agendaUrl;
     const csrfToken = app.dataset.csrf;
     const currentUserId = Number(app.dataset.userId);
     const currentUserType = app.dataset.userType;
@@ -435,10 +436,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 post(notificationsApi, {
                     acao: 'marcar_lida',
                     notificacao_id: Number(notification.id)
-                }).then(refreshNotifications).catch(function (error) {
+                }).then(async function () {
+                    await refreshNotifications();
+                    if (notification.conversa_id) {
+                        openChat(notification.conversa_id);
+                    } else if (notification.agendamento_id) {
+                        window.location.assign(agendaUrl);
+                    }
+                }).catch(function (error) {
                     showToast(error.message, true);
                 });
-                if (notification.conversa_id) openChat(notification.conversa_id);
             });
             notificationList.appendChild(item);
         });

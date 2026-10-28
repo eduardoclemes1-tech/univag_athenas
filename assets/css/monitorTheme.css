@@ -1,0 +1,320 @@
+:root {
+    --monitor-ink: #e8eef7;
+    --monitor-muted: #a7b6ca;
+    --monitor-border: #29415e;
+    --monitor-border-strong: #35516f;
+    --monitor-navy: #0c1a2e;
+    --monitor-blue: #8ab8eb;
+    --monitor-surface: #13243b;
+    --monitor-surface-raised: #172941;
+    --monitor-surface-soft: #1b3552;
+    --monitor-background: #091525;
+}
+
+body.monitor-theme {
+    color-scheme: dark;
+    background: var(--monitor-background);
+    color: var(--monitor-ink);
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+}
+
+body.monitor-theme .navbar-container {
+    background: var(--monitor-navy);
+    border-bottom-color: var(--monitor-border);
+}
+
+body.monitor-theme .navbar-search input {
+    background: var(--monitor-surface);
+    border-color: var(--monitor-border-strong);
+}
+
+body.monitor-theme .navbar-search input:focus {
+    background: var(--monitor-surface-raised);
+    border-color: var(--monitor-blue);
+    box-shadow: 0 0 0 3px #8ab8eb33;
+}
+
+body.monitor-theme .nav-icon-btn {
+    background: var(--monitor-surface-raised);
+}
+
+body.monitor-theme .nav-icon-btn:hover,
+body.monitor-theme .nav-user-dropdown:hover {
+    background: var(--monitor-surface-soft);
+}
+
+body.monitor-theme .nav-divider {
+    background: var(--monitor-border-strong);
+}
+
+body.monitor-theme .notification-badge {
+    border-color: var(--monitor-navy);
+}
+
+body.monitor-theme .search-dropdown,
+body.monitor-theme .popover-dropdown,
+body.monitor-theme .user-menu-dropdown {
+    border-color: var(--monitor-border);
+    background: var(--monitor-surface);
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .dropdown-header h3,
+body.monitor-theme .popover-header h4,
+body.monitor-theme .result-info strong,
+body.monitor-theme .msg-content strong,
+body.monitor-theme .user-menu-header strong,
+body.monitor-theme .notif-content p {
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .dropdown-header p,
+body.monitor-theme .result-info small,
+body.monitor-theme .msg-content small,
+body.monitor-theme .user-menu-header small,
+body.monitor-theme .msg-content p,
+body.monitor-theme .popover-empty {
+    color: var(--monitor-muted);
+}
+
+body.monitor-theme .popover-header,
+body.monitor-theme .user-menu-header,
+body.monitor-theme .status-selector {
+    border-color: var(--monitor-border);
+    background: var(--monitor-background);
+}
+
+body.monitor-theme .category-card,
+body.monitor-theme .status-select,
+body.monitor-theme .btn-notif-decline {
+    border-color: var(--monitor-border-strong);
+    background: var(--monitor-surface-raised);
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .category-icon,
+body.monitor-theme .category-card span,
+body.monitor-theme .user-menu-links a {
+    color: var(--monitor-muted);
+}
+
+body.monitor-theme .category-card:hover,
+body.monitor-theme .user-menu-links a:hover,
+body.monitor-theme .result-item:hover,
+body.monitor-theme .message-item:hover,
+body.monitor-theme .notif-item:hover {
+    background: var(--monitor-surface-soft);
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .category-card:hover .category-icon,
+body.monitor-theme .category-card:hover span {
+    color: #fff;
+}
+
+body.monitor-theme .notification-list .notif-item.unread {
+    background: #1b3552;
+}
+
+body.monitor-theme .notification-list .notif-item:hover {
+    background: #203954;
+}
+
+body.monitor-theme .notification-list .notif-content strong,
+body.monitor-theme .notification-list .notif-content p {
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .notification-list .notif-time {
+    color: var(--monitor-muted);
+}
+
+body.monitor-theme .notification-zoom-link,
+body.monitor-theme .header-action,
+body.monitor-theme .popover-header a {
+    color: var(--monitor-blue);
+}
+
+body.monitor-theme .header-action:hover,
+body.monitor-theme .btn-notif-decline:hover {
+    background: var(--monitor-surface-soft);
+}
+
+body.monitor-theme .chat-app {
+    --chat-ink: var(--monitor-ink);
+    --chat-muted: var(--monitor-muted);
+    --chat-border: var(--monitor-border);
+    --chat-blue: var(--monitor-blue);
+    border-color: var(--monitor-border);
+    background: var(--monitor-surface);
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .chat-app-header,
+body.monitor-theme .chat-conversation,
+body.monitor-theme .chat-message-list,
+body.monitor-theme .chat-compose {
+    background: var(--monitor-surface);
+}
+
+body.monitor-theme .chat-sidebar,
+body.monitor-theme .chat-appointments {
+    background: var(--monitor-background);
+}
+
+body.monitor-theme .chat-contact-search,
+body.monitor-theme .chat-new-contact select,
+body.monitor-theme .chat-appointment-card,
+body.monitor-theme .appointment-actions button,
+body.monitor-theme .chat-compose textarea,
+body.monitor-theme .chat-schedule-dialog,
+body.monitor-theme .chat-schedule-dialog input,
+body.monitor-theme .chat-schedule-dialog select,
+body.monitor-theme .chat-schedule-actions button {
+    border-color: var(--monitor-border-strong);
+    background: var(--monitor-surface-raised);
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .chat-conversation-item {
+    border-color: var(--monitor-border);
+}
+
+body.monitor-theme .chat-conversation-item:hover,
+body.monitor-theme .chat-conversation-item.conversation-selected,
+body.monitor-theme .chat-app-actions button:hover,
+body.monitor-theme .chat-schedule-dialog-header > button:hover {
+    background: var(--monitor-surface-soft);
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .chat-avatar,
+body.monitor-theme .chat-header-icon,
+body.monitor-theme .chat-welcome > span {
+    background: #213a59;
+    color: var(--monitor-blue);
+}
+
+body.monitor-theme .chat-conversation-summary strong,
+body.monitor-theme .chat-conversation-header strong,
+body.monitor-theme .chat-welcome strong,
+body.monitor-theme .chat-message-bubble p,
+body.monitor-theme .appointment-heading strong {
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .chat-message-bubble {
+    border-color: var(--monitor-border-strong);
+    background: var(--monitor-surface-soft);
+}
+
+body.monitor-theme .message-own .chat-message-bubble {
+    border-color: #4778a8;
+    background: #315d8b;
+}
+
+body.monitor-theme .message-own .chat-message-bubble p,
+body.monitor-theme .message-own .chat-message-bubble small {
+    color: #fff;
+}
+
+body.monitor-theme .chat-conversation-summary > span,
+body.monitor-theme .chat-conversation-header small,
+body.monitor-theme .chat-empty-state,
+body.monitor-theme .chat-welcome,
+body.monitor-theme .chat-message-bubble small,
+body.monitor-theme .chat-appointment-card > p,
+body.monitor-theme .chat-schedule-dialog form > p {
+    color: var(--monitor-muted);
+}
+
+body.monitor-theme .chat-message-bubble small {
+    color: #c1d0e2;
+}
+
+body.monitor-theme .chat-compose textarea::placeholder {
+    color: var(--monitor-muted);
+    opacity: 1;
+}
+
+body.monitor-theme .chat-schedule-button,
+body.monitor-theme .appointment-status {
+    border-color: var(--monitor-border-strong);
+    background: var(--monitor-surface-soft);
+    color: var(--monitor-blue);
+}
+
+body.monitor-theme .appointment-actions .appointment-accept,
+body.monitor-theme .chat-compose button,
+body.monitor-theme .chat-schedule-actions button[type='submit'] {
+    border-color: #315d8b;
+    background: #315d8b;
+    color: #fff;
+}
+
+body.monitor-theme .chat-schedule-dialog form > label {
+    color: var(--monitor-muted);
+}
+
+body.monitor-theme .appointment-status.status-confirmado {
+    background: #173a39;
+    color: #82d9b0;
+}
+
+body.monitor-theme .appointment-status.status-recusado,
+body.monitor-theme .appointment-status.status-cancelado {
+    background: #351f2a;
+    color: #ffd1d1;
+}
+
+body.monitor-theme .chat-schedule-dialog::backdrop {
+    background: #030b16d9;
+}
+
+body.monitor-theme .monitor-appointment-dialog {
+    width: min(500px, calc(100% - 28px));
+    background: var(--monitor-surface);
+    color: var(--monitor-ink);
+}
+
+body.monitor-theme .monitor-appointment-dialog input,
+body.monitor-theme .monitor-appointment-dialog select {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 10px;
+    border: 1px solid var(--monitor-border-strong);
+    border-radius: 5px;
+    background: var(--monitor-surface-raised);
+    color: var(--monitor-ink);
+    font: inherit;
+    font-size: 12px;
+}
+
+body.monitor-theme .monitor-appointment-dialog input:focus,
+body.monitor-theme .monitor-appointment-dialog select:focus {
+    border-color: var(--monitor-blue);
+    outline: 0;
+    box-shadow: 0 0 0 3px #8ab8eb20;
+}
+
+body.monitor-theme .monitor-appointment-dialog input::placeholder {
+    color: var(--monitor-muted);
+}
+
+body.monitor-theme .monitor-appointment-dialog #monitorAppointmentFeedback {
+    color: #b7efd1;
+    font-size: 12px;
+}
+
+body.monitor-theme .monitor-appointment-dialog #monitorAppointmentFeedback:empty {
+    display: none;
+}
+
+body.monitor-theme .monitor-appointment-dialog #monitorAppointmentFeedback.monitor-appointment-error {
+    color: #ffd1d1;
+}
+
+body.monitor-theme .monitor-appointment-dialog .chat-schedule-actions button[type='submit']:disabled {
+    cursor: wait;
+    opacity: .65;
+}
