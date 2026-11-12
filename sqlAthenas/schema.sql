@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS agendamentos (
     agendado_para DATETIME NOT NULL,
     duracao_minutos SMALLINT UNSIGNED NOT NULL DEFAULT 60,
     status ENUM('solicitado', 'confirmado', 'recusado', 'cancelado') NOT NULL DEFAULT 'solicitado',
-    link_zoom VARCHAR(500) NULL,
+    meeting_url VARCHAR(500) NULL,
     presenca_aluno TINYINT(1) NULL DEFAULT NULL,
     presenca_monitor TINYINT(1) NULL DEFAULT NULL,
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -131,6 +131,65 @@ CREATE TABLE IF NOT EXISTS lembretes_agendamentos (
     PRIMARY KEY (agendamento_id, usuario_id),
     CONSTRAINT fk_lembrete_agendamento FOREIGN KEY (agendamento_id) REFERENCES agendamentos(id) ON DELETE CASCADE,
     CONSTRAINT fk_lembrete_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS loja_itens (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    slug VARCHAR(50) NOT NULL UNIQUE,
+    nome VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255) NOT NULL DEFAULT '',
+    categoria ENUM('fundo', 'avatar') NOT NULL,
+    preco INT UNSIGNED NOT NULL,
+    visual VARCHAR(50) NOT NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS loja_compras (
+    usuario_id INT NOT NULL,
+    item_id INT UNSIGNED NOT NULL,
+    comprado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (usuario_id, item_id),
+    CONSTRAINT fk_loja_compra_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_loja_compra_item FOREIGN KEY (item_id) REFERENCES loja_itens(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS loja_equipamentos (
+    usuario_id INT NOT NULL,
+    categoria ENUM('fundo', 'avatar') NOT NULL,
+    item_id INT UNSIGNED NOT NULL,
+    equipado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (usuario_id, categoria),
+    CONSTRAINT fk_loja_equipamento_compra
+        FOREIGN KEY (usuario_id, item_id) REFERENCES loja_compras(usuario_id, item_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO loja_itens (slug, nome, descricao, categoria, preco, visual) VALUES
+    ('fundo-oceano', 'Fundo Oceano', 'Um degradê azul para o seu perfil.', 'fundo', 20, 'oceano'),
+    ('fundo-aurora', 'Fundo Aurora', 'Tons verdes e azulados inspirados na aurora.', 'fundo', 30, 'aurora'),
+    ('fundo-por-do-sol', 'Fundo Pôr do Sol', 'Cores quentes para personalizar seu perfil.', 'fundo', 30, 'por-do-sol'),
+    ('fundo-nebulosa', 'Nebulosa Pulsante', 'Nuvens cósmicas em movimento suave.', 'fundo', 35, 'nebulosa'),
+    ('fundo-aurora-animada', 'Aurora em Movimento', 'Faixas coloridas dançam pelo seu perfil.', 'fundo', 35, 'aurora-animada'),
+    ('fundo-chuva-estrelas', 'Chuva de Estrelas', 'Um céu noturno com estrelas passeando.', 'fundo', 45, 'estrelas'),
+    ('avatar-lilas', 'Avatar Lilás', 'Um avatar acadêmico em tons de lilás.', 'avatar', 15, 'lilas'),
+    ('avatar-esmeralda', 'Avatar Esmeralda', 'Um avatar acadêmico em tons de verde.', 'avatar', 15, 'esmeralda'),
+    ('avatar-dourado', 'Avatar Dourado', 'Um avatar acadêmico em tons dourados.', 'avatar', 25, 'dourado'),
+    ('avatar-asas-capelo', 'Asas & Capelo', 'Um avatar com asas brilhantes e chapeuzinho de formando.', 'avatar', 40, 'asas-capelo'),
+    ('avatar-capivara', 'Capivara Caloura', 'Uma capivara estudiosa pronta para a monitoria.', 'avatar', 45, 'capivara');
+
+CREATE TABLE IF NOT EXISTS pontos_transacoes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    agendamento_id BIGINT UNSIGNED NULL,
+    item_id INT UNSIGNED NULL,
+    evento ENUM('participacao', 'cancelamento_tardio', 'compra') NOT NULL,
+    pontos INT NOT NULL,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_pontos_agendamento_evento (agendamento_id, evento),
+    UNIQUE KEY uq_pontos_compra_item (usuario_id, item_id, evento),
+    KEY idx_pontos_usuario_criado (usuario_id, criado_em),
+    CONSTRAINT fk_pontos_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_pontos_agendamento FOREIGN KEY (agendamento_id) REFERENCES agendamentos(id) ON DELETE CASCADE,
+    CONSTRAINT fk_pontos_item FOREIGN KEY (item_id) REFERENCES loja_itens(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS notificacoes (

@@ -154,8 +154,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 try {
     $stmt = $pdo->prepare(
-        'SELECT nome, email, bio, curso, periodo, foto_mime, criado_em
-         FROM usuarios WHERE id = ? AND tipo = ?'
+        "SELECT u.nome, u.email, u.bio, u.curso, u.periodo, u.foto_mime, u.criado_em,
+                (SELECT i.visual
+                 FROM loja_equipamentos e JOIN loja_itens i ON i.id = e.item_id
+                 WHERE e.usuario_id = u.id AND e.categoria = 'fundo' AND i.ativo = 1
+                 LIMIT 1) AS fundo_visual,
+                (SELECT i.visual
+                 FROM loja_equipamentos e JOIN loja_itens i ON i.id = e.item_id
+                 WHERE e.usuario_id = u.id AND e.categoria = 'avatar' AND i.ativo = 1
+                 LIMIT 1) AS avatar_visual
+         FROM usuarios u WHERE u.id = ? AND u.tipo = ?"
     );
     $stmt->execute([$_SESSION['usuario_id'], 'aluno']);
     $aluno = $stmt->fetch();
@@ -178,6 +186,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     ];
 }
 $inicialNome = mb_strtoupper(mb_substr($aluno['nome'], 0, 1, 'UTF-8'), 'UTF-8');
+$fundosPermitidos = ['oceano', 'aurora', 'por-do-sol', 'nebulosa', 'aurora-animada', 'estrelas'];
+$avataresPermitidos = ['lilas', 'esmeralda', 'dourado', 'asas-capelo', 'capivara'];
+$fundoVisual = in_array($aluno['fundo_visual'], $fundosPermitidos, true) ? $aluno['fundo_visual'] : '';
+$avatarVisual = in_array($aluno['avatar_visual'], $avataresPermitidos, true) ? $aluno['avatar_visual'] : '';
+$imagensAvatares = [
+    'asas-capelo' => '../../assets/img/loja/avatar-asas-capelo.svg',
+    'capivara' => '../../assets/img/loja/avatar-capivara-caloura.svg',
+];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -187,7 +203,8 @@ $inicialNome = mb_strtoupper(mb_substr($aluno['nome'], 0, 1, 'UTF-8'), 'UTF-8');
     <title>Meu perfil - UNIVAG ATHENAS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/aluno.css?v=2">
-    <link rel="stylesheet" href="../../assets/css/perfilAluno.css?v=1">
+    <link rel="stylesheet" href="../../assets/css/perfilAluno.css?v=3">
+    <link rel="stylesheet" href="../../assets/css/personalizacao.css?v=1">
 </head>
 <body class="aluno-theme">
     <?php include '../../includes/navbar.php'; ?>
@@ -222,9 +239,17 @@ $inicialNome = mb_strtoupper(mb_substr($aluno['nome'], 0, 1, 'UTF-8'), 'UTF-8');
             <?php endif; ?>
 
             <section class="perfil-aluno-card" aria-label="Resumo do perfil">
-                <div class="perfil-aluno-capa" aria-hidden="true"></div>
+                <div class="perfil-aluno-capa<?php echo $fundoVisual ? ' perfil-fundo-' . htmlspecialchars($fundoVisual, ENT_QUOTES, 'UTF-8') : ''; ?>" aria-hidden="true"></div>
                 <div class="perfil-aluno-resumo">
-                    <?php if ($aluno['foto_mime']): ?>
+                    <?php if ($avatarVisual): ?>
+                        <div class="perfil-aluno-foto perfil-aluno-avatar-premium perfil-avatar-<?php echo htmlspecialchars($avatarVisual, ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true">
+                            <?php if (isset($imagensAvatares[$avatarVisual])): ?>
+                                <img src="<?php echo htmlspecialchars($imagensAvatares[$avatarVisual], ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                            <?php else: ?>
+                                <i class="fa-solid fa-user-graduate"></i>
+                            <?php endif; ?>
+                        </div>
+                    <?php elseif ($aluno['foto_mime']): ?>
                         <img
                             class="perfil-aluno-foto"
                             src="../../actions/fotoPerfil.php"

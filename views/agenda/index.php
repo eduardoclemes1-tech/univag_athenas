@@ -225,7 +225,7 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                                 + ' – ' + padZero(fim.getHours()) + ':' + padZero(fim.getMinutes()),
                             inicio: inicio,
                             fim: fim,
-                            linkZoom: agendamento.link_zoom,
+                            meetingUrl: agendamento.meeting_url,
                             presencaAluno: agendamento.presenca_aluno,
                             presencaMonitor: agendamento.presenca_monitor,
                             avaliacaoNota: agendamento.avaliacao_nota,
@@ -293,19 +293,16 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                 detalhes.append(titulo, participante);
                 info.append(dot, detalhes);
                 cabecalho.append(horario, info);
-                if (item.linkZoom) {
+                if (item.meetingUrl) {
                     try {
-                        const zoom = new URL(item.linkZoom);
-                        if (
-                            zoom.protocol === 'https:'
-                            && /(^|\.)zoom\.us$/i.test(zoom.hostname)
-                        ) {
+                        const reuniao = new URL(item.meetingUrl);
+                        if (reuniao.protocol === 'https:') {
                             const link = document.createElement('a');
-                            link.href = zoom.href;
+                            link.href = reuniao.href;
                             link.target = '_blank';
                             link.rel = 'noopener noreferrer';
                             link.className = 'btn-link-sala';
-                            link.textContent = 'Zoom';
+                            link.textContent = 'Entrar na reunião';
                             cabecalho.appendChild(link);
                         }
                     } catch (error) {
@@ -528,11 +525,15 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
             if (!botao) return;
             botao.disabled = true;
             try {
-                await enviarAcao('presenca', {
+                const resultado = await enviarAcao('presenca', {
                     agendamento_id: Number(botao.dataset.appointmentId),
                     presente: botao.dataset.presenca === '1'
                 });
-                informarAcao('Sua confirmação de presença foi registrada.');
+                informarAcao(resultado.pontos_ganhos === 10
+                    ? (tipoUsuario === 'aluno'
+                        ? 'Presença confirmada: você ganhou 10 pontos!'
+                        : 'Presença confirmada: o aluno ganhou 10 pontos.')
+                    : 'Sua confirmação de presença foi registrada.');
                 await carregarAgendamentos();
             } catch (error) {
                 informarAcao(error.message);

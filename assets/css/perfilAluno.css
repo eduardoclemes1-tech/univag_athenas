@@ -412,3 +412,63 @@
         width: 100%;
     }
 }
+
+.perfil-aluno-capa.perfil-fundo-oceano {
+    background: linear-gradient(110deg, #146eaa 0%, #54c4d2 100%);
+}
+
+.perfil-aluno-capa.perfil-fundo-aurora {
+    background: linear-gradient(110deg, #174f5c 0%, #28b08b 52%, #70c4d5 100%);
+}
+
+.perfil-aluno-capa.perfil-fundo-por-do-sol {
+    background: linear-gradient(110deg, #7a3d79 0%, #e37470 55%, #f5bb68 100%);
+}
+
+.perfil-aluno-foto.perfil-avatar-lilas {
+    border-color: #c9b8ed;
+}
+
+.perfil-aluno-avatar-premium {
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 40px;
+}
+
+.perfil-aluno-avatar-premium img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.perfil-aluno-avatar-premium.perfil-avatar-lilas {
+    background: linear-gradient(140deg, #9074c9, #c9b8ed);
+}
+
+.perfil-aluno-foto.perfil-avatar-esmeralda {
+    border-color: #53b795;
+}
+
+.perfil-aluno-avatar-premium.perfil-avatar-esmeralda {
+    background: linear-gradient(140deg, #237c65, #53b795);
+}
+
+.perfil-aluno-foto.perfil-avatar-dourado {
+    border-color: #d7aa41;
+}
+
+.perfil-aluno-avatar-premium.perfil-avatar-dourado {
+    background: linear-gradient(140deg, #a9791e, #e1bc62);
+}
+
+.perfil-aluno-avatar-premium.perfil-avatar-asas-capelo {
+    border-color: #b893ec;
+    background: #684bb6;
+}
+
+.perfil-aluno-avatar-premium.perfil-avatar-capivara {
+    border-color: #75bf98;
+    background: #357e69;
+}

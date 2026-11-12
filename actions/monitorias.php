@@ -102,7 +102,7 @@ try {
 
     if ($metodo === 'GET') {
         $stmt = $pdo->prepare(
-            "SELECT a.id, a.assunto, a.agendado_para, a.duracao_minutos, a.status, a.link_zoom,
+            "SELECT a.id, a.assunto, a.agendado_para, a.duracao_minutos, a.status, a.meeting_url,
                     a.aluno_id, a.monitor_id, a.presenca_aluno, a.presenca_monitor,
                     aluno.nome AS aluno_nome, monitor.nome AS monitor_nome,
                     av.nota AS avaliacao_nota, av.comentario AS avaliacao_comentario,
@@ -173,6 +173,9 @@ try {
             : (int) $agendamento['aluno_id'];
 
         $pdo->beginTransaction();
+        $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE id = ? FOR UPDATE');
+        $stmt->execute([(int) $agendamento['aluno_id']]);
+        $stmt->fetchColumn();
         $stmt = $pdo->prepare("SELECT {$coluna} FROM agendamentos WHERE id = ? FOR UPDATE");
         $stmt->execute([$agendamentoId]);
         if ($stmt->fetchColumn() !== null) {
@@ -181,6 +184,26 @@ try {
         }
         $stmt = $pdo->prepare("UPDATE agendamentos SET {$coluna} = ? WHERE id = ?");
         $stmt->execute([$valorPresenca, $agendamentoId]);
+        $stmt = $pdo->prepare(
+            'SELECT aluno_id, presenca_aluno, presenca_monitor
+             FROM agendamentos WHERE id = ? FOR UPDATE'
+        );
+        $stmt->execute([$agendamentoId]);
+        $presencas = $stmt->fetch();
+        $pontosGanhos = 0;
+        if (
+            $presencas
+            && (int) $presencas['presenca_aluno'] === 1
+            && (int) $presencas['presenca_monitor'] === 1
+        ) {
+            $stmt = $pdo->prepare(
+                "INSERT INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
+                 VALUES (?, ?, 'participacao', 10)
+                 ON DUPLICATE KEY UPDATE id = id"
+            );
+            $stmt->execute([(int) $presencas['aluno_id'], $agendamentoId]);
+            $pontosGanhos = $stmt->rowCount() === 1 ? 10 : 0;
+        }
         notificarParticipante(
             $pdo,
             $outroUsuarioId,
@@ -190,7 +213,7 @@ try {
                 . ' registrou presença na monitoria "' . $agendamento['assunto'] . '".'
         );
         $pdo->commit();
-        responderMonitorias(200, ['presenca' => $valorPresenca]);
+        responderMonitorias(200, ['presenca' => $valorPresenca, 'pontos_ganhos' => $pontosGanhos]);
     }
 
     if ($acao === 'avaliar') {

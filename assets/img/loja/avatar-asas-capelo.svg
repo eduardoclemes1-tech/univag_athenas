@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Avatar com asas e capelo</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7454c8"/>
+      <stop offset="1" stop-color="#d07ee5"/>
+    </linearGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf7"/>
+      <stop offset="1" stop-color="#f0d8ff"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="62" fill="url(#sky)"/>
+  <path d="M56 72C39 52 15 54 8 70c12-4 21 0 27 9-11-3-20 1-26 12 13-5 25-2 34 8 5-9 10-17 13-27Z" fill="url(#wing)"/>
+  <path d="M72 72c17-20 41-18 48-2-12-4-21 0-27 9 11-3 20 1 26 12-13-5-25-2-34 8-5-9-10-17-13-27Z" fill="url(#wing)"/>
+  <path d="M20 70c10 0 18 5 23 14M17 84c9-2 17 1 23 8M108 70c-10 0-18 5-23 14m26 0c-9-2-17 1-23 8" fill="none" stroke="#c6a0ed" stroke-linecap="round" stroke-width="2"/>
+  <path d="M43 69c0-15 9-25 21-25s21 10 21 25v8H43Z" fill="#624342"/>
+  <ellipse cx="64" cy="77" rx="20" ry="22" fill="#ffd7b1"/>
+  <circle cx="57" cy="77" r="2" fill="#48333b"/>
+  <circle cx="71" cy="77" r="2" fill="#48333b"/>
+  <path d="M60 86c3 3 6 3 9 0" fill="none" stroke="#b65d73" stroke-linecap="round" stroke-width="2"/>
+  <path d="m31 43 33-18 33 18-33 18Z" fill="#f8d36a" stroke="#fff4c2" stroke-linejoin="round" stroke-width="2"/>
+  <path d="M48 51v11c9 8 23 8 32 0V51L64 60Z" fill="#513b8b"/>
+  <path d="M96 43v18" stroke="#f8d36a" stroke-linecap="round" stroke-width="3"/>
+  <circle cx="96" cy="64" r="3" fill="#fff4c2"/>
+  <path d="M47 111c3-10 9-15 17-15s14 5 17 15" fill="#fffdf7" opacity=".92"/>
+  <path d="M55 103 64 112 73 103" fill="none" stroke="#b68de3" stroke-width="3"/>
+</svg>

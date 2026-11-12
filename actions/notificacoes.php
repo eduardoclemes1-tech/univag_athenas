@@ -36,7 +36,7 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt = $pdo->prepare(
             'SELECT n.id, n.tipo, n.titulo, n.mensagem, n.agendamento_id, n.mensagem_id,
-                    n.lida_em, n.criada_em, a.conversa_id, a.agendado_para, a.status, a.link_zoom
+                    n.lida_em, n.criada_em, a.conversa_id, a.agendado_para, a.status, a.meeting_url
              FROM notificacoes n
              LEFT JOIN agendamentos a ON a.id = n.agendamento_id
              WHERE n.usuario_id = ?

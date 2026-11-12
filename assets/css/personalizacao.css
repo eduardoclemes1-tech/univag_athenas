@@ -1,0 +1,56 @@
+.visual-nebulosa,
+.perfil-aluno-capa.perfil-fundo-nebulosa {
+    background-image:
+        radial-gradient(ellipse at 18% 72%, #f987e2 0, transparent 38%),
+        radial-gradient(ellipse at 82% 28%, #51c7ed 0, transparent 40%),
+        linear-gradient(125deg, #17113e, #392778 52%, #111b46);
+    background-size: 180% 180%;
+    animation: loja-nebulosa 15s ease-in-out infinite;
+}
+
+.visual-aurora-animada,
+.perfil-aluno-capa.perfil-fundo-aurora-animada {
+    background-image:
+        radial-gradient(ellipse at 10% 110%, #50e3c2 0, transparent 45%),
+        radial-gradient(ellipse at 90% -10%, #81a9ff 0, transparent 45%),
+        linear-gradient(120deg, #0d3444, #17345b 48%, #38285f);
+    background-size: 190% 190%;
+    animation: loja-aurora 12s ease-in-out infinite alternate;
+}
+
+.visual-estrelas,
+.perfil-aluno-capa.perfil-fundo-estrelas {
+    background-image:
+        radial-gradient(circle, #fff8cc 0 1px, transparent 2px),
+        radial-gradient(circle, #c2d7ff 0 1px, transparent 2px),
+        linear-gradient(145deg, #10182f, #25274e 55%, #111a38);
+    background-size: 72px 72px, 113px 113px, 100% 100%;
+    animation: loja-estrelas 22s linear infinite;
+}
+
+@keyframes loja-nebulosa {
+    0% { background-position: 0 60%, 100% 40%, 50% 50%; }
+    50% { background-position: 100% 35%, 0 75%, 50% 50%; }
+    100% { background-position: 0 60%, 100% 40%, 50% 50%; }
+}
+
+@keyframes loja-aurora {
+    from { background-position: 0 75%, 100% 20%, 50% 50%; }
+    to { background-position: 100% 25%, 0 80%, 50% 50%; }
+}
+
+@keyframes loja-estrelas {
+    from { background-position: 0 0, 0 0, 50% 50%; }
+    to { background-position: 72px 72px, -113px 113px, 50% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .visual-nebulosa,
+    .visual-aurora-animada,
+    .visual-estrelas,
+    .perfil-aluno-capa.perfil-fundo-nebulosa,
+    .perfil-aluno-capa.perfil-fundo-aurora-animada,
+    .perfil-aluno-capa.perfil-fundo-estrelas {
+        animation: none;
+    }
+}

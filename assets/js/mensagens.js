@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedConversation = null;
     let latestMessageId = 0;
     let refreshing = false;
+    let availabilityRequestId = 0;
 
     function escapeText(value) {
         return String(value ?? '');
@@ -52,6 +53,15 @@ document.addEventListener('DOMContentLoaded', function () {
             dateStyle: 'medium',
             timeStyle: 'short'
         }).format(date);
+    }
+
+    function safeMeetingUrl(value) {
+        try {
+            const url = new URL(String(value));
+            return url.protocol === 'https:' ? url.href : '';
+        } catch (error) {
+            return '';
+        }
     }
 
     function setBadge(badge, count) {
@@ -307,13 +317,14 @@ document.addEventListener('DOMContentLoaded', function () {
             date.textContent = formatDate(appointment.agendado_para);
             card.append(heading, date);
 
-            if (appointment.link_zoom && appointment.status === 'confirmado') {
+            const meetingUrl = safeMeetingUrl(appointment.meeting_url);
+            if (meetingUrl && appointment.status === 'confirmado') {
                 const link = document.createElement('a');
-                link.href = appointment.link_zoom;
+                link.href = meetingUrl;
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
                 link.className = 'appointment-zoom-link';
-                link.textContent = 'Entrar na reunião do Zoom';
+                link.textContent = 'Entrar na reunião';
                 card.appendChild(link);
             }
 
@@ -321,9 +332,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const zoomInput = document.createElement('input');
                 zoomInput.type = 'url';
                 zoomInput.className = 'appointment-zoom-input';
-                zoomInput.placeholder = 'Link da reunião Zoom (obrigatório ao confirmar)';
+                zoomInput.placeholder = 'URL da reunião (obrigatória ao confirmar)';
                 zoomInput.maxLength = 500;
-                zoomInput.setAttribute('aria-label', 'Link da reunião Zoom');
+                zoomInput.setAttribute('aria-label', 'URL da reunião');
                 const actions = document.createElement('div');
                 actions.className = 'appointment-actions';
                 const accept = document.createElement('button');
@@ -333,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 accept.addEventListener('click', function () {
                     if (!zoomInput.value.trim()) {
                         zoomInput.focus();
-                        showToast('Informe o link do Zoom para confirmar.', true);
+                        showToast('Informe a URL da reunião para confirmar.', true);
                         return;
                     }
                     respondAppointment(appointment, 'confirmado', zoomInput.value.trim());
@@ -347,6 +358,51 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 actions.append(accept, decline);
                 card.append(zoomInput, actions);
+            }
+            if (
+                currentUserType === 'aluno'
+                && (
+                    appointment.status === 'solicitado'
+                    || (appointment.status === 'confirmado'
+                        && new Date(String(appointment.agendado_para).replace(' ', 'T')) > new Date())
+                )
+            ) {
+                const cancel = document.createElement('button');
+                cancel.type = 'button';
+                cancel.className = 'appointment-decline';
+                cancel.textContent = appointment.status === 'solicitado'
+                    ? 'Cancelar solicitação'
+                    : 'Cancelar monitoria';
+                const cancelActions = document.createElement('div');
+                cancelActions.className = 'appointment-actions';
+                cancelActions.appendChild(cancel);
+                cancel.addEventListener('click', async function () {
+                    const inicio = new Date(String(appointment.agendado_para).replace(' ', 'T'));
+                    const confirmada = appointment.status === 'confirmado';
+                    const avisoTardio = confirmada && inicio.getTime() - Date.now() < 24 * 60 * 60 * 1000;
+                    const confirmacao = !confirmada
+                        ? 'Deseja cancelar esta solicitação de monitoria?'
+                        : avisoTardio
+                            ? 'Faltam menos de 24 horas para a monitoria. O cancelamento descontará 10 pontos. Deseja continuar?'
+                            : 'Deseja cancelar esta monitoria?';
+                    if (!window.confirm(confirmacao)) return;
+                    try {
+                        const resultado = await post(api, {
+                            acao: 'cancelar_agendamento',
+                            conversa_id: selectedConversation.id,
+                            agendamento_id: appointment.id
+                        });
+                        showToast(!confirmada
+                            ? 'Solicitação cancelada.'
+                            : resultado.pontos_descontados > 0
+                                ? 'Monitoria cancelada. Foram descontados 10 pontos.'
+                                : 'Monitoria cancelada sem desconto de pontos.');
+                        await Promise.all([loadMessages(false), refreshNotifications(), loadBootstrap()]);
+                    } catch (error) {
+                        showToast(error.message, true);
+                    }
+                });
+                card.appendChild(cancelActions);
             }
             container.appendChild(card);
         });
@@ -420,13 +476,14 @@ document.addEventListener('DOMContentLoaded', function () {
             time.textContent = formatDate(notification.criada_em);
             content.append(title, message);
 
-            if (notification.link_zoom && notification.status === 'confirmado') {
+            const meetingUrl = safeMeetingUrl(notification.meeting_url);
+            if (meetingUrl && notification.status === 'confirmado') {
                 const zoom = document.createElement('a');
-                zoom.href = notification.link_zoom;
+                zoom.href = meetingUrl;
                 zoom.target = '_blank';
                 zoom.rel = 'noopener noreferrer';
                 zoom.className = 'notification-zoom-link';
-                zoom.textContent = 'Abrir link do Zoom';
+                zoom.textContent = 'Abrir URL da reunião';
                 content.appendChild(zoom);
             }
             content.appendChild(time);
@@ -451,14 +508,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    async function respondAppointment(appointment, status, zoomUrl) {
+    async function respondAppointment(appointment, status, meetingUrl) {
         try {
             await post(api, {
                 acao: 'responder_agendamento',
                 conversa_id: selectedConversation.id,
                 agendamento_id: appointment.id,
                 status: status,
-                link_zoom: zoomUrl
+                meeting_url: meetingUrl
             });
             showToast(status === 'confirmado' ? 'Monitoria confirmada e aluno notificado.' : 'Solicitação recusada.');
             await Promise.all([loadMessages(false), refreshNotifications(), loadBootstrap()]);
@@ -552,11 +609,67 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('requestAppointment').addEventListener('click', function () {
+        availabilityRequestId += 1;
         const dateInput = document.getElementById('appointmentDate');
-        const now = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
-        dateInput.min = now.toISOString().slice(0, 16);
+        const durationSelect = document.getElementById('appointmentDuration');
+        const timeSelect = document.getElementById('appointmentTime');
+        const today = new Date();
+        const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+        dateInput.min = localToday.toISOString().slice(0, 10);
+        localToday.setDate(localToday.getDate() + 90);
+        dateInput.max = localToday.toISOString().slice(0, 10);
+        dateInput.value = '';
+        timeSelect.disabled = true;
+        timeSelect.replaceChildren(new Option('Escolha uma data primeiro', ''));
+        document.getElementById('appointmentFeedback').textContent =
+            'Escolha a data para consultar os horários livres do monitor.';
         appointmentDialog.showModal();
     });
+
+    async function carregarHorariosDisponiveis() {
+        const requestId = ++availabilityRequestId;
+        const dateInput = document.getElementById('appointmentDate');
+        const durationSelect = document.getElementById('appointmentDuration');
+        const timeSelect = document.getElementById('appointmentTime');
+        const feedback = document.getElementById('appointmentFeedback');
+        timeSelect.disabled = true;
+        timeSelect.replaceChildren(new Option('Consultando horários...', ''));
+        if (!dateInput.value || !selectedConversation) {
+            feedback.textContent = 'Escolha a data para consultar os horários livres do monitor.';
+            return;
+        }
+
+        feedback.textContent = 'Consultando horários livres...';
+        try {
+            const params = new URLSearchParams({
+                acao: 'horarios_disponiveis',
+                conversa_id: String(selectedConversation.id),
+                data: dateInput.value,
+                duracao: durationSelect.value
+            });
+            const resultado = await request(api + '?' + params.toString());
+            if (requestId !== availabilityRequestId) return;
+            const horarios = resultado.horarios || [];
+            timeSelect.replaceChildren(new Option(
+                horarios.length ? 'Selecione um horário' : 'Nenhum horário disponível',
+                ''
+            ));
+            horarios.forEach(function (horario) {
+                timeSelect.add(new Option(horario, horario));
+            });
+            timeSelect.disabled = horarios.length === 0;
+            feedback.textContent = horarios.length
+                ? 'Selecione um dos horários livres do monitor.'
+                : 'Não há horários livres para essa data e duração. Tente outro dia.';
+        } catch (error) {
+            if (requestId !== availabilityRequestId) return;
+            timeSelect.replaceChildren(new Option('Não foi possível carregar', ''));
+            feedback.textContent = error.message;
+        }
+    }
+
+    document.getElementById('appointmentDate').addEventListener('change', carregarHorariosDisponiveis);
+    document.getElementById('appointmentDuration').addEventListener('change', carregarHorariosDisponiveis);
 
     document.querySelectorAll('[data-fechar-agendamento]').forEach(function (button) {
         button.addEventListener('click', function () {
@@ -568,19 +681,18 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         if (!selectedConversation) return;
         const dateInput = document.getElementById('appointmentDate').value;
-        const date = new Date(dateInput);
-        if (Number.isNaN(date.getTime())) {
-            showToast('Informe uma data e horário válidos.', true);
+        const timeInput = document.getElementById('appointmentTime').value;
+        if (!dateInput || !timeInput) {
+            showToast('Escolha uma data e um horário disponível.', true);
             return;
         }
-        const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-            .toISOString().slice(0, 16);
         try {
             await post(api, {
                 acao: 'agendar',
                 conversa_id: selectedConversation.id,
                 assunto: document.getElementById('appointmentSubject').value.trim(),
-                agendado_para: localDate
+                agendado_para: dateInput + 'T' + timeInput,
+                duracao_minutos: Number(document.getElementById('appointmentDuration').value)
             });
             appointmentForm.reset();
             appointmentDialog.close();

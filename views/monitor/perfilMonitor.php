@@ -362,6 +362,8 @@ if ($metodo === 'POST' && $ehDono) {
         if (!$erros) {
             try {
                 $pdo->beginTransaction();
+                $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE id = ? FOR UPDATE');
+                $stmt->execute([$_SESSION['usuario_id']]);
                 $stmt = $pdo->prepare('DELETE FROM disponibilidades_monitores WHERE monitor_id = ?');
                 $stmt->execute([$_SESSION['usuario_id']]);
                 $stmt = $pdo->prepare(

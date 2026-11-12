@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     assunto: document.getElementById('monitorAppointmentSubject').value.trim(),
                     agendado_para: dateInput.value,
                     duracao_minutos: Number(document.getElementById('monitorAppointmentDuration').value),
-                    link_zoom: document.getElementById('monitorAppointmentZoom').value.trim()
+                    meeting_url: document.getElementById('monitorAppointmentUrl').value.trim()
                 })
             });
             const payload = await response.json();

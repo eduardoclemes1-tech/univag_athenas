@@ -44,6 +44,7 @@ $urlAgenda = $basePath . 'views/agenda/index.php';
 $urlConfiguracoes = $basePath . 'views/configuracoes.php';
 $urlExplorarMonitores = $basePath . 'views/aluno/monitores.php';
 $urlMaterias = $basePath . 'views/aluno/materias.php';
+$urlLoja = $basePath . 'views/aluno/loja.php';
 
 // Rotas exclusivas da gestão acadêmica do Monitor
 $urlHoras        = $basePath . 'views/monitor/horasComplementares.php';
@@ -53,7 +54,7 @@ $urlCertificados = $basePath . 'views/monitor/certificados.php';
 $urlLogout = $basePath . 'actions/logout.php';
 $urlLogo   = $basePath . 'assets/img/logoAthenas.png';
 $urlCss    = $basePath . 'assets/css/navbar.css?v=4';
-$urlChatCss = $basePath . 'assets/css/mensagens.css?v=1';
+$urlChatCss = $basePath . 'assets/css/mensagens.css?v=2';
 
 // Rota temporária para telas em desenvolvimento
 $urlEmBreve = 'javascript:void(0);';
@@ -285,6 +286,14 @@ $urlEmBreve = 'javascript:void(0);';
                             </a>
                         </li>
 
+                        <?php if ($tipoUsuario === 'aluno'): ?>
+                        <li>
+                            <a href="<?php echo htmlspecialchars($urlLoja); ?>">
+                                <i class="fa-solid fa-store"></i> Lojinha de personalização
+                            </a>
+                        </li>
+                        <?php endif; ?>
+
                         <?php if ($tipoUsuario === 'monitor'): ?>
                         <!-- Links de gestão acadêmica exclusivos para a conta de Monitor -->
                         <li>
@@ -355,10 +364,10 @@ $urlEmBreve = 'javascript:void(0);';
             </select>
         </label>
         <label>
-            <span>Link da sala no Zoom</span>
-            <input type="url" id="monitorAppointmentZoom" maxlength="500" required placeholder="https://zoom.us/j/...">
+            <span>URL da reunião</span>
+            <input type="url" id="monitorAppointmentUrl" maxlength="500" required placeholder="https://...">
         </label>
-        <p>Se você cadastrou horários no perfil, o agendamento respeitará essa disponibilidade. O convite será confirmado na agenda de ambos, e o aluno receberá uma mensagem e uma notificação com o link.</p>
+        <p>O agendamento respeitará os horários e bloqueios cadastrados no seu perfil. O aluno receberá a URL da reunião por mensagem e notificação.</p>
         <div id="monitorAppointmentFeedback" role="status" aria-live="polite"></div>
         <div class="chat-schedule-actions">
             <button type="button" data-fechar-monitor-agendamento>Cancelar</button>
@@ -366,7 +375,7 @@ $urlEmBreve = 'javascript:void(0);';
         </div>
     </form>
 </dialog>
-<script src="<?php echo htmlspecialchars($basePath . 'assets/js/agendamentoMonitor.js?v=1', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
+<script src="<?php echo htmlspecialchars($basePath . 'assets/js/agendamentoMonitor.js?v=2', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
 <?php endif; ?>
 
 <section
@@ -459,10 +468,26 @@ $urlEmBreve = 'javascript:void(0);';
                 <input type="text" id="appointmentSubject" maxlength="180" required placeholder="Ex.: dúvidas sobre SQL">
             </label>
             <label>
-                <span>Data e horário</span>
-                <input type="datetime-local" id="appointmentDate" required>
+                <span>Data</span>
+                <input type="date" id="appointmentDate" required>
             </label>
-            <p>O monitor receberá seu pedido e poderá confirmar com o link da reunião.</p>
+            <label>
+                <span>Duração</span>
+                <select id="appointmentDuration" required>
+                    <option value="30">30 minutos</option>
+                    <option value="45">45 minutos</option>
+                    <option value="60" selected>1 hora</option>
+                    <option value="90">1 hora e 30 minutos</option>
+                </select>
+            </label>
+            <label>
+                <span>Horário disponível</span>
+                <select id="appointmentTime" required disabled>
+                    <option value="">Escolha uma data primeiro</option>
+                </select>
+            </label>
+            <p id="appointmentFeedback" role="status" aria-live="polite">Escolha a data para consultar os horários livres do monitor.</p>
+            <p>O monitor receberá seu pedido e poderá confirmar com a URL da reunião.</p>
             <div class="chat-schedule-actions">
                 <button type="button" data-fechar-agendamento>Cancelar</button>
                 <button type="submit">Enviar solicitação</button>
@@ -471,7 +496,7 @@ $urlEmBreve = 'javascript:void(0);';
     </dialog>
 </section>
 
-<script src="<?php echo htmlspecialchars($basePath . 'assets/js/mensagens.js?v=4', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
+<script src="<?php echo htmlspecialchars($basePath . 'assets/js/mensagens.js?v=5', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
 
 <!-- ===== 9. LÓGICA DE INTERATIVIDADE JAVASCRIPT ===== -->
 <script>

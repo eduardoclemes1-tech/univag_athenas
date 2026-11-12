@@ -1,0 +1,266 @@
+.loja-main {
+    padding-top: 34px;
+    padding-bottom: 48px;
+}
+
+.loja-header,
+.loja-secao-titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.loja-header {
+    margin-bottom: 24px;
+}
+
+.loja-header h1 {
+    margin: 8px 0 5px;
+    color: #202b3c;
+    font-size: clamp(26px, 4vw, 34px);
+    letter-spacing: -.035em;
+}
+
+.loja-header p {
+    margin: 0;
+    color: #667085;
+    font-size: 14px;
+}
+
+.loja-saldo {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 12px 18px;
+    border: 1px solid #f1d88c;
+    border-radius: 9px;
+    background: #fff9e8;
+    color: #835800;
+    white-space: nowrap;
+}
+
+.loja-saldo strong {
+    font-size: 24px;
+}
+
+.loja-aviso {
+    margin-bottom: 18px;
+    padding: 12px 15px;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.loja-aviso p {
+    margin: 0;
+}
+
+.loja-sucesso {
+    border: 1px solid #a6dfc1;
+    background: #effaf4;
+    color: #187647;
+}
+
+.loja-erro {
+    border: 1px solid #f1b3ae;
+    background: #fff3f1;
+    color: #a83227;
+}
+
+.loja-secao {
+    margin-top: 24px;
+    padding: 22px;
+    border: 1px solid #e1e6ed;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 8px #17203308;
+}
+
+.loja-secao-titulo {
+    margin-bottom: 18px;
+}
+
+.loja-secao-titulo h2 {
+    margin: 5px 0 0;
+    color: #202b3c;
+    font-size: 20px;
+}
+
+.loja-link-button {
+    border: 0;
+    background: transparent;
+    color: #075eaa;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.loja-grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+    gap: 16px;
+}
+
+.loja-item {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: 1px solid #e5e9ef;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.loja-preview-fundo {
+    position: relative;
+    height: 106px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 750;
+    text-shadow: 0 1px 5px #0005;
+}
+
+.loja-selo-animado {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 7px;
+    border: 1px solid #ffffff70;
+    border-radius: 20px;
+    background: #10182865;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: .04em;
+    text-shadow: none;
+}
+
+.visual-oceano {
+    background: linear-gradient(125deg, #146eaa, #54c4d2);
+}
+
+.visual-aurora {
+    background: linear-gradient(125deg, #174f5c, #28b08b 52%, #70c4d5);
+}
+
+.visual-por-do-sol {
+    background: linear-gradient(125deg, #7a3d79, #e37470 55%, #f5bb68);
+}
+
+.loja-preview-avatar {
+    width: 82px;
+    height: 82px;
+    display: grid;
+    place-items: center;
+    align-self: center;
+    margin: 12px 0;
+    border: 5px solid #c9b8ed;
+    border-radius: 50%;
+    background: #e8f2fa;
+    color: #075eaa;
+    font-size: 34px;
+}
+
+.loja-preview-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.loja-preview-avatar.visual-esmeralda {
+    border-color: #53b795;
+}
+
+.loja-preview-avatar.visual-dourado {
+    border-color: #d7aa41;
+}
+
+.loja-preview-avatar.visual-asas-capelo {
+    border-color: #b893ec;
+    background: #684bb6;
+}
+
+.loja-preview-avatar.visual-capivara {
+    border-color: #75bf98;
+    background: #357e69;
+}
+
+.loja-item-info {
+    flex: 1;
+    padding: 12px 14px 6px;
+}
+
+.loja-item-info h3 {
+    margin: 0;
+    color: #202b3c;
+    font-size: 15px;
+}
+
+.loja-item-info p {
+    min-height: 36px;
+    margin: 6px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.loja-item-acao {
+    padding: 8px 14px 14px;
+}
+
+.loja-item-acao form {
+    margin: 0;
+}
+
+.loja-botao,
+.loja-equipado {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 6px;
+    background: #075eaa;
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.loja-equipado {
+    background: #effaf4;
+    color: #187647;
+    cursor: default;
+}
+
+.loja-nota {
+    margin: 20px 2px 0;
+    color: #667085;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .loja-header,
+    .loja-secao-titulo {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .loja-saldo {
+        align-self: flex-start;
+    }
+
+    .loja-secao {
+        padding: 16px;
+    }
+}
+

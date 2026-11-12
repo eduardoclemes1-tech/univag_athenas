@@ -47,8 +47,174 @@ function registrarNotificacao(
     $stmt->execute([$usuarioId, $tipo, $titulo, $mensagem, $agendamentoId, $mensagemId]);
 }
 
+function validarHorarioAgendamento(
+    PDO $pdo,
+    int $monitorId,
+    int $alunoId,
+    DateTimeImmutable $inicio,
+    int $duracao,
+    ?int $agendamentoIgnorado = null
+): ?string {
+    $fim = $inicio->modify('+' . $duracao . ' minutes');
+    $stmt = $pdo->prepare(
+        'SELECT disponivel, hora_inicio, hora_fim
+         FROM disponibilidades_monitores
+         WHERE monitor_id = ? AND dia_semana = ?'
+    );
+    $stmt->execute([$monitorId, (int) $inicio->format('N')]);
+    $disponibilidade = $stmt->fetch();
+    if (
+        !$disponibilidade
+        || !(bool) $disponibilidade['disponivel']
+        || $inicio->format('H:i') < substr($disponibilidade['hora_inicio'], 0, 5)
+        || $fim->format('H:i') > substr($disponibilidade['hora_fim'], 0, 5)
+    ) {
+        return 'Escolha um horário dentro da disponibilidade cadastrada pelo monitor.';
+    }
+
+    $inicioSql = $inicio->format('Y-m-d H:i:s');
+    $fimSql = $fim->format('Y-m-d H:i:s');
+    $stmt = $pdo->prepare(
+        'SELECT id FROM bloqueios_disponibilidade
+         WHERE monitor_id = ? AND inicio < ? AND fim > ?
+         LIMIT 1'
+    );
+    $stmt->execute([$monitorId, $fimSql, $inicioSql]);
+    if ($stmt->fetch()) {
+        return 'O horário escolhido foi bloqueado pelo monitor. Selecione outro período.';
+    }
+
+    $excluirAgendamento = $agendamentoIgnorado === null ? '' : 'AND id <> ?';
+    $parametros = [$fimSql, $inicioSql, $monitorId, $alunoId];
+    if ($agendamentoIgnorado !== null) {
+        $parametros[] = $agendamentoIgnorado;
+    }
+    $stmt = $pdo->prepare(
+        "SELECT id
+         FROM agendamentos
+         WHERE status IN ('solicitado', 'confirmado')
+           AND agendado_para < ?
+           AND DATE_ADD(agendado_para, INTERVAL duracao_minutos MINUTE) > ?
+           AND (monitor_id = ? OR aluno_id = ?)
+           {$excluirAgendamento}
+         LIMIT 1"
+    );
+    $stmt->execute($parametros);
+    if ($stmt->fetch()) {
+        return 'Este horário conflita com outro atendimento do monitor ou do aluno.';
+    }
+
+    return null;
+}
+
 $usuarioId = (int) $_SESSION['usuario_id'];
 $tipoUsuario = $_SESSION['usuario_tipo'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    require_once __DIR__ . '/../config/conexao.php';
+    try {
+        $acao = $_GET['acao'] ?? 'inicio';
+        if ($acao === 'horarios_disponiveis') {
+            if ($tipoUsuario !== 'aluno') {
+                responderChat(403, ['erro' => 'Somente alunos podem consultar horários disponíveis.']);
+            }
+            $conversaId = filter_var($_GET['conversa_id'] ?? null, FILTER_VALIDATE_INT);
+            $dataEntrada = $_GET['data'] ?? '';
+            $duracao = filter_var($_GET['duracao'] ?? null, FILTER_VALIDATE_INT);
+            if (
+                !$conversaId
+                || !is_string($dataEntrada)
+                || !in_array($duracao, [30, 45, 60, 90], true)
+                || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataEntrada)
+            ) {
+                responderChat(422, ['erro' => 'Informe uma data e duração válidas.']);
+            }
+            $conversa = participanteConversa($pdo, $conversaId, $usuarioId);
+            if (!$conversa || (int) $conversa['aluno_id'] !== $usuarioId) {
+                responderChat(404, ['erro' => 'Conversa não encontrada.']);
+            }
+            $data = DateTimeImmutable::createFromFormat('!Y-m-d', $dataEntrada);
+            $errosData = DateTimeImmutable::getLastErrors();
+            if (
+                !$data
+                || $data->format('Y-m-d') !== $dataEntrada
+                || ($errosData !== false && ($errosData['warning_count'] > 0 || $errosData['error_count'] > 0))
+                || $data < new DateTimeImmutable('today')
+                || $data > new DateTimeImmutable('+90 days')
+            ) {
+                responderChat(422, ['erro' => 'Escolha uma data dentro dos próximos 90 dias.']);
+            }
+
+            $monitorId = (int) $conversa['monitor_id'];
+            $stmt = $pdo->prepare(
+                'SELECT hora_inicio, hora_fim
+                 FROM disponibilidades_monitores
+                 WHERE monitor_id = ? AND dia_semana = ? AND disponivel = 1'
+            );
+            $stmt->execute([$monitorId, (int) $data->format('N')]);
+            $janela = $stmt->fetch();
+            if (!$janela) {
+                responderChat(200, ['horarios' => []]);
+            }
+
+            $diaInicio = $data->format('Y-m-d 00:00:00');
+            $diaFim = $data->modify('+1 day')->format('Y-m-d 00:00:00');
+            $stmt = $pdo->prepare(
+                'SELECT inicio, fim FROM bloqueios_disponibilidade
+                 WHERE monitor_id = ? AND inicio < ? AND fim > ?'
+            );
+            $stmt->execute([$monitorId, $diaFim, $diaInicio]);
+            $bloqueios = $stmt->fetchAll();
+
+            $stmt = $pdo->prepare(
+                "SELECT agendado_para, duracao_minutos
+                 FROM agendamentos
+                 WHERE status IN ('solicitado', 'confirmado')
+                   AND agendado_para < ?
+                   AND DATE_ADD(agendado_para, INTERVAL duracao_minutos MINUTE) > ?
+                   AND (monitor_id = ? OR aluno_id = ?)"
+            );
+            $stmt->execute([$diaFim, $diaInicio, $monitorId, $usuarioId]);
+            $ocupados = $stmt->fetchAll();
+
+            $inicioMinutos = ((int) substr($janela['hora_inicio'], 0, 2) * 60)
+                + (int) substr($janela['hora_inicio'], 3, 2);
+            $fimMinutos = ((int) substr($janela['hora_fim'], 0, 2) * 60)
+                + (int) substr($janela['hora_fim'], 3, 2);
+            $primeiroMinuto = (int) (ceil($inicioMinutos / 15) * 15);
+            $intervalosOcupados = array_merge($bloqueios, $ocupados);
+            $agora = new DateTimeImmutable();
+            $horarios = [];
+            for ($minuto = $primeiroMinuto; $minuto + $duracao <= $fimMinutos; $minuto += 15) {
+                $hora = sprintf('%02d:%02d', intdiv($minuto, 60), $minuto % 60);
+                $inicioSlot = $data->setTime(intdiv($minuto, 60), $minuto % 60);
+                $fimSlot = $inicioSlot->modify('+' . $duracao . ' minutes');
+                if ($inicioSlot <= $agora) {
+                    continue;
+                }
+
+                $ocupado = false;
+                foreach ($intervalosOcupados as $intervalo) {
+                    $intervaloInicio = new DateTimeImmutable($intervalo['inicio'] ?? $intervalo['agendado_para']);
+                    $intervaloFim = isset($intervalo['fim'])
+                        ? new DateTimeImmutable($intervalo['fim'])
+                        : $intervaloInicio->modify('+' . (int) $intervalo['duracao_minutos'] . ' minutes');
+                    if ($inicioSlot < $intervaloFim && $fimSlot > $intervaloInicio) {
+                        $ocupado = true;
+                        break;
+                    }
+                }
+                if (!$ocupado) {
+                    $horarios[] = $hora;
+                }
+            }
+            responderChat(200, ['horarios' => $horarios]);
+        }
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+        responderChat(500, ['erro' => 'Não foi possível consultar os horários disponíveis.']);
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
@@ -133,7 +299,7 @@ try {
             if ($tipoUsuario === 'monitor') {
                 $stmt = $pdo->prepare(
                     'SELECT a.id, a.assunto, a.agendado_para, a.duracao_minutos,
-                            a.status, a.link_zoom, u.nome AS participante_nome
+                            a.status, a.meeting_url, u.nome AS participante_nome
                      FROM agendamentos a
                      JOIN usuarios u ON u.id = a.aluno_id
                      WHERE a.monitor_id = ? AND a.status = ?
@@ -142,7 +308,7 @@ try {
             } else {
                 $stmt = $pdo->prepare(
                     'SELECT a.id, a.assunto, a.agendado_para, a.duracao_minutos,
-                            a.status, a.link_zoom, u.nome AS participante_nome
+                            a.status, a.meeting_url, u.nome AS participante_nome
                      FROM agendamentos a
                      JOIN usuarios u ON u.id = a.monitor_id
                      WHERE a.aluno_id = ? AND a.status = ?
@@ -190,7 +356,7 @@ try {
             $stmt->execute([$usuarioId, 'mensagem', $conversaId, $usuarioId]);
 
             $stmt = $pdo->prepare(
-                'SELECT a.id, a.assunto, a.agendado_para, a.duracao_minutos, a.status, a.link_zoom
+                'SELECT a.id, a.assunto, a.agendado_para, a.duracao_minutos, a.status, a.meeting_url
                  FROM agendamentos a
                  WHERE a.conversa_id = ?
                  ORDER BY a.agendado_para DESC
@@ -254,14 +420,14 @@ try {
         $assuntoEntrada = $entrada['assunto'] ?? null;
         $dataEntrada = $entrada['agendado_para'] ?? null;
         $duracao = filter_var($entrada['duracao_minutos'] ?? null, FILTER_VALIDATE_INT);
-        $linkZoomEntrada = $entrada['link_zoom'] ?? null;
+        $urlReuniaoEntrada = $entrada['meeting_url'] ?? null;
         if (
             !$alunoId || $alunoId === $usuarioId
             || !is_string($assuntoEntrada)
             || !is_string($dataEntrada)
             || strlen($dataEntrada) !== 16
             || !in_array($duracao, [30, 45, 60, 90], true)
-            || !is_string($linkZoomEntrada)
+            || !is_string($urlReuniaoEntrada)
         ) {
             $pdo->rollBack();
             responderChat(422, ['erro' => 'Preencha todos os dados do agendamento corretamente.']);
@@ -269,8 +435,7 @@ try {
 
         $assunto = trim($assuntoEntrada);
         $agendadoPara = trim($dataEntrada);
-        $linkZoom = trim($linkZoomEntrada);
-        $hostZoom = strtolower((string) parse_url($linkZoom, PHP_URL_HOST));
+        $urlReuniao = trim($urlReuniaoEntrada);
         $data = DateTimeImmutable::createFromFormat('Y-m-d\TH:i', $agendadoPara);
         $errosData = DateTimeImmutable::getLastErrors();
         if (
@@ -287,47 +452,17 @@ try {
             responderChat(422, ['erro' => 'Informe um assunto e uma data futura, dentro dos próximos 90 dias.']);
         }
         if (
-            $linkZoom === ''
-            || mb_strlen($linkZoom, 'UTF-8') > 500
-            || !filter_var($linkZoom, FILTER_VALIDATE_URL)
-            || strtolower((string) parse_url($linkZoom, PHP_URL_SCHEME)) !== 'https'
-            || !preg_match('/(^|\.)zoom\.us$/', $hostZoom)
+            $urlReuniao === ''
+            || mb_strlen($urlReuniao, 'UTF-8') > 500
+            || !filter_var($urlReuniao, FILTER_VALIDATE_URL)
+            || strtolower((string) parse_url($urlReuniao, PHP_URL_SCHEME)) !== 'https'
+            || !parse_url($urlReuniao, PHP_URL_HOST)
         ) {
             $pdo->rollBack();
-            responderChat(422, ['erro' => 'Informe um link válido de reunião do Zoom.']);
-        }
-
-        $stmt = $pdo->prepare(
-            'SELECT dia_semana, disponivel, hora_inicio, hora_fim
-             FROM disponibilidades_monitores
-             WHERE monitor_id = ?'
-        );
-        $stmt->execute([$usuarioId]);
-        $disponibilidades = $stmt->fetchAll();
-        if ($disponibilidades) {
-            $diaAgendado = (int) $data->format('N');
-            $inicioAgendado = $data->format('H:i');
-            $fimAgendado = $data->modify('+' . $duracao . ' minutes')->format('H:i');
-            $dentroDaDisponibilidade = false;
-            foreach ($disponibilidades as $disponibilidade) {
-                if (
-                    (int) $disponibilidade['dia_semana'] === $diaAgendado
-                    && (bool) $disponibilidade['disponivel']
-                    && $inicioAgendado >= substr($disponibilidade['hora_inicio'], 0, 5)
-                    && $fimAgendado <= substr($disponibilidade['hora_fim'], 0, 5)
-                ) {
-                    $dentroDaDisponibilidade = true;
-                    break;
-                }
-            }
-            if (!$dentroDaDisponibilidade) {
-                $pdo->rollBack();
-                responderChat(422, ['erro' => 'Escolha um horário dentro da disponibilidade informada no seu perfil.']);
-            }
+            responderChat(422, ['erro' => 'Informe uma URL HTTPS válida para a reunião.']);
         }
 
         $inicio = $data->format('Y-m-d H:i:s');
-        $fim = $data->modify('+' . $duracao . ' minutes')->format('Y-m-d H:i:s');
         $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE id = ? AND tipo = 'aluno'");
         $stmt->execute([$alunoId]);
         if (!$stmt->fetch()) {
@@ -341,31 +476,10 @@ try {
         $stmt->execute($idsBloqueados);
         $stmt->fetchAll();
 
-        $stmt = $pdo->prepare(
-            'SELECT id FROM bloqueios_disponibilidade
-             WHERE monitor_id = ? AND inicio < ? AND fim > ?
-             LIMIT 1 FOR UPDATE'
-        );
-        $stmt->execute([$usuarioId, $fim, $inicio]);
-        if ($stmt->fetch()) {
+        $erroHorario = validarHorarioAgendamento($pdo, $usuarioId, $alunoId, $data, $duracao);
+        if ($erroHorario !== null) {
             $pdo->rollBack();
-            responderChat(409, ['erro' => 'O horário escolhido foi bloqueado pelo monitor. Selecione outro período.']);
-        }
-
-        $stmt = $pdo->prepare(
-            "SELECT id
-             FROM agendamentos
-             WHERE status IN ('solicitado', 'confirmado')
-               AND agendado_para < ?
-               AND DATE_ADD(agendado_para, INTERVAL duracao_minutos MINUTE) > ?
-               AND (monitor_id = ? OR aluno_id = ?)
-             LIMIT 1
-             FOR UPDATE"
-        );
-        $stmt->execute([$fim, $inicio, $usuarioId, $alunoId]);
-        if ($stmt->fetch()) {
-            $pdo->rollBack();
-            responderChat(409, ['erro' => 'Este horário conflita com outro atendimento do monitor ou do aluno.']);
+            responderChat(409, ['erro' => $erroHorario]);
         }
 
         $stmt = $pdo->prepare(
@@ -377,17 +491,17 @@ try {
 
         $stmt = $pdo->prepare(
             "INSERT INTO agendamentos
-                (conversa_id, aluno_id, monitor_id, assunto, agendado_para, duracao_minutos, status, link_zoom)
+                (conversa_id, aluno_id, monitor_id, assunto, agendado_para, duracao_minutos, status, meeting_url)
              VALUES (?, ?, ?, ?, ?, ?, 'confirmado', ?)"
         );
         $stmt->execute([
-            $conversaId, $alunoId, $usuarioId, $assunto, $inicio, $duracao, $linkZoom,
+            $conversaId, $alunoId, $usuarioId, $assunto, $inicio, $duracao, $urlReuniao,
         ]);
         $agendamentoId = (int) $pdo->lastInsertId();
 
         $dataFormatada = $data->format('d/m/Y \à\s H:i');
         $conteudo = 'O monitor agendou uma monitoria sobre ' . $assunto . ' para '
-            . $dataFormatada . ' (' . $duracao . ' min). Link do Zoom: ' . $linkZoom;
+            . $dataFormatada . ' (' . $duracao . ' min). URL da reunião: ' . $urlReuniao;
         $stmt = $pdo->prepare(
             'INSERT INTO mensagens (conversa_id, remetente_id, conteudo) VALUES (?, ?, ?)'
         );
@@ -437,6 +551,94 @@ try {
         ? (int) $conversa['monitor_id']
         : (int) $conversa['aluno_id'];
 
+    if ($acao === 'cancelar_agendamento') {
+        if ($tipoUsuario !== 'aluno') {
+            $pdo->rollBack();
+            responderChat(403, ['erro' => 'Somente o aluno pode cancelar a monitoria por este fluxo.']);
+        }
+        $agendamentoId = filter_var($entrada['agendamento_id'] ?? null, FILTER_VALIDATE_INT);
+        if (!$agendamentoId) {
+            $pdo->rollBack();
+            responderChat(422, ['erro' => 'Monitoria inválida.']);
+        }
+
+        $idsBloqueados = [(int) $conversa['aluno_id'], (int) $conversa['monitor_id']];
+        sort($idsBloqueados);
+        $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE id IN (?, ?) ORDER BY id FOR UPDATE');
+        $stmt->execute($idsBloqueados);
+        $stmt->fetchAll();
+
+        $stmt = $pdo->prepare(
+            "SELECT assunto, agendado_para, status
+             FROM agendamentos
+             WHERE id = ? AND conversa_id = ? AND aluno_id = ?
+               AND status IN ('solicitado', 'confirmado')
+             FOR UPDATE"
+        );
+        $stmt->execute([$agendamentoId, $conversaId, $usuarioId]);
+        $agendamento = $stmt->fetch();
+        if (!$agendamento) {
+            $pdo->rollBack();
+            responderChat(409, ['erro' => 'Esta monitoria não pode mais ser cancelada.']);
+        }
+
+        $inicio = new DateTimeImmutable($agendamento['agendado_para']);
+        $agora = new DateTimeImmutable();
+        if ($agendamento['status'] === 'confirmado' && $inicio <= $agora) {
+            $pdo->rollBack();
+            responderChat(409, ['erro' => 'Não é possível cancelar uma monitoria que já começou.']);
+        }
+        $cancelamentoTardio = $agendamento['status'] === 'confirmado'
+            && $inicio->getTimestamp() - $agora->getTimestamp() < 24 * 60 * 60;
+
+        $stmt = $pdo->prepare(
+            "UPDATE agendamentos SET status = 'cancelado'
+             WHERE id = ? AND aluno_id = ? AND status IN ('solicitado', 'confirmado')"
+        );
+        $stmt->execute([$agendamentoId, $usuarioId]);
+        if ($stmt->rowCount() !== 1) {
+            $pdo->rollBack();
+            responderChat(409, ['erro' => 'Esta monitoria já foi atualizada. Recarregue a conversa.']);
+        }
+        if ($cancelamentoTardio) {
+            $stmt = $pdo->prepare(
+                "INSERT INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
+                 VALUES (?, ?, 'cancelamento_tardio', -10)"
+            );
+            $stmt->execute([$usuarioId, $agendamentoId]);
+        }
+
+        $mensagem = 'O aluno cancelou a monitoria "' . $agendamento['assunto'] . '".'
+            . ($cancelamentoTardio ? ' Foram descontados 10 pontos por cancelamento com menos de 24 horas.' : '');
+        $stmt = $pdo->prepare('INSERT INTO mensagens (conversa_id, remetente_id, conteudo) VALUES (?, ?, ?)');
+        $stmt->execute([$conversaId, $usuarioId, $mensagem]);
+        $mensagemId = (int) $pdo->lastInsertId();
+        $stmt = $pdo->prepare('UPDATE conversas SET atualizado_em = CURRENT_TIMESTAMP WHERE id = ?');
+        $stmt->execute([$conversaId]);
+        registrarNotificacao(
+            $pdo,
+            $destinatarioId,
+            'agendamento',
+            'Monitoria cancelada',
+            $mensagem,
+            $agendamentoId
+        );
+        registrarNotificacao(
+            $pdo,
+            $destinatarioId,
+            'mensagem',
+            'Atualização da monitoria',
+            $mensagem,
+            null,
+            $mensagemId
+        );
+        $pdo->commit();
+        responderChat(200, [
+            'status' => 'cancelado',
+            'pontos_descontados' => $cancelamentoTardio ? 10 : 0,
+        ]);
+    }
+
     if ($acao === 'enviar') {
         $conteudoEntrada = $entrada['conteudo'] ?? null;
         if (!is_string($conteudoEntrada)) {
@@ -478,9 +680,15 @@ try {
 
         $assuntoEntrada = $entrada['assunto'] ?? null;
         $dataEntrada = $entrada['agendado_para'] ?? null;
-        if (!is_string($assuntoEntrada) || !is_string($dataEntrada) || strlen($dataEntrada) !== 16) {
+        $duracao = filter_var($entrada['duracao_minutos'] ?? null, FILTER_VALIDATE_INT);
+        if (
+            !is_string($assuntoEntrada)
+            || !is_string($dataEntrada)
+            || strlen($dataEntrada) !== 16
+            || !in_array($duracao, [30, 45, 60, 90], true)
+        ) {
             $pdo->rollBack();
-            responderChat(422, ['erro' => 'Informe um assunto e uma data válidos.']);
+            responderChat(422, ['erro' => 'Informe o assunto, a data e uma duração válidos.']);
         }
         $assunto = trim($assuntoEntrada);
         $agendadoPara = trim($dataEntrada);
@@ -497,14 +705,33 @@ try {
             || ($errosData !== false && ($errosData['warning_count'] > 0 || $errosData['error_count'] > 0))
             || $data <= new DateTimeImmutable()
             || $data > new DateTimeImmutable('+90 days')
+            || $data->modify('+' . $duracao . ' minutes')->format('Y-m-d') !== $data->format('Y-m-d')
         ) {
             $pdo->rollBack();
             responderChat(422, ['erro' => 'Informe um assunto e uma data futura, dentro dos próximos 90 dias.']);
         }
 
+        $idsBloqueados = [(int) $conversa['monitor_id'], $usuarioId];
+        sort($idsBloqueados);
+        $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE id IN (?, ?) ORDER BY id FOR UPDATE');
+        $stmt->execute($idsBloqueados);
+        $stmt->fetchAll();
+
+        $erroHorario = validarHorarioAgendamento(
+            $pdo,
+            (int) $conversa['monitor_id'],
+            $usuarioId,
+            $data,
+            $duracao
+        );
+        if ($erroHorario !== null) {
+            $pdo->rollBack();
+            responderChat(409, ['erro' => $erroHorario]);
+        }
+
         $stmt = $pdo->prepare(
-            "INSERT INTO agendamentos (conversa_id, aluno_id, monitor_id, assunto, agendado_para)
-             VALUES (?, ?, ?, ?, ?)"
+            "INSERT INTO agendamentos (conversa_id, aluno_id, monitor_id, assunto, agendado_para, duracao_minutos)
+             VALUES (?, ?, ?, ?, ?, ?)"
         );
         $stmt->execute([
             $conversaId,
@@ -512,6 +739,7 @@ try {
             $destinatarioId,
             $assunto,
             $data->format('Y-m-d H:i:s'),
+            $duracao,
         ]);
         $agendamentoId = (int) $pdo->lastInsertId();
 
@@ -521,7 +749,8 @@ try {
             $destinatarioId,
             'agendamento',
             'Nova solicitação de monitoria',
-            $nomeAluno . ' solicitou uma monitoria sobre ' . $assunto . '.',
+            $nomeAluno . ' solicitou uma monitoria sobre ' . $assunto . ' para '
+                . $data->format('d/m/Y \à\s H:i') . '.',
             $agendamentoId
         );
         $pdo->commit();
@@ -536,34 +765,72 @@ try {
 
         $agendamentoId = filter_var($entrada['agendamento_id'] ?? null, FILTER_VALIDATE_INT);
         $status = $entrada['status'] ?? '';
-        $linkZoomEntrada = $entrada['link_zoom'] ?? '';
-        if (!is_string($linkZoomEntrada)) {
+        $urlReuniaoEntrada = $entrada['meeting_url'] ?? '';
+        if (!is_string($urlReuniaoEntrada)) {
             $pdo->rollBack();
-            responderChat(422, ['erro' => 'Informe um link Zoom válido.']);
+            responderChat(422, ['erro' => 'Informe uma URL de reunião válida.']);
         }
-        $linkZoom = trim($linkZoomEntrada);
-        $hostZoom = strtolower((string) parse_url($linkZoom, PHP_URL_HOST));
+        $urlReuniao = trim($urlReuniaoEntrada);
         if (!$agendamentoId || !in_array($status, ['confirmado', 'recusado'], true)) {
             $pdo->rollBack();
             responderChat(400, ['erro' => 'Resposta de agendamento inválida.']);
         }
         if (
             $status === 'confirmado'
-            && ($linkZoom === '' || mb_strlen($linkZoom, 'UTF-8') > 500
-                || !filter_var($linkZoom, FILTER_VALIDATE_URL)
-                || strtolower((string) parse_url($linkZoom, PHP_URL_SCHEME)) !== 'https'
-                || !preg_match('/(^|\.)zoom\.us$/', $hostZoom))
+            && ($urlReuniao === '' || mb_strlen($urlReuniao, 'UTF-8') > 500
+                || !filter_var($urlReuniao, FILTER_VALIDATE_URL)
+                || strtolower((string) parse_url($urlReuniao, PHP_URL_SCHEME)) !== 'https'
+                || !parse_url($urlReuniao, PHP_URL_HOST))
         ) {
             $pdo->rollBack();
-            responderChat(422, ['erro' => 'Informe um link válido do Zoom para confirmar o agendamento.']);
+            responderChat(422, ['erro' => 'Informe uma URL HTTPS válida para a reunião.']);
+        }
+
+        if ($status === 'confirmado') {
+            $idsBloqueados = [(int) $conversa['aluno_id'], (int) $conversa['monitor_id']];
+            sort($idsBloqueados);
+            $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE id IN (?, ?) ORDER BY id FOR UPDATE');
+            $stmt->execute($idsBloqueados);
+            $stmt->fetchAll();
+        }
+        $stmt = $pdo->prepare(
+            "SELECT aluno_id, monitor_id, agendado_para, duracao_minutos
+             FROM agendamentos
+             WHERE id = ? AND conversa_id = ? AND monitor_id = ? AND status = 'solicitado'
+             FOR UPDATE"
+        );
+        $stmt->execute([$agendamentoId, $conversaId, $usuarioId]);
+        $agendamento = $stmt->fetch();
+        if (!$agendamento) {
+            $pdo->rollBack();
+            responderChat(409, ['erro' => 'Esse agendamento não está mais aguardando resposta.']);
+        }
+        if ($status === 'confirmado') {
+            $inicioAgendamento = new DateTimeImmutable($agendamento['agendado_para']);
+            if ($inicioAgendamento <= new DateTimeImmutable()) {
+                $pdo->rollBack();
+                responderChat(409, ['erro' => 'O horário solicitado já passou. Combine uma nova data com o aluno.']);
+            }
+            $erroHorario = validarHorarioAgendamento(
+                $pdo,
+                (int) $agendamento['monitor_id'],
+                (int) $agendamento['aluno_id'],
+                $inicioAgendamento,
+                (int) $agendamento['duracao_minutos'],
+                $agendamentoId
+            );
+            if ($erroHorario !== null) {
+                $pdo->rollBack();
+                responderChat(409, ['erro' => $erroHorario]);
+            }
         }
 
         $stmt = $pdo->prepare(
             "UPDATE agendamentos
-             SET status = ?, link_zoom = ?
+             SET status = ?, meeting_url = ?
              WHERE id = ? AND conversa_id = ? AND monitor_id = ? AND status = 'solicitado'"
         );
-        $stmt->execute([$status, $status === 'confirmado' ? $linkZoom : null, $agendamentoId, $conversaId, $usuarioId]);
+        $stmt->execute([$status, $status === 'confirmado' ? $urlReuniao : null, $agendamentoId, $conversaId, $usuarioId]);
         if ($stmt->rowCount() !== 1) {
             $pdo->rollBack();
             responderChat(409, ['erro' => 'Esse agendamento não está mais aguardando resposta.']);
@@ -571,7 +838,7 @@ try {
 
         $titulo = $status === 'confirmado' ? 'Monitoria confirmada' : 'Solicitação de monitoria recusada';
         $mensagem = $status === 'confirmado'
-            ? 'Sua monitoria foi confirmada. Acesse o link do Zoom: ' . $linkZoom
+            ? 'Sua monitoria foi confirmada. URL da reunião: ' . $urlReuniao
             : 'O monitor não pôde aceitar este horário. Converse para combinar outra data.';
         registrarNotificacao(
             $pdo,
@@ -583,7 +850,7 @@ try {
         );
 
         $conteudo = $status === 'confirmado'
-            ? 'Agendamento confirmado. Link do Zoom: ' . $linkZoom
+            ? 'Agendamento confirmado. URL da reunião: ' . $urlReuniao
             : 'O agendamento solicitado foi recusado. Vamos combinar outro horário pelo chat.';
         $stmt = $pdo->prepare('INSERT INTO mensagens (conversa_id, remetente_id, conteudo) VALUES (?, ?, ?)');
         $stmt->execute([$conversaId, $usuarioId, $conteudo]);
