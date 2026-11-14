@@ -1,1 +1,33 @@
+# Configurações de ambiente e credenciais
 .env
+.env.backup
+.env.local
+.env.production
+*.env
+
+# Diretórios de upload e arquivos locais de dados
+athenas_uploads/
+storage/uploads/
+*.log
+
+# Dependências PHP / Composer
+/vendor/
+
+# Arquivos de IDE e Editores de Código
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Caches e temporários
+tmp/
+temp/
+*.tmp
