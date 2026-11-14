@@ -286,13 +286,46 @@ try {
                 responderChat(403, ['erro' => 'Somente monitores podem consultar alunos para agendamento.']);
             }
 
-            $stmt = $pdo->query(
-                "SELECT id, nome, email
-                 FROM usuarios
-                 WHERE tipo = 'aluno'
-                 ORDER BY nome ASC"
+            $busca = trim((string) ($_GET['busca'] ?? ''));
+            if ($busca !== '') {
+                if (mb_strlen($busca, 'UTF-8') < 2) {
+                    responderChat(422, ['erro' => 'Digite ao menos 2 caracteres para pesquisar alunos.']);
+                }
+                $termo = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $busca) . '%';
+                $stmt = $pdo->prepare(
+                    "SELECT id, nome, email
+                     FROM usuarios
+                     WHERE tipo = 'aluno' AND (nome LIKE ? OR email LIKE ?)
+                     ORDER BY nome ASC
+                     LIMIT 30"
+                );
+                $stmt->execute([$termo, $termo]);
+                responderChat(200, ['alunos' => $stmt->fetchAll()]);
+            }
+
+            $stmt = $pdo->prepare(
+                "SELECT u.id, u.nome, u.email
+                 FROM usuarios u
+                 WHERE u.tipo = 'aluno'
+                   AND EXISTS (SELECT 1 FROM conversas c WHERE c.monitor_id = ? AND c.aluno_id = u.id)
+                 ORDER BY u.nome ASC
+                 LIMIT 50"
             );
-            responderChat(200, ['alunos' => $stmt->fetchAll()]);
+            $stmt->execute([$usuarioId]);
+            $alunos = $stmt->fetchAll();
+
+            if (empty($alunos)) {
+                $stmt = $pdo->query(
+                    "SELECT id, nome, email
+                     FROM usuarios
+                     WHERE tipo = 'aluno'
+                     ORDER BY id DESC
+                     LIMIT 30"
+                );
+                $alunos = $stmt->fetchAll();
+            }
+
+            responderChat(200, ['alunos' => $alunos]);
         }
 
         if ($acao === 'agenda') {

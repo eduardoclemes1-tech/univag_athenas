@@ -243,8 +243,9 @@ CREATE TABLE IF NOT EXISTS disponibilidades_monitores (
         )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-/* ===== 6. DADOS INICIAIS DE TESTE ===== */
--- Insere um usuário monitor e um aluno de teste (Senha padrão: 123456)
+/* ===== 6. DADOS INICIAIS DE TESTE (SOMENTE AMBIENTE DE DESENVOLVIMENTO) ===== */
+-- ATENÇÃO: Nunca execute estas inserções em ambiente de produção com senhas padrão!
+-- Insere um usuário monitor e um aluno de teste para testes locais (Senha padrão: 123456)
 INSERT INTO usuarios (nome, email, cpf, senha, tipo) VALUES 
 ('Monitor Teste', 'admin@univag.br', '00000000000', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor'),
 ('Aluno Teste', 'aluno@univag.br', '11111111111', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'aluno')

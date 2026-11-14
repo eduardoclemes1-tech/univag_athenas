@@ -1,4 +1,10 @@
 <?php
+if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
+    header('Content-Type: text/plain; charset=utf-8');
+    exit('Acesso proibido: este processo deve ser executado exclusivamente em linha de comando (CLI).');
+}
+
 require_once __DIR__ . '/../config/conexao.php';
 
 function enviarLembretes(PDO $pdo): int

@@ -1,0 +1,27 @@
+# Desabilitar listagem de diretórios
+Options -Indexes
+
+# Bloquear acesso a arquivos ocultos (.env, .git, etc.)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Bloquear acesso a arquivos de configuração, scripts SQL e documentação
+<FilesMatch "\.(env|sql|yml|yaml|ini|log|md|sh)$">
+    Require all denied
+</FilesMatch>
+
+# Regras de reescrita e proteção de diretórios sensíveis
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^sqlAthenas/ - [F,L]
+    RewriteRule ^actions/workerLembretes\.php$ - [F,L]
+</IfModule>
+
+# Cabeçalhos de segurança HTTP
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

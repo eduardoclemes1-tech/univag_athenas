@@ -15,10 +15,18 @@ try {
         exit;
     }
 
+    $etag = '"' . hash('sha256', $foto['foto_perfil']) . '"';
+    header('ETag: ' . $etag);
+    header('Cache-Control: private, max-age=3600, must-revalidate');
+    header('X-Content-Type-Options: nosniff');
+
+    if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) === $etag) {
+        http_response_code(304);
+        exit;
+    }
+
     header('Content-Type: ' . $foto['foto_mime']);
     header('Content-Length: ' . strlen($foto['foto_perfil']));
-    header('Cache-Control: private, no-store');
-    header('X-Content-Type-Options: nosniff');
     echo $foto['foto_perfil'];
 } catch (PDOException $e) {
     error_log($e->getMessage());

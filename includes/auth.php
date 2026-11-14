@@ -1,9 +1,24 @@
 <?php
-function exigirUsuarioAutenticado(?string $tipoRequerido = null): void
+function iniciarSessaoSegura(): void
 {
     if (session_status() === PHP_SESSION_NONE) {
+        if (!headers_sent()) {
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'domain' => '',
+                'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
+        }
         session_start();
     }
+}
+
+function exigirUsuarioAutenticado(?string $tipoRequerido = null): void
+{
+    iniciarSessaoSegura();
 
     $tipoUsuario = $_SESSION['usuario_tipo'] ?? null;
     $autenticado = isset($_SESSION['usuario_id'])

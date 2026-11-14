@@ -723,7 +723,8 @@ document.addEventListener('DOMContentLoaded', function () {
         notificationList.appendChild(error);
     });
 
-    window.setInterval(async function () {
+    let pollTimerId = null;
+    async function execPolling() {
         if (refreshing) return;
         refreshing = true;
         try {
@@ -736,6 +737,24 @@ document.addEventListener('DOMContentLoaded', function () {
             chatStatus.textContent = 'Reconectando...';
         } finally {
             refreshing = false;
+            scheduleNextPoll();
         }
-    }, 5000);
+    }
+
+    function scheduleNextPoll() {
+        window.clearTimeout(pollTimerId);
+        // Quando a aba está em segundo plano (inativa), reduz a frequência para 30s poupando CPU e banco de dados
+        const interval = document.hidden ? 30000 : 5000;
+        pollTimerId = window.setTimeout(execPolling, interval);
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            // Se o usuário voltou para a aba, atualiza imediatamente
+            scheduleNextPoll();
+            execPolling();
+        }
+    });
+
+    scheduleNextPoll();
 });
