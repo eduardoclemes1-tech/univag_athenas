@@ -102,12 +102,20 @@ try {
 
     if ($metodo === 'GET') {
         $stmt = $pdo->prepare(
-            "SELECT a.id, a.assunto, a.agendado_para, a.duracao_minutos, a.status, a.meeting_url,
+            "SELECT a.id, a.conversa_id, a.assunto, a.agendado_para, a.duracao_minutos, a.status, a.meeting_url,
                     a.aluno_id, a.monitor_id, a.presenca_aluno, a.presenca_monitor,
                     aluno.nome AS aluno_nome, monitor.nome AS monitor_nome,
                     av.nota AS avaliacao_nota, av.comentario AS avaliacao_comentario,
                     r.assunto_estudado, r.observacoes AS registro_observacoes,
-                    r.atualizado_em AS registro_atualizado_em
+                    r.atualizado_em AS registro_atualizado_em,
+                    EXISTS (
+                        SELECT 1 FROM pontos_transacoes pt
+                        WHERE pt.agendamento_id = a.id AND pt.evento = 'bonus_monitor'
+                    ) AS bonus_monitor_concedido,
+                    EXISTS (
+                        SELECT 1 FROM pontos_transacoes pt
+                        WHERE pt.agendamento_id = a.id AND pt.evento = 'material_apoio'
+                    ) AS bonus_material_concedido
              FROM agendamentos a
              JOIN usuarios aluno ON aluno.id = a.aluno_id
              JOIN usuarios monitor ON monitor.id = a.monitor_id
@@ -158,6 +166,57 @@ try {
         responderMonitorias(404, ['erro' => 'Monitoria não encontrada.']);
     }
 
+    if ($acao === 'cancelar') {
+        $inicio = new DateTimeImmutable($agendamento['agendado_para']);
+        $agora = new DateTimeImmutable();
+        if ($inicio <= $agora) {
+            responderMonitorias(409, ['erro' => 'Não é possível cancelar uma monitoria que já começou.']);
+        }
+        $cancelamentoTardio = ($tipoUsuario === 'aluno')
+            && ($inicio->getTimestamp() - $agora->getTimestamp() < 24 * 60 * 60);
+
+        $pdo->beginTransaction();
+        $stmt = $pdo->prepare(
+            "UPDATE agendamentos SET status = 'cancelado'
+             WHERE id = ? AND status = 'confirmado'"
+        );
+        $stmt->execute([$agendamentoId]);
+        if ($stmt->rowCount() !== 1) {
+            $pdo->rollBack();
+            responderMonitorias(409, ['erro' => 'Esta monitoria já foi atualizada.']);
+        }
+
+        if ($cancelamentoTardio) {
+            $stmt = $pdo->prepare(
+                "INSERT INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
+                 VALUES (?, ?, 'cancelamento_tardio', -10)
+                 ON DUPLICATE KEY UPDATE id = id"
+            );
+            $stmt->execute([$usuarioId, $agendamentoId]);
+        }
+
+        $outroUsuarioId = $tipoUsuario === 'aluno'
+            ? (int) $agendamento['monitor_id']
+            : (int) $agendamento['aluno_id'];
+        $autorLabel = $tipoUsuario === 'aluno' ? 'O aluno' : 'O monitor';
+        $mensagem = $autorLabel . ' cancelou a monitoria "' . $agendamento['assunto'] . '".'
+            . ($cancelamentoTardio ? ' Foram descontados 10 pontos por cancelamento com menos de 24 horas.' : '');
+
+        if (!empty($agendamento['conversa_id'])) {
+            $stmt = $pdo->prepare('INSERT INTO mensagens (conversa_id, remetente_id, conteudo) VALUES (?, ?, ?)');
+            $stmt->execute([(int) $agendamento['conversa_id'], $usuarioId, $mensagem]);
+            $stmt = $pdo->prepare('UPDATE conversas SET atualizado_em = CURRENT_TIMESTAMP WHERE id = ?');
+            $stmt->execute([(int) $agendamento['conversa_id']]);
+        }
+
+        notificarParticipante($pdo, $outroUsuarioId, $agendamentoId, 'Monitoria cancelada', $mensagem);
+        $pdo->commit();
+        responderMonitorias(200, [
+            'status' => 'cancelado',
+            'pontos_descontados' => $cancelamentoTardio ? 10 : 0,
+        ]);
+    }
+
     if ($acao === 'presenca') {
         if (strtotime($agendamento['agendado_para']) + (int) $agendamento['duracao_minutos'] * 60 > time()) {
             responderMonitorias(422, ['erro' => 'A presença só pode ser registrada após o término da monitoria.']);
@@ -191,6 +250,7 @@ try {
         $stmt->execute([$agendamentoId]);
         $presencas = $stmt->fetch();
         $pontosGanhos = 0;
+        $pontosSessao = max(10, (int) round((int) $agendamento['duracao_minutos'] / 3));
         if (
             $presencas
             && (int) $presencas['presenca_aluno'] === 1
@@ -198,11 +258,20 @@ try {
         ) {
             $stmt = $pdo->prepare(
                 "INSERT INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
-                 VALUES (?, ?, 'participacao', 10)
+                 VALUES (?, ?, 'participacao', ?)
                  ON DUPLICATE KEY UPDATE id = id"
             );
-            $stmt->execute([(int) $presencas['aluno_id'], $agendamentoId]);
-            $pontosGanhos = $stmt->rowCount() === 1 ? 10 : 0;
+            $stmt->execute([(int) $presencas['aluno_id'], $agendamentoId, $pontosSessao]);
+            $pontosGanhos = $stmt->rowCount() === 1 ? $pontosSessao : 0;
+            if ($pontosGanhos > 0) {
+                notificarParticipante(
+                    $pdo,
+                    (int) $presencas['aluno_id'],
+                    $agendamentoId,
+                    '⭐ +' . $pontosGanhos . ' pontos Athenas creditados!',
+                    'Presença confirmada por ambos na monitoria "' . $agendamento['assunto'] . '"! Você ganhou +' . $pontosGanhos . ' pontos e avançou sua maestria.'
+                );
+            }
         }
         notificarParticipante(
             $pdo,
@@ -234,6 +303,7 @@ try {
         }
 
         $pdo->beginTransaction();
+        $pontosAvaliacao = 0;
         try {
             $stmt = $pdo->prepare(
                 'INSERT INTO avaliacoes_monitorias (agendamento_id, aluno_id, monitor_id, nota, comentario)
@@ -246,13 +316,31 @@ try {
                 $nota,
                 trim($comentario),
             ]);
+
+            $stmtPts = $pdo->prepare(
+                "INSERT INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
+                 VALUES (?, ?, 'avaliacao', 5)
+                 ON DUPLICATE KEY UPDATE id = id"
+            );
+            $stmtPts->execute([$usuarioId, $agendamentoId]);
+            $pontosAvaliacao = $stmtPts->rowCount() === 1 ? 5 : 0;
+
             notificarParticipante(
                 $pdo,
                 (int) $agendamento['monitor_id'],
                 $agendamentoId,
                 'Nova avaliação recebida',
-                'Você recebeu uma avaliação da monitoria "' . $agendamento['assunto'] . '".'
+                'Você recebeu uma avaliação (' . $nota . '/5) da monitoria "' . $agendamento['assunto'] . '".'
             );
+            if ($pontosAvaliacao > 0) {
+                notificarParticipante(
+                    $pdo,
+                    $usuarioId,
+                    $agendamentoId,
+                    '⭐ +5 pontos por avaliar a monitoria!',
+                    'Obrigado por avaliar o atendimento "' . $agendamento['assunto'] . '"! Foram creditados +5 pontos Athenas.'
+                );
+            }
             $pdo->commit();
         } catch (PDOException $e) {
             if ($pdo->inTransaction()) {
@@ -263,7 +351,10 @@ try {
             }
             throw $e;
         }
-        responderMonitorias(201, ['avaliacao' => ['nota' => $nota, 'comentario' => trim($comentario)]]);
+        responderMonitorias(201, [
+            'avaliacao' => ['nota' => $nota, 'comentario' => trim($comentario)],
+            'pontos_ganhos' => $pontosAvaliacao,
+        ]);
     }
 
     if ($acao === 'registrar_atendimento') {
@@ -279,6 +370,7 @@ try {
 
         $assuntoEstudado = $entrada['assunto_estudado'] ?? null;
         $observacoes = $entrada['observacoes'] ?? '';
+        $concederBonus = !empty($entrada['conceder_bonus']);
         if (
             !is_string($assuntoEstudado)
             || trim($assuntoEstudado) === ''
@@ -301,6 +393,27 @@ try {
                 observacoes = VALUES(observacoes)'
         );
         $stmt->execute([$agendamentoId, $usuarioId, $assuntoEstudado, $observacoes]);
+
+        $pontosBonus = 0;
+        if ($concederBonus) {
+            $stmtBonus = $pdo->prepare(
+                "INSERT INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
+                 VALUES (?, ?, 'bonus_monitor', 10)
+                 ON DUPLICATE KEY UPDATE id = id"
+            );
+            $stmtBonus->execute([(int) $agendamento['aluno_id'], $agendamentoId]);
+            $pontosBonus = $stmtBonus->rowCount() === 1 ? 10 : 0;
+            if ($pontosBonus > 0) {
+                notificarParticipante(
+                    $pdo,
+                    (int) $agendamento['aluno_id'],
+                    $agendamentoId,
+                    '🌟 Bônus de Dedicação (+10 pts)!',
+                    'O monitor ' . $agendamento['monitor_nome'] . ' destacou sua participação em "' . $agendamento['assunto'] . '" e concedeu +10 pontos extras!'
+                );
+            }
+        }
+
         notificarParticipante(
             $pdo,
             (int) $agendamento['aluno_id'],
@@ -314,6 +427,7 @@ try {
                 'assunto_estudado' => $assuntoEstudado,
                 'observacoes' => $observacoes,
             ],
+            'pontos_bonus' => $pontosBonus,
         ]);
     }
 
@@ -434,6 +548,26 @@ try {
             }
         }
 
+        $pontosMaterial = 0;
+        if ($tipoUsuario === 'aluno') {
+            $stmtMatPts = $pdo->prepare(
+                "INSERT INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
+                 VALUES (?, ?, 'material_apoio', 5)
+                 ON DUPLICATE KEY UPDATE id = id"
+            );
+            $stmtMatPts->execute([$usuarioId, $agendamentoId]);
+            $pontosMaterial = $stmtMatPts->rowCount() === 1 ? 5 : 0;
+            if ($pontosMaterial > 0) {
+                notificarParticipante(
+                    $pdo,
+                    $usuarioId,
+                    $agendamentoId,
+                    '⭐ +5 pontos de Aluno Preparado!',
+                    'Você compartilhou material ou dúvida na monitoria "' . $agendamento['assunto'] . '" e ganhou +5 pontos Athenas!'
+                );
+            }
+        }
+
         $outroUsuarioId = $usuarioId === (int) $agendamento['aluno_id']
             ? (int) $agendamento['monitor_id']
             : (int) $agendamento['aluno_id'];
@@ -445,7 +579,7 @@ try {
             'Um participante compartilhou "' . mb_substr($nome, 0, 200, 'UTF-8') . '".'
         );
         $pdo->commit();
-        responderMonitorias(201, ['material_id' => $materialId]);
+        responderMonitorias(201, ['material_id' => $materialId, 'pontos_ganhos' => $pontosMaterial]);
     }
 
     responderMonitorias(400, ['erro' => 'Ação inválida.']);

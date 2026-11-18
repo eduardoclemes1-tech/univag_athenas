@@ -1,9 +1,9 @@
 <?php
+require_once __DIR__ . '/auth.php';
+
 function processarCadastroUsuario(string $tipo): never
 {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    iniciarSessaoSegura();
 
     $formularios = [
         'aluno' => 'CadastroAluno.php',

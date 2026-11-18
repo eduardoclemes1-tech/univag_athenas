@@ -260,6 +260,14 @@
     border-radius: 50%;
     font-size: 16px;
     font-weight: 700;
+    overflow: hidden;
+}
+
+.monitor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .avatar-verde {
@@ -539,6 +547,88 @@
     color: #858e9b;
     font-size: 10px;
     line-height: 1.5;
+}
+
+.monitor-card-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.monitor-agendar-rapido {
+    padding: 6px 10px;
+    border: 1px solid #cde0f1;
+    border-radius: 5px;
+    background: #eaf3fb;
+    color: #075eaa;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+.monitor-agendar-rapido:hover {
+    background: #d8eaf9;
+    border-color: #9ab8d2;
+}
+
+.perfil-dialog-acoes {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid #edf0f3;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.dialog-btn-primario,
+.dialog-btn-secundario,
+.dialog-btn-link {
+    min-height: 38px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+.dialog-btn-primario {
+    border: 1px solid #075eaa;
+    background: #075eaa;
+    color: #fff;
+}
+
+.dialog-btn-primario:hover {
+    background: #064c8a;
+}
+
+.dialog-btn-secundario {
+    border: 1px solid #c9d6e3;
+    background: #fff;
+    color: #202b3c;
+}
+
+.dialog-btn-secundario:hover {
+    background: #f2f5f8;
+}
+
+.dialog-btn-link {
+    margin-left: auto;
+    padding: 0 8px;
+    color: #075eaa;
+}
+
+.dialog-btn-link:hover {
+    text-decoration: underline;
 }
 
 @media (max-width: 1050px) {

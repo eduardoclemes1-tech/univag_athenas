@@ -9,6 +9,7 @@ if (empty($_SESSION['csrf_token'])) {
 
 $erros = [];
 $salvo = isset($_GET['salvo']) && $_GET['salvo'] === '1';
+$ganhouBonusPerfil = isset($_GET['bonus']) && $_GET['bonus'] === '1';
 $dadosFormulario = [
     'nome' => $_SESSION['usuario_nome'] ?? '',
     'bio' => '',
@@ -142,8 +143,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
 
+            $concedeuBonus = false;
+            if (
+                $dadosFormulario['nome'] !== ''
+                && $dadosFormulario['bio'] !== ''
+                && $dadosFormulario['curso'] !== ''
+                && $dadosFormulario['periodo'] !== ''
+            ) {
+                $stmtChkBonus = $pdo->prepare(
+                    "SELECT 1 FROM pontos_transacoes WHERE usuario_id = ? AND evento = 'perfil_completo' LIMIT 1"
+                );
+                $stmtChkBonus->execute([(int) $_SESSION['usuario_id']]);
+                if (!$stmtChkBonus->fetch()) {
+                    $stmtInsBonus = $pdo->prepare(
+                        "INSERT INTO pontos_transacoes (usuario_id, evento, pontos) VALUES (?, 'perfil_completo', 15)"
+                    );
+                    $stmtInsBonus->execute([(int) $_SESSION['usuario_id']]);
+                    $stmtNotifBonus = $pdo->prepare(
+                        "INSERT INTO notificacoes (usuario_id, tipo, titulo, mensagem)
+                         VALUES (?, 'agendamento', '🎉 +15 pontos de Perfil Completo!', 'Você completou suas informações acadêmicas no perfil e ganhou +15 pontos Athenas!')"
+                    );
+                    $stmtNotifBonus->execute([(int) $_SESSION['usuario_id']]);
+                    $concedeuBonus = true;
+                }
+            }
+
             $_SESSION['usuario_nome'] = $dadosFormulario['nome'];
-            header('Location: perfil.php?salvo=1');
+            header('Location: perfil.php?salvo=1' . ($concedeuBonus ? '&bonus=1' : ''));
             exit;
         } catch (PDOException $e) {
             error_log($e->getMessage());
@@ -185,15 +211,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'periodo' => $aluno['periodo'],
     ];
 }
+require_once __DIR__ . '/../../includes/gamificacao.php';
 $inicialNome = mb_strtoupper(mb_substr($aluno['nome'], 0, 1, 'UTF-8'), 'UTF-8');
-$fundosPermitidos = ['oceano', 'aurora', 'por-do-sol', 'nebulosa', 'aurora-animada', 'estrelas'];
-$avataresPermitidos = ['lilas', 'esmeralda', 'dourado', 'asas-capelo', 'capivara'];
+$fundosPermitidos = athenasFundosPermitidos();
+$avataresPermitidos = athenasAvataresPermitidos();
 $fundoVisual = in_array($aluno['fundo_visual'], $fundosPermitidos, true) ? $aluno['fundo_visual'] : '';
 $avatarVisual = in_array($aluno['avatar_visual'], $avataresPermitidos, true) ? $aluno['avatar_visual'] : '';
-$imagensAvatares = [
-    'asas-capelo' => '../../assets/img/loja/avatar-asas-capelo.svg',
-    'capivara' => '../../assets/img/loja/avatar-capivara-caloura.svg',
-];
+$imagensAvatares = [];
+$iconesAvataresPerfil = athenasIconesAvatares();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -204,7 +229,7 @@ $imagensAvatares = [
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/aluno.css?v=2">
     <link rel="stylesheet" href="../../assets/css/perfilAluno.css?v=3">
-    <link rel="stylesheet" href="../../assets/css/personalizacao.css?v=1">
+    <link rel="stylesheet" href="../../assets/css/personalizacao.css?v=5">
 </head>
 <body class="aluno-theme">
     <?php include '../../includes/navbar.php'; ?>
@@ -224,7 +249,12 @@ $imagensAvatares = [
 
             <?php if ($salvo): ?>
                 <div class="perfil-aviso perfil-sucesso" role="status">
-                    <i class="fa-solid fa-circle-check" aria-hidden="true"></i> Seu perfil foi atualizado.
+                    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                    <?php if ($ganhouBonusPerfil): ?>
+                        Seu perfil foi atualizado e você ganhou <strong>+15 pontos Athenas</strong> de bônus por completar seu perfil acadêmico!
+                    <?php else: ?>
+                        Seu perfil foi atualizado.
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
             <?php if ($erros): ?>
@@ -246,7 +276,7 @@ $imagensAvatares = [
                             <?php if (isset($imagensAvatares[$avatarVisual])): ?>
                                 <img src="<?php echo htmlspecialchars($imagensAvatares[$avatarVisual], ENT_QUOTES, 'UTF-8'); ?>" alt="">
                             <?php else: ?>
-                                <i class="fa-solid fa-user-graduate"></i>
+                                <i class="fa-solid <?php echo htmlspecialchars($iconesAvataresPerfil[$avatarVisual] ?? 'fa-user-graduate', ENT_QUOTES, 'UTF-8'); ?>"></i>
                             <?php endif; ?>
                         </div>
                     <?php elseif ($aluno['foto_mime']): ?>

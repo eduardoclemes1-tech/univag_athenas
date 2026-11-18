@@ -1,12 +1,12 @@
 :root {
     color-scheme: light;
-    --aluno-ink: #202b3c;
-    --aluno-muted: #667085;
-    --aluno-border: #dce3eb;
-    --aluno-blue: #075eaa;
-    --aluno-blue-dark: #084b82;
-    --aluno-surface: #ffffff;
-    --aluno-background: #f1f3f6;
+    --aluno-ink: #1e293b;
+    --aluno-muted: #52637a;
+    --aluno-border: #cbd8e8;
+    --aluno-blue: #005bb5;
+    --aluno-blue-dark: #00448a;
+    --aluno-surface: #f5f8fc;
+    --aluno-background: #e6eef7;
 }
 
 * {
@@ -21,13 +21,23 @@ body {
     font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
 }
 
+body.aluno-home-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 .aluno-main {
-    padding: 28px 24px 56px;
+    flex: 1;
+    padding: 24px 28px 48px;
 }
 
 .aluno-layout {
-    width: min(1356px, 100%);
+    width: min(1560px, 100%);
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
 }
 
 .aluno-banner {
@@ -315,6 +325,1271 @@ body {
     line-height: 1.65;
 }
 
+.aluno-alerta-pendencia {
+    margin-top: 16px;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border: 1px solid #f3d19e;
+    border-radius: 6px;
+    background: #fff9eb;
+    color: #7c4a03;
+    font-size: 13px;
+}
+
+.aluno-alerta-pendencia a {
+    color: #075eaa;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.aluno-lista-atividades {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+}
+
+.aluno-atividade-item {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid #e4e9f0;
+    border-radius: 6px;
+    background: #fafbfd;
+}
+
+.aluno-atividade-data {
+    min-width: 62px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 6px;
+    background: #eaf3fb;
+    color: #075eaa;
+    text-align: center;
+}
+
+.aluno-atividade-data strong {
+    font-size: 14px;
+    line-height: 1.1;
+}
+
+.aluno-atividade-data span {
+    margin-top: 3px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.aluno-atividade-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.aluno-atividade-info strong {
+    display: block;
+    color: var(--aluno-ink);
+    font-size: 14px;
+}
+
+.aluno-atividade-info small {
+    display: block;
+    margin-top: 4px;
+    color: var(--aluno-muted);
+    font-size: 12px;
+}
+
+.aluno-atividade-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.aluno-badge-status {
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.aluno-badge-confirmado {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.aluno-badge-solicitado {
+    background: #fff4e5;
+    color: #9a5b13;
+}
+
+.aluno-link-reuniao {
+    padding: 7px 12px;
+    border-radius: 5px;
+    background: #075eaa;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.aluno-link-reuniao:hover {
+    background: #084b82;
+}
+
+/* ================= PORTAL DO ALUNO ESTILO AVA UNIVAG ================= */
+.ava-aluno-banner {
+    position: relative;
+    min-height: 92px;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #004a94;
+    background: linear-gradient(115deg, #004a8f 0%, #0066c2 52%, #003e7a 100%);
+    box-shadow: 0 10px 26px rgba(0, 52, 107, 0.22);
+}
+
+.ava-aluno-polygons {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 42%),
+        linear-gradient(235deg, rgba(56, 189, 248, 0.18) 10%, transparent 50%);
+}
+
+.ava-aluno-polygons::before,
+.ava-aluno-polygons::after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    opacity: 0.16;
+}
+
+.ava-aluno-polygons::before {
+    right: 22%;
+    top: -28px;
+    border-width: 0 90px 140px 90px;
+    border-color: transparent transparent #bae6fd transparent;
+    transform: rotate(16deg);
+}
+
+.ava-aluno-polygons::after {
+    right: 6%;
+    bottom: -36px;
+    border-width: 120px 80px 0 80px;
+    border-color: #ffffff transparent transparent transparent;
+    transform: rotate(-14deg);
+}
+
+.ava-aluno-banner-title {
+    position: relative;
+    z-index: 1;
+}
+
+.ava-aluno-banner-title h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.ava-aluno-banner-chips {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.banner-chip {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(6px);
+    color: #ffffff;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.banner-chip:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.banner-chip-gold i {
+    color: #fde047;
+}
+
+/* Superfície Principal Suave (Soft Slate Blue / Ice) */
+.ava-aluno-surface {
+    padding: 32px 36px 38px;
+    border-radius: 12px;
+    border: 1px solid #cbd9ea;
+    background: linear-gradient(180deg, #f7faff 0%, #eef4fb 100%);
+    box-shadow: 0 12px 32px rgba(15, 39, 71, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.ava-aluno-surface .aluno-alerta-pendencia {
+    width: 100%;
+    margin: 0;
+}
+
+/* Split Card Principal do Curso do Aluno */
+.ava-aluno-split-card {
+    width: 100%;
+    min-height: 204px;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #bfd2e8;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(13, 46, 89, 0.09);
+}
+
+.ava-aluno-cover {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 22% 28%, rgba(56, 189, 248, 0.28) 0%, transparent 52%),
+        linear-gradient(135deg, #004488 0%, #0066c4 55%, #003369 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 20px 24px;
+}
+
+.ava-aluno-cover-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(30deg, rgba(255, 255, 255, 0.09) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.09) 87.5%),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.07) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.07) 87.5%);
+    background-size: 64px 110px;
+}
+
+.ava-aluno-watermark {
+    position: relative;
+    z-index: 1;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+}
+
+.ava-aluno-course-body {
+    padding: 26px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f4f8fd 100%);
+}
+
+.ava-aluno-eyebrow {
+    display: block;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.ava-aluno-course-meta h2 {
+    margin: 0 0 12px;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.ava-aluno-pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.aluno-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.pill-green {
+    background: #3ca648;
+    color: #ffffff;
+}
+
+.pill-blue {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.pill-amber {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.pill-slate {
+    background: #e8eff8;
+    color: #1e3a5f;
+    border: 1px solid #cbd8ea;
+}
+
+.ava-aluno-course-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #dde7f3;
+}
+
+.ava-aluno-access-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #005bb5;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.ava-aluno-access-link:hover {
+    color: #003b75;
+}
+
+.ava-aluno-access-link i {
+    font-size: 12px;
+    transition: transform 0.15s ease;
+}
+
+.ava-aluno-access-link:hover i {
+    transform: translateX(3px);
+}
+
+.ava-aluno-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ava-aluno-btn-secondary,
+.ava-aluno-btn-primary {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.ava-aluno-btn-secondary {
+    background: #eaf2fb;
+    border: 1px solid #bfd3eb;
+    color: #0f294a;
+}
+
+.ava-aluno-btn-secondary:hover {
+    background: #dbe9f8;
+}
+
+.ava-aluno-btn-primary {
+    background: #005bb5;
+    border: 1px solid #005bb5;
+    color: #ffffff;
+}
+
+.ava-aluno-btn-primary:hover {
+    background: #00448a;
+}
+
+/* Seções Internas do Aluno */
+.ava-aluno-section {
+    width: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ava-aluno-section-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #cfdff0;
+}
+
+.ava-aluno-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #0f294a;
+}
+
+.ava-aluno-section-title i {
+    color: #005bb5;
+    font-size: 16px;
+}
+
+.ava-aluno-section-title h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.aluno-status-ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.aluno-status-warn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #b45309;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ava-aluno-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ava-aluno-discipline-card {
+    padding: 22px 26px;
+    border-radius: 8px;
+    border: 1px solid #c5d7ec;
+    border-left: 5px solid #005bb5;
+    background: linear-gradient(135deg, #ffffff 0%, #f3f8fe 100%);
+    box-shadow: 0 4px 14px rgba(15, 39, 71, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ava-aluno-discipline-card:hover {
+    border-color: #8ab4e1;
+    border-left-color: #00448a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 39, 71, 0.09);
+}
+
+.ava-aluno-card-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ava-aluno-card-date {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ava-aluno-discipline-card h4 {
+    margin: 2px 0 0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.ava-aluno-card-sub {
+    margin: 0;
+    color: #475569;
+    font-size: 13px;
+}
+
+.ava-aluno-card-sub strong {
+    color: #0f294a;
+}
+
+.ava-aluno-card-links {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.link-sala-direta {
+    color: #0284c7;
+}
+
+/* ================= HUB EXCLUSIVO DO ALUNO (AGENDA VISUAL + JORNADA & MONITORES) ================= */
+.aluno-hub-grid {
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(380px, 1fr);
+    gap: 28px;
+    align-items: start;
+}
+
+.aluno-hub-col-main,
+.aluno-hub-col-side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.aluno-hub-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #cfdff0;
+}
+
+.aluno-hub-kicker {
+    display: block;
+    color: #005bb5;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.aluno-hub-header h3,
+.side-card-head h3 {
+    margin: 0;
+    color: #0f294a;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.aluno-hub-link {
+    color: #005bb5;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.aluno-hub-link:hover {
+    text-decoration: underline;
+}
+
+.aluno-study-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.study-session-card {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #c6d8ec;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(13, 46, 89, 0.06);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.study-session-card:hover {
+    transform: translateY(-2px);
+    border-color: #8ab4e1;
+    box-shadow: 0 10px 24px rgba(13, 46, 89, 0.11);
+}
+
+.study-date-badge {
+    width: 74px;
+    flex: 0 0 74px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    text-align: center;
+}
+
+.study-date-badge.date-confirmed {
+    background: linear-gradient(145deg, #005bb5 0%, #003e80 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 91, 181, 0.25);
+}
+
+.study-date-badge.date-pending {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+}
+
+.study-month {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    opacity: 0.88;
+}
+
+.study-day {
+    font-size: 24px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 2px 0;
+}
+
+.study-time {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.study-session-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.study-session-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.study-subject-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: #eaf2fb;
+    color: #004b96;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.study-session-rewards {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reward-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fef9c3;
+    border: 1px solid #fde047;
+    color: #854d0e;
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.reward-chip i {
+    color: #eab308;
+}
+
+.study-status-badge {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.study-status-badge.status-ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.study-status-badge.status-wait {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.study-session-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.study-session-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #edf2f9;
+}
+
+.study-mentor-info {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.study-mentor-avatar,
+.side-mentor-avatar {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #1e40af;
+    font-size: 12px;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.study-mentor-avatar img,
+.side-mentor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.study-mentor-info small {
+    display: block;
+    font-size: 10px;
+    color: #64748b;
+}
+
+.study-mentor-info strong {
+    display: block;
+    font-size: 12.5px;
+    color: #1e293b;
+}
+
+.study-session-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.study-btn-chat,
+.study-btn-join,
+.study-btn-agenda {
+    height: 32px;
+    padding: 0 11px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.study-btn-chat {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+}
+
+.study-btn-chat:hover {
+    background: #e2e8f0;
+}
+
+.study-btn-join {
+    background: #3ca648;
+    border: 1px solid #3ca648;
+    color: #ffffff;
+}
+
+.study-btn-join:hover {
+    background: #2f8a3a;
+}
+
+.study-btn-agenda {
+    background: #eaf2fb;
+    border: 1px solid #bfd3eb;
+    color: #005bb5;
+}
+
+.study-empty-box {
+    padding: 36px 24px;
+    border-radius: 12px;
+    border: 1px dashed #b8cde6;
+    background: #ffffff;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.study-empty-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #eaf2fb;
+    color: #005bb5;
+    font-size: 20px;
+    display: grid;
+    place-items: center;
+}
+
+.study-empty-box h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #0f294a;
+}
+
+.study-empty-box p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #52637a;
+    max-width: 360px;
+}
+
+/* Cards da Coluna Lateral do Aluno */
+.aluno-side-card {
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #c6d8ec;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(13, 46, 89, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.side-card-progress {
+    background: linear-gradient(155deg, #003e80 0%, #002855 100%);
+    border-color: #004e9e;
+    color: #ffffff;
+}
+
+.side-card-progress .aluno-hub-kicker {
+    color: #7dd3fc;
+}
+
+.side-card-progress .side-card-head h3 {
+    color: #ffffff;
+}
+
+.side-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.side-card-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(250, 204, 21, 0.18);
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    color: #fde047;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+}
+
+.progress-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.progress-stat-row strong {
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.aluno-progress-track {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+}
+
+.aluno-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #4ade80);
+}
+
+.progress-points-box {
+    margin-top: 4px;
+    padding: 12px 14px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.progress-points-box small {
+    display: block;
+    font-size: 10.5px;
+    color: #bae6fd;
+}
+
+.progress-points-box strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 14px;
+    color: #fde047;
+}
+
+.progress-points-box a {
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.progress-points-box a:hover {
+    text-decoration: underline;
+}
+
+.side-mentors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.side-mentor-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #f4f8fd;
+    border: 1px solid #dce8f6;
+}
+
+.side-mentor-main {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+}
+
+.side-mentor-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.side-mentor-info strong {
+    display: block;
+    font-size: 12.5px;
+    color: #0f294a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.side-mentor-info small {
+    display: block;
+    font-size: 11px;
+    color: #52637a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.side-mentor-btn {
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid #005bb5;
+    background: #005bb5;
+    color: #ffffff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.side-mentor-btn:hover {
+    background: #00448a;
+}
+
+@media (max-width: 860px) {
+    .aluno-hub-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 540px) {
+    .study-session-card {
+        flex-direction: column;
+    }
+
+    .study-date-badge {
+        width: 100%;
+        flex-basis: auto;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 8px 14px;
+    }
+}
+
+/* Grade de Módulos Digitais do Aluno (Tiles Azuis UNIVAG) */
+.ava-aluno-tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.ava-aluno-tile {
+    position: relative;
+    min-height: 118px;
+    padding: 14px 12px;
+    border-radius: 7px;
+    border: 1px solid #004b96;
+    background: linear-gradient(145deg, #004e9e 0%, #003875 60%, #002754 100%);
+    color: #ffffff;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0, 40, 85, 0.22);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.ava-aluno-tile::before {
+    content: '';
+    position: absolute;
+    right: -18px;
+    bottom: -18px;
+    width: 68px;
+    height: 68px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), transparent);
+    clip-path: polygon(100% 0, 0 100%, 100% 100%);
+    pointer-events: none;
+}
+
+.ava-aluno-tile:hover {
+    transform: translateY(-3px);
+    border-color: #38bdf8;
+    box-shadow: 0 10px 22px rgba(0, 40, 85, 0.34);
+}
+
+.tile-badge {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.22);
+    border: 1px solid rgba(125, 211, 252, 0.45);
+    color: #bae6fd;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.tile-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #38bdf8;
+}
+
+.tile-title {
+    position: relative;
+    z-index: 1;
+    margin: auto 0;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.22;
+    letter-spacing: 0.02em;
+    color: #ffffff;
+}
+
+.tile-watermark {
+    position: absolute;
+    right: 8px;
+    bottom: -6px;
+    font-size: 54px;
+    font-weight: 900;
+    color: rgba(125, 211, 252, 0.16);
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* Rodapé Institucional UNIVAG */
+.ava-aluno-footer {
+    margin-top: auto;
+    padding: 32px 24px 36px;
+    background: #0b0848;
+    border-top: 1px solid #1e1b6e;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    text-align: center;
+}
+
+.ava-aluno-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+}
+
+.ava-aluno-support-btn {
+    padding: 9px 18px;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: transparent;
+    color: #ffffff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.ava-aluno-support-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.ava-aluno-footer-links a {
+    color: #cbd5e1;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.ava-aluno-footer-links a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.ava-aluno-footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.ava-aluno-footer-brand small {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.ava-aluno-footer-brand img {
+    height: 36px;
+    object-fit: contain;
+    filter: brightness(1.15);
+}
+
+@media (max-width: 1024px) {
+    .ava-aluno-tiles-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ava-aluno-split-card {
+        grid-template-columns: 240px minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .ava-aluno-surface {
+        padding: 24px 18px;
+    }
+
+    .ava-aluno-split-card {
+        grid-template-columns: 1fr;
+    }
+
+    .ava-aluno-cover {
+        min-height: 110px;
+    }
+
+    .ava-aluno-tiles-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 800px) {
     .aluno-resumo {
         grid-template-columns: 1fr 1fr;
@@ -370,4 +1645,102 @@ body {
     .aluno-banner {
         height: 72px;
     }
+}
+
+/* ================= WIDGET COMPACTO E CONTEXTUAL DE MAESTRIA NA SIDEBAR DO INÍCIO ================= */
+.banner-chip-trophy i {
+    color: #fde047;
+}
+
+.side-maestria-widget {
+    margin-top: 14px;
+    padding: 12px 13px;
+    border-radius: 9px;
+    border: 1px solid #d5e3f3;
+    background: #f5f9ff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.side-maestria-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.side-maestria-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #0f294a;
+}
+
+.side-maestria-title i {
+    color: #005bb5;
+}
+
+.side-maestria-lvl {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #dbeafe;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.side-maestria-bar {
+    margin: 0 !important;
+    height: 7px;
+}
+
+.side-maestria-fill {
+    background: linear-gradient(90deg, #005bb5 0%, #0ea5e9 100%);
+}
+
+.side-maestria-hint {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #475569;
+}
+
+.side-maestria-hint strong {
+    color: #0f294a;
+}
+
+.side-maestria-mini-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-top: 4px;
+    border-top: 1px dashed #d5e3f3;
+}
+
+.side-maestria-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #cbd8ea;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.side-maestria-pill i {
+    color: #005bb5;
+    font-size: 10px;
+}
+
+.side-maestria-pill.pill-done {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #166534;
 }

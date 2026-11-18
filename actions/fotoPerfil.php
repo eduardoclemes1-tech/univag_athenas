@@ -5,8 +5,14 @@ exigirUsuarioAutenticado();
 require_once __DIR__ . '/../config/conexao.php';
 
 try {
-    $stmt = $pdo->prepare('SELECT foto_perfil, foto_mime FROM usuarios WHERE id = ? AND tipo = ?');
-    $stmt->execute([$_SESSION['usuario_id'], $_SESSION['usuario_tipo']]);
+    $idSolicitado = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
+    if ($idSolicitado && $idSolicitado > 0) {
+        $stmt = $pdo->prepare('SELECT foto_perfil, foto_mime FROM usuarios WHERE id = ?');
+        $stmt->execute([$idSolicitado]);
+    } else {
+        $stmt = $pdo->prepare('SELECT foto_perfil, foto_mime FROM usuarios WHERE id = ? AND tipo = ?');
+        $stmt->execute([$_SESSION['usuario_id'], $_SESSION['usuario_tipo']]);
+    }
     $foto = $stmt->fetch();
 
     $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];

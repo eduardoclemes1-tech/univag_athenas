@@ -1,99 +1,102 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 exigirUsuarioAutenticado('aluno');
+require_once __DIR__ . '/../../config/conexao.php';
 
-$monitores = [
-    [
-        'nome' => 'Marcos Silva Pereira',
-        'iniciais' => 'MS',
-        'area' => 'Dados',
-        'disciplina' => 'Banco de Dados',
-        'tags' => ['SQL', 'Modelagem de dados', 'DER'],
-        'modalidade' => 'Online e presencial',
-        'disponivel' => true,
-        'horarios' => 'Segunda e quarta, das 14h às 18h',
-        'avaliacao' => '4,9',
-        'avaliacoes' => 28,
-        'curso' => 'Sistemas de Informação · 5º semestre',
-        'sobre' => 'Gosto de explicar banco de dados com exemplos do dia a dia, começando pelos conceitos e avançando para exercícios práticos de SQL.',
-        'cor' => 'verde',
-    ],
-    [
-        'nome' => 'Ana Beatriz Costa',
-        'iniciais' => 'AC',
-        'area' => 'Programação',
-        'disciplina' => 'Lógica de Programação',
-        'tags' => ['Python', 'Algoritmos', 'Iniciantes'],
-        'modalidade' => 'Online',
-        'disponivel' => true,
-        'horarios' => 'Terça e quinta, das 16h às 19h',
-        'avaliacao' => '4,8',
-        'avaliacoes' => 21,
-        'curso' => 'Ciência da Computação · 4º semestre',
-        'sobre' => 'Ajudo quem está começando a transformar problemas em passos simples e escrever os primeiros programas com confiança.',
-        'cor' => 'azul',
-    ],
-    [
-        'nome' => 'Lucas Mendes Rocha',
-        'iniciais' => 'LR',
-        'area' => 'Desenvolvimento',
-        'disciplina' => 'Desenvolvimento Web',
-        'tags' => ['HTML e CSS', 'JavaScript', 'Projetos'],
-        'modalidade' => 'Presencial',
-        'disponivel' => false,
-        'horarios' => 'Novos horários em breve',
-        'avaliacao' => '4,7',
-        'avaliacoes' => 16,
-        'curso' => 'Sistemas de Informação · 6º semestre',
-        'sobre' => 'Trabalho com projetos web e gosto de ensinar construindo páginas junto com o aluno, do primeiro layout à interação.',
-        'cor' => 'laranja',
-    ],
-    [
-        'nome' => 'Juliana Ferreira Lima',
-        'iniciais' => 'JL',
-        'area' => 'Programação',
-        'disciplina' => 'Estruturas de Dados',
-        'tags' => ['Algoritmos', 'Árvores', 'Ordenação'],
-        'modalidade' => 'Online e presencial',
-        'disponivel' => true,
-        'horarios' => 'Segunda a sexta, das 10h às 12h',
-        'avaliacao' => '5,0',
-        'avaliacoes' => 19,
-        'curso' => 'Ciência da Computação · 5º semestre',
-        'sobre' => 'Ajudo a visualizar como os dados se organizam em listas, árvores e outras estruturas, relacionando teoria e implementação.',
-        'cor' => 'roxo',
-    ],
-    [
-        'nome' => 'Rafael Oliveira Santos',
-        'iniciais' => 'RS',
-        'area' => 'Infraestrutura',
-        'disciplina' => 'Redes de Computadores',
-        'tags' => ['TCP/IP', 'Endereçamento', 'Conectividade'],
-        'modalidade' => 'Online',
-        'disponivel' => true,
-        'horarios' => 'Quarta e sexta, das 13h às 17h',
-        'avaliacao' => '4,8',
-        'avaliacoes' => 14,
-        'curso' => 'Redes de Computadores · 6º semestre',
-        'sobre' => 'Explico os fundamentos de redes e protocolos com exemplos práticos de comunicação entre dispositivos.',
-        'cor' => 'azul',
-    ],
-    [
-        'nome' => 'Camila Nunes Almeida',
-        'iniciais' => 'CA',
-        'area' => 'Desenvolvimento',
-        'disciplina' => 'Desenvolvimento Mobile',
-        'tags' => ['Interfaces', 'Aplicativos', 'APIs'],
-        'modalidade' => 'Presencial',
-        'disponivel' => true,
-        'horarios' => 'Terça e quinta, das 9h às 12h',
-        'avaliacao' => '4,9',
-        'avaliacoes' => 25,
-        'curso' => 'Sistemas de Informação · 6º semestre',
-        'sobre' => 'Compartilho práticas para criar interfaces mobile simples, acessíveis e conectadas a serviços web.',
-        'cor' => 'verde',
-    ],
+$nomesDiasCurto = [
+    1 => 'Seg',
+    2 => 'Ter',
+    3 => 'Qua',
+    4 => 'Qui',
+    5 => 'Sex',
+    6 => 'Sáb',
+    7 => 'Dom',
 ];
+$coresAvatar = ['verde', 'azul', 'laranja', 'roxo'];
+$monitores = [];
+
+try {
+    $stmt = $pdo->query(
+        "SELECT u.id, u.nome, u.bio, u.curso, u.periodo, u.foto_mime,
+                pm.area_atuacao, pm.disciplina, pm.local_atendimento,
+                pm.duracao_monitoria, pm.modalidade, pm.metodologia,
+                pm.ideal_para, pm.topicos,
+                (SELECT ROUND(AVG(av.nota), 1) FROM avaliacoes_monitorias av WHERE av.monitor_id = u.id) AS media_nota,
+                (SELECT COUNT(*) FROM avaliacoes_monitorias av WHERE av.monitor_id = u.id) AS total_avaliacoes
+         FROM usuarios u
+         LEFT JOIN perfis_monitores pm ON pm.monitor_id = u.id
+         WHERE u.tipo = 'monitor'
+         ORDER BY u.id ASC"
+    );
+    $registros = $stmt->fetchAll();
+
+    $stmtDisp = $pdo->query(
+        'SELECT monitor_id, dia_semana, hora_inicio, hora_fim
+         FROM disponibilidades_monitores
+         WHERE disponivel = 1
+         ORDER BY monitor_id, dia_semana'
+    );
+    $dispPorMonitor = [];
+    foreach ($stmtDisp->fetchAll() as $disp) {
+        $dispPorMonitor[(int) $disp['monitor_id']][] = $disp;
+    }
+
+    foreach ($registros as $idx => $reg) {
+        $monitorId = (int) $reg['id'];
+        $partesNome = preg_split('/\s+/u', trim($reg['nome'])) ?: ['M'];
+        $iniciais = mb_strtoupper(
+            mb_substr($partesNome[0] ?? 'M', 0, 1, 'UTF-8')
+            . (isset($partesNome[1]) ? mb_substr($partesNome[1], 0, 1, 'UTF-8') : ''),
+            'UTF-8'
+        );
+
+        $disps = $dispPorMonitor[$monitorId] ?? [];
+        $disponivel = count($disps) > 0;
+        if ($disponivel) {
+            $resumosDias = [];
+            foreach ($disps as $d) {
+                $diaLabel = $nomesDiasCurto[(int) $d['dia_semana']] ?? '';
+                $ini = substr((string) $d['hora_inicio'], 0, 5);
+                $fim = substr((string) $d['hora_fim'], 0, 5);
+                $resumosDias[] = "{$diaLabel} ({$ini}–{$fim})";
+            }
+            $horariosTexto = implode(' · ', $resumosDias);
+        } else {
+            $horariosTexto = 'Consulte horários pelo chat';
+        }
+
+        $topicosLista = array_values(array_filter(array_map('trim', explode(',', (string) ($reg['topicos'] ?? '')))));
+        if (!$topicosLista) {
+            $topicosLista = [$reg['disciplina'] ?: 'Apoio acadêmico'];
+        }
+
+        $cursoFormatado = implode(' · ', array_filter([$reg['curso'], $reg['periodo']])) ?: 'Monitoria Acadêmica UNIVAG';
+        $totalAvaliacoes = (int) ($reg['total_avaliacoes'] ?? 0);
+        $mediaNota = $reg['media_nota'] !== null
+            ? number_format((float) $reg['media_nota'], 1, ',', '.')
+            : '5,0';
+
+        $monitores[] = [
+            'id' => $monitorId,
+            'nome' => $reg['nome'],
+            'iniciais' => $iniciais ?: 'M',
+            'tem_foto' => !empty($reg['foto_mime']),
+            'area' => trim((string) ($reg['area_atuacao'] ?? '')) ?: 'Tecnologia',
+            'disciplina' => trim((string) ($reg['disciplina'] ?? '')) ?: 'Monitoria Geral',
+            'tags' => array_slice($topicosLista, 0, 5),
+            'modalidade' => trim((string) ($reg['modalidade'] ?? '')) ?: 'Online e presencial',
+            'disponivel' => $disponivel,
+            'horarios' => $horariosTexto,
+            'avaliacao' => $mediaNota,
+            'avaliacoes' => $totalAvaliacoes,
+            'curso' => $cursoFormatado,
+            'sobre' => trim((string) ($reg['bio'] ?? '')) ?: 'Monitor acadêmico disponível para auxiliar nos estudos e resolução de exercícios.',
+            'cor' => $coresAvatar[$idx % count($coresAvatar)],
+        ];
+    }
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+}
 
 $areas = array_values(array_unique(array_column($monitores, 'area')));
 sort($areas);
@@ -115,7 +118,7 @@ if (!in_array($areaSelecionada, $areas, true)) {
     <title>Monitores disponíveis - UNIVAG ATHENAS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/aluno.css?v=2">
-    <link rel="stylesheet" href="../../assets/css/catalogoMonitores.css?v=1">
+    <link rel="stylesheet" href="../../assets/css/catalogoMonitores.css?v=2">
 </head>
 <body class="aluno-theme">
     <?php include '../../includes/navbar.php'; ?>
@@ -129,7 +132,7 @@ if (!in_array($areaSelecionada, $areas, true)) {
                     </a>
                     <span class="aluno-eyebrow">APOIO PARA SEUS ESTUDOS</span>
                     <h1>Encontre seu monitor</h1>
-                    <p>Explore as áreas e escolha quem pode ajudar você a avançar.</p>
+                    <p>Explore as áreas, converse em tempo real e agende sua monitoria.</p>
                 </div>
                 <div class="catalogo-resumo-icone" aria-hidden="true">
                     <i class="fa-solid fa-user-graduate"></i>
@@ -205,6 +208,7 @@ if (!in_array($areaSelecionada, $areas, true)) {
                         <article
                             class="monitor-card"
                             data-index="<?php echo $indice; ?>"
+                            data-id="<?php echo (int) $monitor['id']; ?>"
                             data-nome="<?php echo htmlspecialchars($monitor['nome'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-area="<?php echo htmlspecialchars($monitor['area'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-disciplina="<?php echo htmlspecialchars($monitor['disciplina'], ENT_QUOTES, 'UTF-8'); ?>"
@@ -213,21 +217,26 @@ if (!in_array($areaSelecionada, $areas, true)) {
                             data-disponivel="<?php echo $monitor['disponivel'] ? '1' : '0'; ?>"
                             data-horarios="<?php echo htmlspecialchars($monitor['horarios'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-avaliacao="<?php echo htmlspecialchars($monitor['avaliacao'], ENT_QUOTES, 'UTF-8'); ?>"
-                            data-avaliacoes="<?php echo $monitor['avaliacoes']; ?>"
+                            data-avaliacoes="<?php echo (int) $monitor['avaliacoes']; ?>"
                             data-curso="<?php echo htmlspecialchars($monitor['curso'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-sobre="<?php echo htmlspecialchars($monitor['sobre'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-iniciais="<?php echo htmlspecialchars($monitor['iniciais'], ENT_QUOTES, 'UTF-8'); ?>"
+                            data-tem-foto="<?php echo $monitor['tem_foto'] ? '1' : '0'; ?>"
                             data-cor="<?php echo htmlspecialchars($monitor['cor'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-busca="<?php echo htmlspecialchars($buscaCard, ENT_QUOTES, 'UTF-8'); ?>"
                         >
                             <div class="monitor-card-topo">
                                 <span class="monitor-avatar avatar-<?php echo htmlspecialchars($monitor['cor'], ENT_QUOTES, 'UTF-8'); ?>">
-                                    <?php echo htmlspecialchars($monitor['iniciais'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php if ($monitor['tem_foto']): ?>
+                                        <img src="../../actions/fotoPerfil.php?id=<?php echo (int) $monitor['id']; ?>" alt="Foto de <?php echo htmlspecialchars($monitor['nome'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php else: ?>
+                                        <?php echo htmlspecialchars($monitor['iniciais'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php endif; ?>
                                 </span>
                                 <span class="monitor-nota" aria-label="Nota <?php echo htmlspecialchars($monitor['avaliacao'], ENT_QUOTES, 'UTF-8'); ?> de 5">
                                     <i class="fa-solid fa-star" aria-hidden="true"></i>
                                     <?php echo htmlspecialchars($monitor['avaliacao'], ENT_QUOTES, 'UTF-8'); ?>
-                                    <small>(<?php echo $monitor['avaliacoes']; ?>)</small>
+                                    <small>(<?php echo (int) $monitor['avaliacoes']; ?>)</small>
                                 </span>
                             </div>
                             <span class="monitor-area"><?php echo htmlspecialchars($monitor['area'], ENT_QUOTES, 'UTF-8'); ?></span>
@@ -245,11 +254,22 @@ if (!in_array($areaSelecionada, $areas, true)) {
                             <div class="monitor-card-rodape">
                                 <span class="monitor-status <?php echo $monitor['disponivel'] ? 'status-disponivel' : 'status-indisponivel'; ?>">
                                     <span aria-hidden="true"></span>
-                                    <?php echo $monitor['disponivel'] ? 'Com horários' : 'Sem horários no momento'; ?>
+                                    <?php echo $monitor['disponivel'] ? 'Com horários' : 'Sob consulta'; ?>
                                 </span>
-                                <button class="monitor-detalhes" type="button" data-abrir-perfil>
-                                    Ver perfil <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                                </button>
+                                <div class="monitor-card-acoes">
+                                    <?php if ($monitor['disponivel']): ?>
+                                        <button
+                                            class="monitor-agendar-rapido"
+                                            type="button"
+                                            data-solicitar-monitoria-monitor="<?php echo (int) $monitor['id']; ?>"
+                                        >
+                                            <i class="fa-regular fa-calendar-plus" aria-hidden="true"></i> Agendar
+                                        </button>
+                                    <?php endif; ?>
+                                    <button class="monitor-detalhes" type="button" data-abrir-perfil>
+                                        Ver perfil <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                                    </button>
+                                </div>
                             </div>
                         </article>
                     <?php endforeach; ?>
@@ -261,7 +281,7 @@ if (!in_array($areaSelecionada, $areas, true)) {
                     <p>Tente mudar a busca ou remover algum filtro.</p>
                     <button class="catalogo-limpar" type="button" data-limpar-vazio>Limpar filtros</button>
                 </div>
-                <p class="catalogo-aviso">Perfis e horários exibidos são exemplos para demonstração.</p>
+                <p class="catalogo-aviso">Catálogo integrado em tempo real aos monitores cadastrados na plataforma.</p>
             </section>
         </div>
     </main>
@@ -292,7 +312,17 @@ if (!in_array($areaSelecionada, $areas, true)) {
                 <p id="perfilModalidade"></p>
                 <p id="perfilHorarios"></p>
             </div>
-            <p class="perfil-dialog-aviso">Este é um perfil de demonstração. Horários e avaliações são exemplos.</p>
+            <div class="perfil-dialog-acoes">
+                <button type="button" class="dialog-btn-primario" id="dialogBtnSolicitar" data-solicitar-monitoria-monitor="">
+                    <i class="fa-regular fa-calendar-plus" aria-hidden="true"></i> Solicitar monitoria
+                </button>
+                <button type="button" class="dialog-btn-secundario" id="dialogBtnConversar" data-iniciar-conversa-monitor="">
+                    <i class="fa-solid fa-comments" aria-hidden="true"></i> Iniciar conversa
+                </button>
+                <a class="dialog-btn-link" id="dialogBtnPaginaCompleta" href="../monitor/perfilMonitor.php">
+                    Ver página completa <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
     </dialog>
 
@@ -314,7 +344,7 @@ if (!in_array($areaSelecionada, $areas, true)) {
                 const visiveis = cartoes.filter(function (cartao) {
                     return cartao.dataset.busca.includes(termo)
                         && (!area.value || cartao.dataset.area === area.value)
-                        && (!modalidade.value || cartao.dataset.modalidade.includes(modalidade.value))
+                        && (!modalidade.value || cartao.dataset.modalidade.toLocaleLowerCase('pt-BR').includes(modalidade.value.toLocaleLowerCase('pt-BR')))
                         && (!apenasDisponiveis.checked || cartao.dataset.disponivel === '1');
                 });
 
@@ -354,21 +384,39 @@ if (!in_array($areaSelecionada, $areas, true)) {
             }
 
             function abrirPerfil(cartao) {
-                dialogo.querySelector('#perfilAvatar').textContent = cartao.dataset.iniciais;
-                dialogo.querySelector('#perfilAvatar').className = 'monitor-avatar avatar-' + cartao.dataset.cor;
+                const avatarEl = dialogo.querySelector('#perfilAvatar');
+                avatarEl.className = 'monitor-avatar avatar-' + cartao.dataset.cor;
+                avatarEl.replaceChildren();
+                if (cartao.dataset.temFoto === '1') {
+                    const img = document.createElement('img');
+                    img.src = '../../actions/fotoPerfil.php?id=' + encodeURIComponent(cartao.dataset.id);
+                    img.alt = 'Foto de ' + cartao.dataset.nome;
+                    avatarEl.appendChild(img);
+                } else {
+                    avatarEl.textContent = cartao.dataset.iniciais;
+                }
+
                 dialogo.querySelector('#perfilArea').textContent = cartao.dataset.area;
                 dialogo.querySelector('#perfilNome').textContent = cartao.dataset.nome;
                 dialogo.querySelector('#perfilCurso').textContent = cartao.dataset.curso;
-                dialogo.querySelector('#perfilNota').textContent =
-                    '★ ' + cartao.dataset.avaliacao + ' · ' + cartao.dataset.avaliacoes + ' avaliações de exemplo';
+                const qtdAvaliacoes = Number(cartao.dataset.avaliacoes || 0);
+                dialogo.querySelector('#perfilNota').textContent = qtdAvaliacoes > 0
+                    ? '★ ' + cartao.dataset.avaliacao + ' · ' + qtdAvaliacoes + (qtdAvaliacoes === 1 ? ' avaliação recebida' : ' avaliações recebidas')
+                    : '★ ' + cartao.dataset.avaliacao + ' · Monitor verificado UNIVAG';
                 dialogo.querySelector('#perfilSobre').textContent = cartao.dataset.sobre;
                 dialogo.querySelector('#perfilDisciplina').textContent = cartao.dataset.disciplina;
                 dialogo.querySelector('#perfilModalidade').textContent = cartao.dataset.modalidade;
                 dialogo.querySelector('#perfilHorarios').textContent = cartao.dataset.horarios;
 
+                dialogo.querySelector('#dialogBtnSolicitar').dataset.solicitarMonitoriaMonitor = cartao.dataset.id;
+                dialogo.querySelector('#dialogBtnConversar').dataset.iniciarConversaMonitor = cartao.dataset.id;
+                dialogo.querySelector('#dialogBtnPaginaCompleta').href =
+                    '../monitor/perfilMonitor.php?id=' + encodeURIComponent(cartao.dataset.id);
+
                 const tags = dialogo.querySelector('#perfilTags');
                 tags.replaceChildren();
                 cartao.dataset.tags.split(', ').forEach(function (nomeTag) {
+                    if (!nomeTag) return;
                     const tag = document.createElement('span');
                     tag.textContent = nomeTag;
                     tags.appendChild(tag);

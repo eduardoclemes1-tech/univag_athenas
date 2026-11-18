@@ -1,54 +1,181 @@
 .loja-main {
-    padding-top: 34px;
-    padding-bottom: 48px;
+    padding-top: 28px;
+    padding-bottom: 56px;
 }
 
-.loja-header,
-.loja-secao-titulo {
-    display: flex;
+/* ================= HERO SHOWCASE + SIMULADOR AO VIVO ================= */
+.loja-hero-showcase {
+    padding: 28px 32px;
+    border-radius: 14px;
+    border: 1px solid #bfd2e8;
+    background: linear-gradient(135deg, #ffffff 0%, #eef5fc 100%);
+    box-shadow: 0 10px 28px rgba(13, 46, 89, 0.08);
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.95fr);
+    gap: 28px;
     align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.loja-header {
     margin-bottom: 24px;
 }
 
-.loja-header h1 {
-    margin: 8px 0 5px;
-    color: #202b3c;
-    font-size: clamp(26px, 4vw, 34px);
-    letter-spacing: -.035em;
+.loja-hero-info h1 {
+    margin: 8px 0 8px;
+    color: #0f172a;
+    font-size: clamp(26px, 3.6vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
 }
 
-.loja-header p {
+.loja-hero-info p {
     margin: 0;
-    color: #667085;
+    color: #475569;
     font-size: 14px;
+    line-height: 1.55;
+    max-width: 560px;
+}
+
+.loja-hero-stats {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
 }
 
 .loja-saldo {
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
-    padding: 12px 18px;
-    border: 1px solid #f1d88c;
-    border-radius: 9px;
-    background: #fff9e8;
-    color: #835800;
-    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid #f59e0b;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    color: #92400e;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.16);
+}
+
+.loja-saldo i {
+    color: #f59e0b;
+    font-size: 18px;
 }
 
 .loja-saldo strong {
-    font-size: 24px;
+    font-size: 22px;
+    font-weight: 900;
 }
 
+.loja-saldo span {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.loja-ver-perfil-btn {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.18s ease;
+}
+
+.loja-ver-perfil-btn:hover {
+    border-color: #005bb5;
+    color: #005bb5;
+}
+
+/* Simulador do Perfil */
+.loja-live-preview-wrapper {
+    border-radius: 12px;
+    border: 1px solid #cbd8ea;
+    background: #f8fafd;
+    padding: 12px;
+}
+
+.preview-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 0 4px;
+}
+
+.preview-header-bar span {
+    font-size: 11px;
+    font-weight: 800;
+    color: #005bb5;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.preview-header-bar small {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.preview-profile-card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #dce6f2;
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.preview-banner-box {
+    height: 82px !important;
+}
+
+.preview-profile-body {
+    padding: 0 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.preview-avatar-box {
+    width: 64px !important;
+    height: 64px !important;
+    margin: -28px 0 0 !important;
+    font-size: 24px !important;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.preview-profile-text {
+    padding-top: 6px;
+    min-width: 0;
+}
+
+.preview-profile-text strong {
+    display: block;
+    font-size: 15px;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.preview-profile-text small {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Avisos */
 .loja-aviso {
     margin-bottom: 18px;
-    padding: 12px 15px;
-    border-radius: 7px;
-    font-size: 14px;
+    padding: 13px 16px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 600;
 }
 
 .loja-aviso p {
@@ -67,39 +194,463 @@
     color: #a83227;
 }
 
+/* Seções da Loja */
 .loja-secao {
     margin-top: 24px;
-    padding: 22px;
-    border: 1px solid #e1e6ed;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 2px 8px #17203308;
+    padding: 26px 28px;
+    border: 1px solid #cbd9ea;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(13, 46, 89, 0.05);
 }
 
 .loja-secao-titulo {
-    margin-bottom: 18px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e6eef7;
 }
 
 .loja-secao-titulo h2 {
-    margin: 5px 0 0;
-    color: #202b3c;
-    font-size: 20px;
+    margin: 6px 0 4px;
+    color: #0f172a;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.secao-subtitulo {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
 }
 
 .loja-link-button {
-    border: 0;
-    background: transparent;
-    color: #075eaa;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #005bb5;
     font: inherit;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.15s ease;
 }
 
-.loja-grade {
+.loja-link-button:hover {
+    background: #eaf2fb;
+    border-color: #93c5fd;
+}
+
+/* ================= COLEÇÕES DE PERFIL COMPLETO (COMBO BANNER + AVATAR) ================= */
+.colecoes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.colecao-combo-card {
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid #d5e2f2;
+    background: #ffffff;
+    overflow: hidden;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.colecao-combo-card:hover {
+    transform: translateY(-3px);
+    border-color: #005bb5;
+    box-shadow: 0 10px 24px rgba(0, 91, 181, 0.14);
+}
+
+.colecao-combo-banner {
+    position: relative;
+    height: 68px;
+}
+
+.colecao-combo-body {
+    padding: 0 12px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.colecao-combo-avatar {
+    width: 48px !important;
+    height: 48px !important;
+    margin: -22px 0 0 !important;
+    font-size: 18px !important;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.colecao-combo-meta {
+    padding-top: 4px;
+    min-width: 0;
+}
+
+.colecao-combo-meta strong {
+    display: block;
+    font-size: 12.5px;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.colecao-combo-meta span {
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #005bb5;
+}
+
+/* ================= SISTEMA DE MAESTRIA DE MATÉRIA (ESTILO LIMPO DO PORTAL) ================= */
+.maestria-secao {
+    background: #ffffff;
+    border-color: #cbd9ea;
+    color: #0f172a;
+}
+
+.maestria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+}
+
+.maestria-card {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #d5e2f2;
+    background: #f8fafd;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.maestria-card:hover {
+    transform: translateY(-2px);
+    border-color: #005bb5;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.maestria-topo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.maestria-head-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.maestria-head-info h3 {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+/* Vitrine Interna do Prêmio Exclusivo de Maestria 10 */
+.maestria-premio-box {
+    margin-top: 2px;
+    border-radius: 10px;
+    border: 1px solid #dce6f2;
+    background: #ffffff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.maestria-premio-header {
+    padding: 6px 12px;
+    background: #f1f6fc;
+    border-bottom: 1px solid #e2ecf7;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #005bb5;
+}
+
+.maestria-banner-preview {
+    height: 98px !important;
+    border-bottom: 1px solid #eef3f9;
+}
+
+.maestria-premio-identidade {
+    padding: 0 12px 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.maestria-avatar-preview {
+    width: 48px !important;
+    height: 48px !important;
+    margin: -22px 0 0 !important;
+    font-size: 18px !important;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.maestria-premio-texto {
+    padding-top: 4px;
+    min-width: 0;
+}
+
+.maestria-premio-texto strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.maestria-premio-texto small {
+    display: block;
+    font-size: 11px;
+    color: #005bb5;
+    font-weight: 700;
+}
+
+.maestria-piada-desc {
+    margin: 0;
+    padding: 0 12px 10px;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #475569;
+}
+
+.maestria-premio-acoes {
+    padding: 9px 12px 11px;
+    border-top: 1px solid #eef3f9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.maestria-premio-acoes form {
+    margin: 0;
+    flex: 1;
+    display: flex;
+}
+
+.maestria-btn-provador {
+    height: 34px;
+    padding: 0 11px;
+    border-radius: 7px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+}
+
+.maestria-btn-provador:hover {
+    border-color: #005bb5;
+    background: #eaf2fb;
+    color: #005bb5;
+}
+
+.maestria-btn-resgatar,
+.maestria-btn-equipado {
+    width: 100%;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 7px;
+    border: 0;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.maestria-btn-resgatar {
+    background: #005bb5;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.maestria-btn-resgatar:hover {
+    background: #00448a;
+}
+
+.maestria-btn-equipado {
+    flex: 1;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.maestria-crest {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    background: #eaf3fb;
+    border: 1px solid #bfdbfe;
+    color: #005bb5;
+}
+
+.maestria-emerald .maestria-crest {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #059669;
+}
+
+.maestria-purple .maestria-crest {
+    background: #f3e8ff;
+    border-color: #d8b4fe;
+    color: #7e22ce;
+}
+
+.maestria-amber .maestria-crest {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #d97706;
+}
+
+.maestria-lvl {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 8.5px;
+    font-weight: 800;
+}
+
+.maestria-tier-badge {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.tier-bronze .maestria-tier-badge { background: #fef3c7; color: #92400e; }
+.tier-silver .maestria-tier-badge { background: #e2e8f0; color: #1e293b; }
+.tier-gold .maestria-tier-badge,
+.tier-grandmaster .maestria-tier-badge { background: #dcfce7; color: #166534; }
+
+.maestria-xp-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 5px;
+}
+
+.maestria-xp-row strong {
+    color: #0f172a;
+}
+
+.maestria-bar-track {
+    width: 100%;
+    height: 7px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+
+.maestria-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #005bb5, #0ea5e9);
+}
+
+/* ================= CARDS DE CONJUNTOS COMPLETOS (3 FILEIRAS DE 4) ================= */
+.conjuntos-completos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.conjunto-stage {
+    position: relative;
+    background: linear-gradient(180deg, #f8fafd 0%, #ffffff 100%);
+    border-bottom: 1px solid #eef3f9;
+}
+
+.conjunto-banner-preview {
+    height: 104px !important;
+}
+
+.conjunto-identidade-bar {
+    padding: 0 14px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.conjunto-avatar-preview {
+    width: 56px !important;
+    height: 56px !important;
+    margin: -26px 0 0 !important;
+    font-size: 21px !important;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.conjunto-avatar-tag {
+    padding-top: 4px;
+    min-width: 0;
+}
+
+.conjunto-avatar-tag small {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #005bb5;
+    text-transform: uppercase;
+}
+
+.conjunto-avatar-tag strong {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .loja-item {
@@ -107,63 +658,91 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    border: 1px solid #e5e9ef;
-    border-radius: 9px;
-    background: #fff;
+    border: 1px solid #dce6f2;
+    border-radius: 12px;
+    background: #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.loja-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.09);
+}
+
+.loja-item.item-equipado-card {
+    border: 2px solid #16a34a;
 }
 
 .loja-preview-fundo {
     position: relative;
-    height: 106px;
+    height: 112px;
     display: grid;
     place-items: center;
     color: #fff;
-    font-weight: 750;
-    text-shadow: 0 1px 5px #0005;
+    font-weight: 800;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
 }
 
-.loja-selo-animado {
+.preview-caption {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+.loja-avatar-stage {
+    position: relative;
+    padding: 20px 12px 10px;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(180deg, #f1f6fc 0%, #ffffff 100%);
+    border-bottom: 1px solid #eef3f9;
+}
+
+.raridade-pill {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 7px;
-    border: 1px solid #ffffff70;
-    border-radius: 20px;
-    background: #10182865;
-    color: #fff;
-    font-size: 9px;
-    font-weight: 750;
-    letter-spacing: .04em;
+    top: 9px;
+    left: 9px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     text-shadow: none;
 }
 
-.visual-oceano {
-    background: linear-gradient(125deg, #146eaa, #54c4d2);
-}
+.raridade-pill.raridade-comum { background: #e2e8f0; color: #334155; }
+.raridade-pill.raridade-raro { background: #dbeafe; color: #1d4ed8; }
+.raridade-pill.raridade-epico { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+.raridade-pill.raridade-lendario { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+.raridade-pill.raridade-mitico { background: linear-gradient(135deg, #991b1b, #d97706); color: #fef08a; border: 1px solid #fde047; }
 
-.visual-aurora {
-    background: linear-gradient(125deg, #174f5c, #28b08b 52%, #70c4d5);
-}
-
-.visual-por-do-sol {
-    background: linear-gradient(125deg, #7a3d79, #e37470 55%, #f5bb68);
+.loja-selo-animado {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.65);
+    color: #fff;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-shadow: none;
 }
 
 .loja-preview-avatar {
-    width: 82px;
-    height: 82px;
+    width: 84px;
+    height: 84px;
     display: grid;
     place-items: center;
-    align-self: center;
-    margin: 12px 0;
-    border: 5px solid #c9b8ed;
+    border: 4px solid #c9b8ed;
     border-radius: 50%;
     background: #e8f2fa;
     color: #075eaa;
-    font-size: 34px;
+    font-size: 32px;
 }
 
 .loja-preview-avatar img {
@@ -173,94 +752,293 @@
     object-fit: cover;
 }
 
-.loja-preview-avatar.visual-esmeralda {
-    border-color: #53b795;
-}
-
-.loja-preview-avatar.visual-dourado {
-    border-color: #d7aa41;
-}
-
-.loja-preview-avatar.visual-asas-capelo {
-    border-color: #b893ec;
-    background: #684bb6;
-}
-
-.loja-preview-avatar.visual-capivara {
-    border-color: #75bf98;
-    background: #357e69;
-}
-
 .loja-item-info {
     flex: 1;
-    padding: 12px 14px 6px;
+    padding: 14px 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .loja-item-info h3 {
     margin: 0;
-    color: #202b3c;
-    font-size: 15px;
+    color: #0f172a;
+    font-size: 15.5px;
+    font-weight: 800;
 }
 
 .loja-item-info p {
-    min-height: 36px;
-    margin: 6px 0 0;
-    color: #667085;
+    margin: 0;
+    color: #475569;
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.45;
+}
+
+.item-perk-tag {
+    margin-top: auto;
+    padding: 6px 9px;
+    border-radius: 7px;
+    background: #f4f8fd;
+    border: 1px solid #e0ebf8;
+    color: #004b96;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .loja-item-acao {
-    padding: 8px 14px 14px;
+    padding: 10px 16px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 .loja-item-acao form {
     margin: 0;
+    flex: 1;
+    display: flex;
+}
+
+.loja-btn-testar {
+    height: 36px;
+    padding: 0 11px;
+    border-radius: 7px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+}
+
+.loja-btn-testar:hover {
+    border-color: #005bb5;
+    color: #005bb5;
+    background: #eaf2fb;
 }
 
 .loja-botao,
 .loja-equipado {
-    min-height: 38px;
+    width: 100%;
+    min-height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 6px;
     padding: 0 12px;
     border: 0;
-    border-radius: 6px;
-    background: #075eaa;
+    border-radius: 7px;
+    background: #005bb5;
     color: #fff;
     font: inherit;
     font-size: 12px;
-    font-weight: 750;
+    font-weight: 800;
     cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.loja-botao:hover {
+    background: #00448a;
+}
+
+.btn-equipar-item {
+    background: #0f172a;
+}
+
+.btn-equipar-item:hover {
+    background: #1e293b;
 }
 
 .loja-equipado {
-    background: #effaf4;
-    color: #187647;
+    flex: 1;
+    background: #dcfce7;
+    color: #166534;
     cursor: default;
 }
 
 .loja-nota {
-    margin: 20px 2px 0;
-    color: #667085;
+    margin: 22px 4px 0;
+    color: #475569;
     font-size: 13px;
 }
 
-@media (max-width: 600px) {
-    .loja-header,
-    .loja-secao-titulo {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+/* Guia de Missões de Pontos & Extrato Recente */
+.guia-pontos-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.95fr);
+    gap: 20px;
+    align-items: start;
+}
 
-    .loja-saldo {
-        align-self: flex-start;
-    }
+.missoes-pontos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
 
-    .loja-secao {
-        padding: 16px;
+.missao-ponto-card {
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #d5e2f2;
+    background: #f8fafd;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.missao-badge {
+    align-self: flex-start;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.missao-ponto-card strong {
+    font-size: 13px;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.missao-ponto-card strong i {
+    color: #005bb5;
+}
+
+.missao-ponto-card p {
+    margin: 0;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #475569;
+}
+
+.extrato-pontos-box {
+    padding: 16px;
+    border-radius: 11px;
+    border: 1px solid #d5e2f2;
+    background: #f8fafd;
+}
+
+.extrato-pontos-box h3 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.extrato-pontos-box h3 i {
+    color: #005bb5;
+}
+
+.extrato-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.extrato-lista li {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #e2ecf7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.extrato-lista strong {
+    display: block;
+    font-size: 12px;
+    color: #0f172a;
+}
+
+.extrato-lista small {
+    display: block;
+    font-size: 10.5px;
+    color: #64748b;
+}
+
+.pts-pos,
+.pts-neg {
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.pts-pos {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.pts-neg {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.extrato-vazio {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+@media (max-width: 960px) {
+    .guia-pontos-layout {
+        grid-template-columns: 1fr;
     }
 }
 
+@media (max-width: 1180px) {
+    .conjuntos-completos-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .maestria-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .loja-hero-showcase {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .conjuntos-completos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    .conjuntos-completos-grid,
+    .maestria-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .loja-secao-titulo {
+        flex-direction: column;
+    }
+
+    .loja-secao {
+        padding: 18px;
+    }
+}

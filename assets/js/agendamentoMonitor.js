@@ -8,9 +8,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = form.dataset.csrf;
     const studentSelect = document.getElementById('monitorAppointmentStudent');
     const dateInput = document.getElementById('monitorAppointmentDate');
+    const durationSelect = document.getElementById('monitorAppointmentDuration');
+    const timeSelect = document.getElementById('monitorAppointmentTime');
+    const hint = document.getElementById('monitorAppointmentHint');
     const feedback = document.getElementById('monitorAppointmentFeedback');
     const submitButton = form.querySelector('button[type="submit"]');
     let studentsLoaded = false;
+    let availabilityRequestId = 0;
 
     function showToast(message, error) {
         let toast = document.getElementById('athenasToast');
@@ -33,9 +37,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function setDateLimits() {
         const now = new Date();
         const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-        dateInput.min = localNow.toISOString().slice(0, 16);
+        dateInput.min = localNow.toISOString().slice(0, 10);
         localNow.setDate(localNow.getDate() + 90);
-        dateInput.max = localNow.toISOString().slice(0, 16);
+        dateInput.max = localNow.toISOString().slice(0, 10);
     }
 
     async function loadStudents() {
@@ -57,16 +61,101 @@ document.addEventListener('DOMContentLoaded', function () {
         studentsLoaded = true;
     }
 
-    openButton.addEventListener('click', function () {
+    async function loadAvailableSlots() {
+        const requestId = ++availabilityRequestId;
+        timeSelect.disabled = true;
+        timeSelect.replaceChildren(new Option('Consultando horários...', ''));
+        if (!dateInput.value) {
+            timeSelect.replaceChildren(new Option('Escolha uma data primeiro', ''));
+            if (hint) {
+                hint.textContent = 'Escolha a data para consultar seus horários livres cadastrados no perfil.';
+            }
+            return;
+        }
+
+        if (hint) {
+            hint.textContent = 'Consultando seus horários livres...';
+        }
+        try {
+            const params = new URLSearchParams({
+                acao: 'horarios_disponiveis',
+                data: dateInput.value,
+                duracao: durationSelect.value,
+                aluno_id: studentSelect.value || '0'
+            });
+            const response = await fetch(api + '?' + params.toString());
+            const payload = await response.json();
+            if (!response.ok) {
+                throw new Error(payload.erro || 'Não foi possível consultar os horários.');
+            }
+            if (requestId !== availabilityRequestId) return;
+
+            const horarios = payload.horarios || [];
+            timeSelect.replaceChildren(new Option(
+                horarios.length ? 'Selecione um horário disponível' : 'Nenhum horário livre nesta data',
+                ''
+            ));
+            horarios.forEach(function (horario) {
+                timeSelect.add(new Option(horario, horario));
+            });
+            timeSelect.disabled = horarios.length === 0;
+            if (hint) {
+                hint.textContent = horarios.length
+                    ? 'Horários livres filtrados automaticamente conforme sua disponibilidade e agenda.'
+                    : 'Você não possui horários livres cadastrados para esse dia/duração. Tente outra data ou ajuste sua disponibilidade no Perfil.';
+            }
+        } catch (error) {
+            if (requestId !== availabilityRequestId) return;
+            timeSelect.replaceChildren(new Option('Não foi possível carregar', ''));
+            if (hint) {
+                hint.textContent = error.message;
+            }
+        }
+    }
+
+    async function openModalForStudent(alunoId) {
         feedback.textContent = '';
         feedback.classList.remove('monitor-appointment-error');
         setDateLimits();
+        dateInput.value = '';
+        timeSelect.disabled = true;
+        timeSelect.replaceChildren(new Option('Escolha uma data primeiro', ''));
+        if (hint) {
+            hint.textContent = 'Escolha a data para consultar seus horários livres cadastrados no perfil.';
+        }
+        const searchDropdown = document.getElementById('searchDropdown');
+        if (searchDropdown) searchDropdown.classList.remove('active');
         dialog.showModal();
-        loadStudents().catch(function (error) {
+        try {
+            await loadStudents();
+            if (alunoId) {
+                studentSelect.value = String(alunoId);
+            }
+        } catch (error) {
             studentSelect.replaceChildren(new Option('Falha ao carregar alunos', ''));
             feedback.textContent = error.message;
             feedback.classList.add('monitor-appointment-error');
-        });
+        }
+    }
+
+    openButton.addEventListener('click', function () {
+        openModalForStudent(null);
+    });
+
+    document.addEventListener('click', function (event) {
+        const btnAluno = event.target.closest('[data-agendar-com-aluno]');
+        if (btnAluno) {
+            event.preventDefault();
+            openModalForStudent(btnAluno.dataset.agendarComAluno);
+        }
+    });
+
+    dateInput.addEventListener('change', loadAvailableSlots);
+    durationSelect.addEventListener('change', loadAvailableSlots);
+    studentSelect.addEventListener('change', function () {
+        if (dateInput.value) {
+            loadAvailableSlots();
+        }
     });
 
     document.querySelectorAll('[data-fechar-monitor-agendamento]').forEach(function (button) {
@@ -75,10 +164,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    dialog.addEventListener('click', function (event) {
+        if (event.target === dialog) {
+            dialog.close();
+        }
+    });
+
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
         feedback.textContent = '';
         feedback.classList.remove('monitor-appointment-error');
+
+        if (!dateInput.value || !timeSelect.value) {
+            feedback.textContent = 'Selecione uma data e um horário disponível.';
+            feedback.classList.add('monitor-appointment-error');
+            return;
+        }
+
         submitButton.disabled = true;
 
         try {
@@ -92,8 +194,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     acao: 'agendar_monitor',
                     aluno_id: Number(studentSelect.value),
                     assunto: document.getElementById('monitorAppointmentSubject').value.trim(),
-                    agendado_para: dateInput.value,
-                    duracao_minutos: Number(document.getElementById('monitorAppointmentDuration').value),
+                    agendado_para: dateInput.value + 'T' + timeSelect.value,
+                    duracao_minutos: Number(durationSelect.value),
                     meeting_url: document.getElementById('monitorAppointmentUrl').value.trim()
                 })
             });
@@ -103,6 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             form.reset();
+            timeSelect.disabled = true;
+            timeSelect.replaceChildren(new Option('Escolha uma data primeiro', ''));
             dialog.close();
             window.dispatchEvent(new CustomEvent('athenas:appointment-created'));
             showToast('Monitoria agendada. O aluno receberá uma mensagem e uma notificação.', false);

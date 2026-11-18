@@ -32,7 +32,7 @@ body {
 }
 
 .certificados-content-wrapper {
-    max-width: 1080px;
+    max-width: 1560px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -144,7 +144,40 @@ body {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.aluno-theme {
+    --bg-page: #f1f3f6;
+    --bg-card: #ffffff;
+    --bg-gray-box: #f8fafc;
+    --text-primary: #202b3c;
+    --text-secondary: #667085;
+    --primary-blue: #075eaa;
+    --border-color: #dce3eb;
+    --monitor-surface-soft: #eef2f6;
+    --monitor-surface-raised: #f8fafc;
+}
+
+body.aluno-theme .certificados-header h1 {
+    color: #202b3c;
+}
+
+body.aluno-theme .certificados-header p {
+    color: #667085;
+}
+
+body.aluno-theme .btn-baixar-certificado {
+    background-color: #075eaa;
+    color: #ffffff;
+}
+
+body.aluno-theme .btn-baixar-certificado:hover {
+    background-color: #084b82;
 }
 
 .btn-baixar-certificado:hover {

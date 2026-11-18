@@ -1,4 +1,5 @@
 /* ===== 1. CRIAÇÃO DO BANCO DE DADOS E SELEÇÃO DE CONTEXTO ===== */
+SET NAMES utf8mb4;
 -- Garante a criação da base de dados com codificação UTF-8 para suporte a acentos
 CREATE DATABASE IF NOT EXISTS athenas DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE athenas;
@@ -163,25 +164,54 @@ CREATE TABLE IF NOT EXISTS loja_equipamentos (
         FOREIGN KEY (usuario_id, item_id) REFERENCES loja_compras(usuario_id, item_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT IGNORE INTO loja_itens (slug, nome, descricao, categoria, preco, visual) VALUES
-    ('fundo-oceano', 'Fundo Oceano', 'Um degradê azul para o seu perfil.', 'fundo', 20, 'oceano'),
-    ('fundo-aurora', 'Fundo Aurora', 'Tons verdes e azulados inspirados na aurora.', 'fundo', 30, 'aurora'),
-    ('fundo-por-do-sol', 'Fundo Pôr do Sol', 'Cores quentes para personalizar seu perfil.', 'fundo', 30, 'por-do-sol'),
-    ('fundo-nebulosa', 'Nebulosa Pulsante', 'Nuvens cósmicas em movimento suave.', 'fundo', 35, 'nebulosa'),
-    ('fundo-aurora-animada', 'Aurora em Movimento', 'Faixas coloridas dançam pelo seu perfil.', 'fundo', 35, 'aurora-animada'),
-    ('fundo-chuva-estrelas', 'Chuva de Estrelas', 'Um céu noturno com estrelas passeando.', 'fundo', 45, 'estrelas'),
-    ('avatar-lilas', 'Avatar Lilás', 'Um avatar acadêmico em tons de lilás.', 'avatar', 15, 'lilas'),
-    ('avatar-esmeralda', 'Avatar Esmeralda', 'Um avatar acadêmico em tons de verde.', 'avatar', 15, 'esmeralda'),
-    ('avatar-dourado', 'Avatar Dourado', 'Um avatar acadêmico em tons dourados.', 'avatar', 25, 'dourado'),
-    ('avatar-asas-capelo', 'Asas & Capelo', 'Um avatar com asas brilhantes e chapeuzinho de formando.', 'avatar', 40, 'asas-capelo'),
-    ('avatar-capivara', 'Capivara Caloura', 'Uma capivara estudiosa pronta para a monitoria.', 'avatar', 45, 'capivara');
+INSERT INTO loja_itens (slug, nome, descricao, categoria, preco, visual, ativo) VALUES
+    ('fundo-matrix-cyber', 'Conjunto Ciberespaço Root', 'Malha hacker neon ciano/verde em movimento + Insígnia Terminal Root >_.', 'fundo', 20, 'matrix-cyber', 1),
+    ('fundo-oceano-abissal', 'Conjunto Fossa de Poseidon', 'Correntes bioluminescentes oceânicas + Brasão Tridente Abissal.', 'fundo', 25, 'oceano-abissal', 1),
+    ('fundo-templo-atena', 'Conjunto Guardião do Olimpo', 'Constelações safira em rotação celeste + Coruja Sábia de Atena.', 'fundo', 30, 'templo-atena', 1),
+    ('fundo-floresta-runica', 'Conjunto Santuário Bio-Tech', 'Energia esmeralda e partículas douradas vivas + Insígnia Bio-Tech.', 'fundo', 40, 'floresta-runica', 1),
+    ('fundo-horizonte-synth', 'Conjunto Outrun Synthwave', 'Sol neon retro-futurista e grade laser + Visor Cyber-Synth.', 'fundo', 50, 'horizonte-synth', 1),
+    ('fundo-tempestade-plasma', 'Conjunto Sobrecarga Quântica', 'Descargas de plasma em alta voltagem + Reator de Núcleo Quântico.', 'fundo', 55, 'tempestade-plasma', 1),
+    ('fundo-protocolo-fantasma', 'Conjunto Protocolo Fantasma', 'Feixes furtivos em carbono e ametista + Insígnia Ninja Cyber.', 'fundo', 65, 'protocolo-fantasma', 1),
+    ('fundo-singularidade', 'Conjunto Horizonte de Eventos', 'Buraco negro com anel fotônico dourado + Viajante Interestelar.', 'fundo', 70, 'singularidade', 1),
+    ('fundo-forja-dragao', 'Conjunto Fúria do Compilador', 'Magma vulcânico e brasas douradas + Brasão Dragão Compilador.', 'fundo', 80, 'forja-dragao', 1),
+    ('fundo-eclipse-carmesim', 'Conjunto Lua de Sangue', 'Eclipse solar total com coroa carmesim + Soberano do Eclipse.', 'fundo', 85, 'eclipse-carmesim', 1),
+    ('fundo-supernova-prisma', 'Conjunto Supernova Prismática', 'Explosão estelar holográfica diamantina + Joia Prismática.', 'fundo', 90, 'supernova-prisma', 1),
+    ('fundo-chama-olimpica', 'Conjunto Honra Suprema UNIVAG', 'Luz imperial dourada de Atena + Coroa Suprema Lenda do Campus.', 'fundo', 100, 'chama-olimpica', 1),
+    ('avatar-hacker-neon', 'Mestre do Terminal', 'Avatar do Conjunto Ciberespaço Root.', 'avatar', 20, 'hacker-neon', 1),
+    ('avatar-leviata-dados', 'Senhor dos Mares', 'Avatar do Conjunto Fossa de Poseidon.', 'avatar', 25, 'leviata-dados', 1),
+    ('avatar-coruja-atena', 'Coruja Sábia de Atena', 'Avatar do Conjunto Guardião do Olimpo.', 'avatar', 30, 'coruja-atena', 1),
+    ('avatar-espirito-pantanal', 'Guardião Bio-Tech', 'Avatar do Conjunto Santuário Bio-Tech.', 'avatar', 40, 'espirito-pantanal', 1),
+    ('avatar-piloto-synth', 'Visor Cyber-Synth', 'Avatar do Conjunto Outrun Synthwave.', 'avatar', 50, 'piloto-synth', 1),
+    ('avatar-nucleo-quantico', 'Núcleo Quântico', 'Avatar do Conjunto Sobrecarga Quântica.', 'avatar', 55, 'nucleo-quantico', 1),
+    ('avatar-ninja-cyber', 'Sombra Furtiva', 'Avatar do Conjunto Protocolo Fantasma.', 'avatar', 65, 'ninja-cyber', 1),
+    ('avatar-viajante-astral', 'Viajante Interestelar', 'Avatar do Conjunto Horizonte de Eventos.', 'avatar', 70, 'viajante-astral', 1),
+    ('avatar-dragao-codigo', 'Dragão Compilador', 'Avatar do Conjunto Fúria do Compilador.', 'avatar', 80, 'dragao-codigo', 1),
+    ('avatar-soberano-eclipse', 'Soberano do Eclipse', 'Avatar do Conjunto Lua de Sangue.', 'avatar', 85, 'soberano-eclipse', 1),
+    ('avatar-fenix-cosmica', 'Cristal de Supernova', 'Avatar do Conjunto Supernova Prismática.', 'avatar', 90, 'fenix-cosmica', 1),
+    ('avatar-coroa-lendaria', 'Lenda do Campus UNIVAG', 'Avatar do Conjunto Honra Suprema UNIVAG.', 'avatar', 100, 'coroa-lendaria', 1),
+    ('maestria-fundo-dados', 'O Literal Banco de Dados', 'Prêmio Exclusivo Maestria 10 (BD): Um banco de praça feito inteiramente de dados de 6 faces + O Analista de Dados.', 'fundo', 0, 'maestria-banco-dados', 1),
+    ('maestria-fundo-logica', 'Na Minha Máquina Funciona™', 'Prêmio Exclusivo Maestria 10 (Lógica): Insetos (bugs) de cartola tomando café no terminal.', 'fundo', 0, 'maestria-cacador-bugs', 1),
+    ('maestria-fundo-estruturas', 'Árvore Invertida & Pilha Alcalina', 'Prêmio Exclusivo Maestria 10 (Estruturas): Árvore com a raiz no céu e folhas no chão + Pilhas Duracell LIFO.', 'fundo', 0, 'maestria-arvore-pilha', 1),
+    ('maestria-fundo-dev', 'O Escolhido que Centralizou a <div>', 'Prêmio Exclusivo Maestria 10 (Full-Stack): Uma <div> perfeitamente centralizada a laser + Pilha de Panquecas.', 'fundo', 0, 'maestria-centralizador-div', 1),
+    ('maestria-fundo-redes', 'Rede de Varanda & Parede em Chamas', 'Prêmio Exclusivo Maestria 10 (Redes): Uma rede de praia balançando ao lado de um muro pegando fogo (Firewall).', 'fundo', 0, 'maestria-rede-dormir', 1),
+    ('maestria-avatar-dados', 'O Analista de Dados (Literal)', 'Analisando dados de cassino com lupa · Maestria 10 em Banco de Dados.', 'avatar', 0, 'maestria-analista-dados', 1),
+    ('maestria-avatar-logica', 'Criador Oficial de Bugs', 'Não é bug, é feature de gala · Maestria 10 em Lógica & Algoritmos.', 'avatar', 0, 'maestria-domador-bugs', 1),
+    ('maestria-avatar-estruturas', 'Lenhador de Árvore Invertida', 'Raiz no topo, folhas embaixo · Maestria 10 em Estruturas de Dados.', 'avatar', 0, 'maestria-lenhador-binario', 1),
+    ('maestria-avatar-dev', 'Senhor do margin: auto', 'Dominou a arte proibida de centralizar a <div> · Maestria 10 em Full-Stack.', 'avatar', 0, 'maestria-mestre-div', 1),
+    ('maestria-avatar-redes', 'Admin de Rede (de Dormir)', 'Descansando na LAN protegido pelo muro em chamas · Maestria 10 em Redes.', 'avatar', 0, 'maestria-admin-rede', 1)
+ON DUPLICATE KEY UPDATE
+    nome = VALUES(nome),
+    descricao = VALUES(descricao),
+    preco = VALUES(preco),
+    visual = VALUES(visual),
+    ativo = VALUES(ativo);
 
 CREATE TABLE IF NOT EXISTS pontos_transacoes (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     agendamento_id BIGINT UNSIGNED NULL,
     item_id INT UNSIGNED NULL,
-    evento ENUM('participacao', 'cancelamento_tardio', 'compra') NOT NULL,
+    evento ENUM('participacao', 'cancelamento_tardio', 'compra', 'avaliacao', 'material_apoio', 'bonus_monitor', 'perfil_completo') NOT NULL,
     pontos INT NOT NULL,
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_pontos_agendamento_evento (agendamento_id, evento),
@@ -245,8 +275,114 @@ CREATE TABLE IF NOT EXISTS disponibilidades_monitores (
 
 /* ===== 6. DADOS INICIAIS DE TESTE (SOMENTE AMBIENTE DE DESENVOLVIMENTO) ===== */
 -- ATENÇÃO: Nunca execute estas inserções em ambiente de produção com senhas padrão!
--- Insere um usuário monitor e um aluno de teste para testes locais (Senha padrão: 123456)
-INSERT INTO usuarios (nome, email, cpf, senha, tipo) VALUES 
-('Monitor Teste', 'admin@univag.br', '00000000000', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor'),
-('Aluno Teste', 'aluno@univag.br', '11111111111', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'aluno')
-ON DUPLICATE KEY UPDATE id=id;
+-- Insere monitores e alunos de teste para ambiente de desenvolvimento (Senha padrão: 123456)
+INSERT INTO usuarios (nome, email, cpf, senha, tipo, bio, curso, periodo) VALUES
+('Marcos Silva Pereira', 'admin@univag.br', '00000000000', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor', 'Gosto de explicar banco de dados com exemplos do dia a dia, começando pelos conceitos e avançando para exercícios práticos de SQL.', 'Sistemas de Informação', '5º semestre'),
+('Aluno Teste', 'aluno@univag.br', '11111111111', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'aluno', 'Estudante dedicado em busca de reforço prático em programação e banco de dados.', 'Engenharia de Software', '3º semestre'),
+('Mariana Souza Oliveira', 'mariana.oliveira@univag.br', '77777777777', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'aluno', 'Focada em modelagem de banco de dados e desenvolvimento back-end.', 'Sistemas de Informação', '2º semestre'),
+('Gabriel Henrique Lima', 'gabriel.lima@univag.br', '88888888888', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'aluno', 'Interessado em algoritmos, estruturas de dados e projetos práticos.', 'Ciência da Computação', '1º semestre'),
+('Beatriz Mendes Ferreira', 'beatriz.ferreira@univag.br', '99999999999', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'aluno', 'Buscando apoio em SQL, normalização e consultas avançadas.', 'Engenharia de Software', '4º semestre'),
+('Ana Beatriz Costa', 'ana.costa@univag.br', '22222222222', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor', 'Ajudo quem está começando a transformar problemas em passos simples e escrever os primeiros programas com confiança.', 'Ciência da Computação', '4º semestre'),
+('Lucas Mendes Rocha', 'lucas.rocha@univag.br', '33333333333', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor', 'Trabalho com projetos web e gosto de ensinar construindo páginas junto com o aluno, do primeiro layout à interação.', 'Sistemas de Informação', '6º semestre'),
+('Juliana Ferreira Lima', 'juliana.lima@univag.br', '44444444444', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor', 'Ajudo a visualizar como os dados se organizam em listas, árvores e outras estruturas, relacionando teoria e implementação.', 'Ciência da Computação', '5º semestre'),
+('Rafael Oliveira Santos', 'rafael.santos@univag.br', '55555555555', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor', 'Explico os fundamentos de redes e protocolos com exemplos práticos de comunicação entre dispositivos.', 'Redes de Computadores', '6º semestre'),
+('Camila Nunes Almeida', 'camila.almeida@univag.br', '66666666666', '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse', 'monitor', 'Compartilho práticas para criar interfaces mobile simples, acessíveis e conectadas a serviços web.', 'Sistemas de Informação', '6º semestre')
+ON DUPLICATE KEY UPDATE
+    bio = IF(usuarios.bio = '', VALUES(bio), usuarios.bio),
+    curso = IF(usuarios.curso = '', VALUES(curso), usuarios.curso),
+    periodo = IF(usuarios.periodo = '', VALUES(periodo), usuarios.periodo);
+
+INSERT INTO perfis_monitores (monitor_id, area_atuacao, disciplina, local_atendimento, duracao_monitoria, modalidade, metodologia, ideal_para, topicos)
+SELECT id, 'Dados', 'Banco de Dados', 'Online e presencial', '1 hora', 'Online e presencial',
+       'Explicações passo a passo de modelagem relacional e prática guiada com consultas SQL reais.',
+       'Quem quer aprender a modelar informações e consultar bancos relacionais.',
+       'SQL, Modelagem de dados, DER, Consultas e Junções'
+FROM usuarios WHERE email = 'admin@univag.br'
+ON DUPLICATE KEY UPDATE monitor_id = monitor_id;
+
+INSERT INTO perfis_monitores (monitor_id, area_atuacao, disciplina, local_atendimento, duracao_monitoria, modalidade, metodologia, ideal_para, topicos)
+SELECT id, 'Programação', 'Lógica de Programação', 'Sala virtual (Google Meet)', '1 hora', 'Online',
+       'Resolução de exercícios práticos passo a passo com testes de mesa e Python.',
+       'Iniciantes em programação que querem dominar estruturas condicionais e laços.',
+       'Python, Algoritmos, Iniciantes, Fluxogramas'
+FROM usuarios WHERE email = 'ana.costa@univag.br'
+ON DUPLICATE KEY UPDATE monitor_id = monitor_id;
+
+INSERT INTO perfis_monitores (monitor_id, area_atuacao, disciplina, local_atendimento, duracao_monitoria, modalidade, metodologia, ideal_para, topicos)
+SELECT id, 'Desenvolvimento', 'Desenvolvimento Web', 'Laboratório 3 - Bloco C', '1 hora', 'Presencial',
+       'Construção prática de interfaces semânticas, responsivas e interativas.',
+       'Estudantes que querem criar páginas web modernas do zero.',
+       'HTML e CSS, JavaScript, Projetos, Responsividade'
+FROM usuarios WHERE email = 'lucas.rocha@univag.br'
+ON DUPLICATE KEY UPDATE monitor_id = monitor_id;
+
+INSERT INTO perfis_monitores (monitor_id, area_atuacao, disciplina, local_atendimento, duracao_monitoria, modalidade, metodologia, ideal_para, topicos)
+SELECT id, 'Programação', 'Estruturas de Dados', 'Híbrido (Meet ou Lab 2)', '1 hora', 'Online e presencial',
+       'Visualização gráfica de ponteiros, listas, pilhas, filas e árvores com implementação prática.',
+       'Quem já conhece lógica básica e quer dominar estruturas de dados e complexidade.',
+       'Algoritmos, Árvores, Ordenação, Pilhas e Filas'
+FROM usuarios WHERE email = 'juliana.lima@univag.br'
+ON DUPLICATE KEY UPDATE monitor_id = monitor_id;
+
+INSERT INTO perfis_monitores (monitor_id, area_atuacao, disciplina, local_atendimento, duracao_monitoria, modalidade, metodologia, ideal_para, topicos)
+SELECT id, 'Infraestrutura', 'Redes de Computadores', 'Sala virtual', '45 minutos', 'Online',
+       'Simulações práticas de sub-redes, roteamento, DNS e análise de pacotes.',
+       'Quem busca compreender protocolos TCP/IP e infraestrutura de redes.',
+       'TCP/IP, Endereçamento, Conectividade, Roteamento'
+FROM usuarios WHERE email = 'rafael.santos@univag.br'
+ON DUPLICATE KEY UPDATE monitor_id = monitor_id;
+
+INSERT INTO perfis_monitores (monitor_id, area_atuacao, disciplina, local_atendimento, duracao_monitoria, modalidade, metodologia, ideal_para, topicos)
+SELECT id, 'Desenvolvimento', 'Desenvolvimento Mobile', 'Laboratório Mobile - Bloco B', '1 hora', 'Presencial',
+       'Prototipação e integração de aplicativos mobile com consumo de APIs REST.',
+       'Estudantes interessados em criação de apps e interfaces móveis.',
+       'Interfaces, Aplicativos, APIs, UX Mobile'
+FROM usuarios WHERE email = 'camila.almeida@univag.br'
+ON DUPLICATE KEY UPDATE monitor_id = monitor_id;
+
+INSERT IGNORE INTO disponibilidades_monitores (monitor_id, dia_semana, disponivel, hora_inicio, hora_fim)
+SELECT u.id, d.dia_semana, d.disponivel, d.hora_inicio, d.hora_fim
+FROM usuarios u
+CROSS JOIN (
+    SELECT 1 AS dia_semana, 1 AS disponivel, '14:00:00' AS hora_inicio, '18:00:00' AS hora_fim UNION ALL
+    SELECT 2, 1, '14:00:00', '18:00:00' UNION ALL
+    SELECT 3, 1, '14:00:00', '18:00:00' UNION ALL
+    SELECT 4, 1, '14:00:00', '18:00:00' UNION ALL
+    SELECT 5, 1, '14:00:00', '17:00:00' UNION ALL
+    SELECT 6, 0, NULL, NULL UNION ALL
+    SELECT 7, 0, NULL, NULL
+) d
+WHERE u.email IN ('admin@univag.br', 'ana.costa@univag.br', 'juliana.lima@univag.br', 'rafael.santos@univag.br', 'camila.almeida@univag.br');
+
+-- Conversa e agendamentos iniciais para demonstração caso a tabela esteja vazia
+INSERT IGNORE INTO conversas (aluno_id, monitor_id)
+SELECT a.id, m.id
+FROM usuarios a
+JOIN usuarios m ON m.email = 'admin@univag.br'
+WHERE a.email = 'aluno@univag.br';
+
+INSERT INTO agendamentos (conversa_id, aluno_id, monitor_id, assunto, agendado_para, duracao_minutos, status, meeting_url, presenca_aluno, presenca_monitor)
+SELECT c.id, c.aluno_id, c.monitor_id,
+       'Modelagem Relacional e Consultas SQL (JOINs)',
+       DATE_SUB(DATE_FORMAT(CURRENT_TIMESTAMP, '%Y-%m-%d 15:00:00'), INTERVAL 2 DAY),
+       90, 'confirmado', 'https://meet.google.com/univag-athenas-sql', 1, 1
+FROM conversas c
+JOIN usuarios a ON a.id = c.aluno_id AND a.email = 'aluno@univag.br'
+JOIN usuarios m ON m.id = c.monitor_id AND m.email = 'admin@univag.br'
+WHERE NOT EXISTS (SELECT 1 FROM agendamentos ag WHERE ag.aluno_id = c.aluno_id);
+
+INSERT INTO agendamentos (conversa_id, aluno_id, monitor_id, assunto, agendado_para, duracao_minutos, status, meeting_url)
+SELECT c.id, c.aluno_id, c.monitor_id,
+       'Revisão Prática de Normalização e Índices',
+       DATE_ADD(DATE_FORMAT(CURRENT_TIMESTAMP, '%Y-%m-%d 16:00:00'), INTERVAL 2 DAY),
+       60, 'confirmado', 'https://meet.google.com/univag-athenas-sql'
+FROM conversas c
+JOIN usuarios a ON a.id = c.aluno_id AND a.email = 'aluno@univag.br'
+JOIN usuarios m ON m.id = c.monitor_id AND m.email = 'admin@univag.br'
+WHERE (SELECT COUNT(*) FROM agendamentos ag WHERE ag.aluno_id = c.aluno_id) = 1;
+
+INSERT IGNORE INTO pontos_transacoes (usuario_id, agendamento_id, evento, pontos)
+SELECT ag.aluno_id, ag.id, 'participacao', GREATEST(10, ROUND(ag.duracao_minutos / 3))
+FROM agendamentos ag
+WHERE ag.presenca_aluno = 1 AND ag.presenca_monitor = 1;
+

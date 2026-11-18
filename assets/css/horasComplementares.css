@@ -35,7 +35,7 @@ body {
 }
 
 .horas-content-wrapper {
-    max-width: 1080px;
+    max-width: 1560px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -206,6 +206,31 @@ body {
 .status-validacao {
     background-color: var(--status-validacao-bg);
     color: var(--status-validacao-text);
+}
+
+body.aluno-theme {
+    --bg-page: #f1f3f6;
+    --bg-card: #ffffff;
+    --bg-dark-card: #075eaa;
+    --text-primary: #202b3c;
+    --text-secondary: #667085;
+    --primary-blue: #075eaa;
+    --border-color: #dce3eb;
+    --monitor-border: #dce3eb;
+    --monitor-blue: #075eaa;
+}
+
+body.aluno-theme .horas-header-bloco h1 {
+    color: #202b3c;
+}
+
+body.aluno-theme .horas-header-bloco p {
+    color: #667085;
+}
+
+.status-agendado {
+    background-color: #e0f2fe;
+    color: #0369a1;
 }
 
 /* ===== 5. RESPONSIVIDADE ===== */

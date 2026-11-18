@@ -13,7 +13,7 @@ if (empty($_SESSION['csrf_token'])) {
 $nomeUsuario  = $_SESSION['usuario_nome'] ?? 'Usuário';
 $emailUsuario = $_SESSION['usuario_email'] ?? '';
 $tipoUsuario  = $_SESSION['usuario_tipo'] ?? 'aluno';
-$inicialNome  = mb_substr($nomeUsuario, 0, 1, 'UTF-8');
+$inicialNome  = mb_strtoupper(mb_substr($nomeUsuario, 0, 1, 'UTF-8'), 'UTF-8');
 
 /* ===== 2. CÁLCULO DINÂMICO DO CAMINHO BASE (PREVINE ERRO 404) ===== */
 // Analisa o caminho da página atual para calcular o número de níveis até a raiz 'univag_athenas'
@@ -25,6 +25,39 @@ if ($univagIndex !== false) {
     $basePath = ($depth > 0) ? str_repeat('../', $depth) : './';
 } else {
     $basePath = '../../';
+}
+
+$navTemFoto = false;
+$navAvatarVisual = '';
+$navAvatarImg = '';
+require_once __DIR__ . '/gamificacao.php';
+$mapaIconesNav = athenasIconesAvatares();
+if (!empty($_SESSION['usuario_id'])) {
+    try {
+        if (!isset($pdo)) {
+            require_once __DIR__ . '/../config/conexao.php';
+        }
+        $stmtNav = $pdo->prepare(
+            "SELECT u.foto_mime,
+                    (SELECT i.visual
+                     FROM loja_equipamentos e JOIN loja_itens i ON i.id = e.item_id
+                     WHERE e.usuario_id = u.id AND e.categoria = 'avatar' AND i.ativo = 1
+                     LIMIT 1) AS avatar_visual
+             FROM usuarios u WHERE u.id = ?"
+        );
+        $stmtNav->execute([(int) $_SESSION['usuario_id']]);
+        $dadosNav = $stmtNav->fetch();
+        if ($dadosNav) {
+            $navTemFoto = !empty($dadosNav['foto_mime']);
+            $avataresValidos = athenasAvataresPermitidos();
+            if (in_array($dadosNav['avatar_visual'] ?? '', $avataresValidos, true)) {
+                $navAvatarVisual = $dadosNav['avatar_visual'];
+                $navAvatarImg = '';
+            }
+        }
+    } catch (Throwable $e) {
+        // Falha silenciosa para não interromper a renderização da barra
+    }
 }
 
 /* ===== 3. MAPEAMENTO DE ROTAS DA NAVBAR ===== */
@@ -53,11 +86,9 @@ $urlCertificados = $basePath . 'views/monitor/certificados.php';
 // Ações reais do sistema e assets estáticos
 $urlLogout = $basePath . 'actions/logout.php';
 $urlLogo   = $basePath . 'assets/img/logoAthenas.png';
-$urlCss    = $basePath . 'assets/css/navbar.css?v=4';
-$urlChatCss = $basePath . 'assets/css/mensagens.css?v=2';
-
-// Rota temporária para telas em desenvolvimento
-$urlEmBreve = 'javascript:void(0);';
+$urlCss    = $basePath . 'assets/css/navbar.css?v=11';
+$urlChatCss = $basePath . 'assets/css/mensagens.css?v=4';
+$urlBuscaGlobal = $basePath . 'actions/buscaGlobal.php';
 ?>
 
 <!-- ===== 4. CARREGAMENTO DO CSS DA NAVBAR ===== -->
@@ -75,110 +106,121 @@ $urlEmBreve = 'javascript:void(0);';
         </div>
 
         <!-- ===== 6. BARRA DE PESQUISA INTELIGENTE (EXPLORAR + BUSCA VIVA) ===== -->
-        <div class="navbar-search-wrapper">
+        <div
+            class="navbar-search-wrapper"
+            id="navbarSearchWrapper"
+            data-search-api="<?php echo htmlspecialchars($urlBuscaGlobal, ENT_QUOTES, 'UTF-8'); ?>"
+            data-base-path="<?php echo htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8'); ?>"
+            data-user-type="<?php echo htmlspecialchars($tipoUsuario, ENT_QUOTES, 'UTF-8'); ?>"
+        >
             <div class="navbar-search">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="searchInput" placeholder="<?php echo $tipoUsuario === 'aluno' ? 'Buscar monitores ou matérias...' : 'Buscar alunos ou matérias...'; ?>" autocomplete="off">
-                <button type="button" class="btn-clear-search" id="btnClearSearch">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="<?php echo $tipoUsuario === 'aluno' ? 'Buscar monitores, alunos ou matérias...' : 'Buscar alunos, monitores/orientadores ou sessões...'; ?>"
+                    autocomplete="off"
+                >
+                <kbd class="search-kbd" id="searchKbd">Ctrl+K</kbd>
+                <button type="button" class="btn-clear-search" id="btnClearSearch" aria-label="Limpar busca">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <!-- Modal Explorar (Exibido com o campo de busca vazio) -->
+            <!-- Painel Inteligente de Busca e Comando -->
             <div class="search-dropdown" id="searchDropdown">
                 <div class="dropdown-header">
                     <div>
-                        <h3>Explorar</h3>
-                        <p><?php echo $tipoUsuario === 'aluno' ? 'Encontre um monitor pelo assunto que precisa' : 'Acompanhe seus atendimentos e disciplinas'; ?></p>
+                        <h3 id="searchDropdownTitle"><?php echo $tipoUsuario === 'monitor' ? 'Central do Monitor & Busca' : 'Explorar & Buscar'; ?></h3>
+                        <p id="searchDropdownSubtitle"><?php echo $tipoUsuario === 'monitor' ? 'Localize alunos, orientadores, sessões ou execute ações rápidas' : 'Encontre monitores, colegas, disciplinas e atendimentos'; ?></p>
                     </div>
-                    <button type="button" class="btn-close-dropdown" id="btnCloseDropdown">
+                    <button type="button" class="btn-close-dropdown" id="btnCloseDropdown" aria-label="Fechar busca">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <div class="dropdown-grid" id="categoriesGrid">
-                    <?php if ($tipoUsuario === 'aluno'): ?>
-                    <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Programação'); ?>" class="category-card">
-                        <div class="category-icon"><i class="fa-solid fa-code"></i></div>
-                        <span>Programação</span>
-                    </a>
-                    <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Dados'); ?>" class="category-card">
-                        <div class="category-icon"><i class="fa-solid fa-database"></i></div>
-                        <span>Dados</span>
-                    </a>
-                    <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Desenvolvimento'); ?>" class="category-card">
-                        <div class="category-icon"><i class="fa-solid fa-window-maximize"></i></div>
-                        <span>Desenvolvimento</span>
-                    </a>
-                    <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Infraestrutura'); ?>" class="category-card">
-                        <div class="category-icon"><i class="fa-solid fa-network-wired"></i></div>
-                        <span>Infraestrutura</span>
-                    </a>
-                    <a href="<?php echo htmlspecialchars($urlExplorarMonitores); ?>" class="category-card">
-                        <div class="category-icon"><i class="fa-solid fa-users"></i></div>
-                        <span>Todas as áreas</span>
-                    </a>
-                    <?php else: ?>
-                    <a href="<?php echo $urlEmBreve; ?>" class="category-card" title="Em breve">
-                        <div class="category-icon"><i class="fa-solid fa-code"></i></div>
-                        <span>Programação</span>
-                    </a>
-                    <a href="<?php echo $urlEmBreve; ?>" class="category-card" title="Em breve">
-                        <div class="category-icon"><i class="fa-solid fa-database"></i></div>
-                        <span>Dados</span>
-                    </a>
-                    <a href="<?php echo $urlEmBreve; ?>" class="category-card" title="Em breve">
-                        <div class="category-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                        <span>Mobile</span>
-                    </a>
-                    <a href="<?php echo $urlEmBreve; ?>" class="category-card" title="Em breve">
-                        <div class="category-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                        <span>Cibersegurança</span>
-                    </a>
-                    <a href="<?php echo $urlEmBreve; ?>" class="category-card" title="Em breve">
-                        <div class="category-icon"><i class="fa-solid fa-brain"></i></div>
-                        <span>IA</span>
-                    </a>
-                    <a href="<?php echo $urlEmBreve; ?>" class="category-card" title="Em breve">
-                        <div class="category-icon"><i class="fa-solid fa-ellipsis"></i></div>
-                        <span>Outros</span>
-                    </a>
-                    <?php endif; ?>
+                <!-- Abas de Filtro da Busca -->
+                <div class="search-filter-tabs" id="searchFilterTabs">
+                    <button type="button" class="search-tab-btn active" data-search-tab="todos">Todos</button>
+                    <button type="button" class="search-tab-btn" data-search-tab="alunos">
+                        <i class="fa-solid fa-user-graduate"></i> Alunos
+                    </button>
+                    <button type="button" class="search-tab-btn" data-search-tab="monitores">
+                        <i class="fa-solid fa-chalkboard-user"></i> Monitores / Prof.
+                    </button>
+                    <button type="button" class="search-tab-btn" data-search-tab="atendimentos">
+                        <i class="fa-regular fa-calendar-check"></i> Sessões &amp; Matérias
+                    </button>
                 </div>
 
-                <!-- Painel de Resultados (Exibido ao digitar no campo) -->
-                <div class="search-live-results" id="liveResults" style="display: none;">
-                    <?php if ($tipoUsuario === 'aluno'): ?>
-                    <div class="results-section-title">Monitores</div>
-                    <a
-                        href="<?php echo htmlspecialchars($urlExplorarMonitores); ?>"
-                        class="result-item"
-                        id="monitorSearchResult"
-                        data-catalog-url="<?php echo htmlspecialchars($urlExplorarMonitores); ?>"
-                    >
-                        <div class="result-avatar">M</div>
-                        <div class="result-info">
-                            <strong>Explorar monitores</strong>
-                            <small>Filtrar por nome, disciplina ou assunto</small>
-                        </div>
-                        <span class="badge-online">Online</span>
-                    </a>
-
-                    <div class="results-section-title">Matérias</div>
-                    <a
-                        href="<?php echo htmlspecialchars($urlMaterias); ?>"
-                        class="result-item"
-                        id="materiaSearchResult"
-                        data-catalog-url="<?php echo htmlspecialchars($urlMaterias); ?>"
-                    >
-                        <div class="result-icon-subject"><i class="fa-solid fa-book"></i></div>
-                        <div class="result-info">
-                            <strong>Explorar matérias</strong>
-                            <small>Buscar por disciplina e conteúdo</small>
-                        </div>
-                    </a>
-                    <?php endif; ?>
+                <!-- Grade de Ações Rápidas (Exibida quando o campo está vazio na aba Todos) -->
+                <div id="categoriesSection">
+                    <div class="results-section-title">
+                        <span><?php echo $tipoUsuario === 'monitor' ? 'Ferramentas Exclusivas do Monitor' : 'Trilhas e Áreas Acadêmicas'; ?></span>
+                    </div>
+                    <div class="dropdown-grid" id="categoriesGrid">
+                        <?php if ($tipoUsuario === 'aluno'): ?>
+                        <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Programação'); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-code"></i></div>
+                            <span>Programação</span>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Dados'); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-database"></i></div>
+                            <span>Dados &amp; SQL</span>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Desenvolvimento'); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-window-maximize"></i></div>
+                            <span>Web &amp; Mobile</span>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($urlExplorarMonitores . '?area=Infraestrutura'); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-network-wired"></i></div>
+                            <span>Redes &amp; Infra</span>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($urlMaterias); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-book-open"></i></div>
+                            <span>Catálogo de Matérias</span>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($urlLoja); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-store"></i></div>
+                            <span>Lojinha Athenas</span>
+                        </a>
+                        <?php else: ?>
+                        <button type="button" class="category-card" data-agendar-com-aluno="">
+                            <div class="category-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+                            <span>Agendar com Aluno</span>
+                            <small>Criar sessão direta</small>
+                        </button>
+                        <a href="<?php echo htmlspecialchars($urlAgenda); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <span>Validar Presenças</span>
+                            <small id="quickMonitorPendencias">Agenda e registros</small>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($urlPerfil); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-business-time"></i></div>
+                            <span>Meus Horários</span>
+                            <small>Grade e bloqueios</small>
+                        </a>
+                        <button type="button" class="category-card" data-abrir-chat>
+                            <div class="category-icon"><i class="fa-solid fa-comments"></i></div>
+                            <span>Sala de Dúvidas</span>
+                            <small>Atender no chat</small>
+                        </button>
+                        <a href="<?php echo htmlspecialchars($urlHoras); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <span>Minhas Horas</span>
+                            <small>Progresso semestral</small>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($urlCertificados); ?>" class="category-card">
+                            <div class="category-icon"><i class="fa-solid fa-award"></i></div>
+                            <span>Emitir Certificados</span>
+                            <small>PDF autenticado</small>
+                        </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
+
+                <!-- Resultados Dinâmicos em Tempo Real (Alunos, Monitores, Sessões e Matérias) -->
+                <div class="search-live-results" id="liveResults"></div>
             </div>
         </div>
 
@@ -190,12 +232,23 @@ $urlEmBreve = 'javascript:void(0);';
             </a>
 
             <?php if ($tipoUsuario === 'aluno'): ?>
-            <!-- Ícones exclusivos da visão do Aluno (Matérias e Explorar Monitores) -->
+            <!-- Ícones exclusivos da visão do Aluno (Matérias, Explorar Monitores e Lojinha) -->
             <a href="<?php echo htmlspecialchars($urlMaterias); ?>" class="nav-icon-btn" title="Explorar matérias">
                 <i class="fa-solid fa-book-bookmark"></i>
             </a>
             <a href="<?php echo htmlspecialchars($urlExplorarMonitores); ?>" class="nav-icon-btn" title="Explorar monitorias">
                 <i class="fa-solid fa-user-graduate"></i>
+            </a>
+            <a href="<?php echo htmlspecialchars($urlLoja); ?>" class="nav-icon-btn" title="Lojinha & Maestrias">
+                <i class="fa-solid fa-store"></i>
+            </a>
+            <?php else: ?>
+            <!-- Ícones de gestão acadêmica do Monitor direto na Navbar -->
+            <a href="<?php echo htmlspecialchars($urlHoras); ?>" class="nav-icon-btn" title="Horas Complementares" aria-label="Horas Complementares">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </a>
+            <a href="<?php echo htmlspecialchars($urlCertificados); ?>" class="nav-icon-btn" title="Meus Certificados" aria-label="Meus Certificados">
+                <i class="fa-solid fa-award"></i>
             </a>
             <?php endif; ?>
 
@@ -249,8 +302,19 @@ $urlEmBreve = 'javascript:void(0);';
             <!-- ===== 8. MENU DE USUÁRIO E STATUS ===== -->
             <div class="nav-user-wrapper" id="navUserWrapper">
                 <div class="nav-user-dropdown" id="btnUserMenu">
-                    <div class="nav-user-avatar">
-                        <?php echo htmlspecialchars($inicialNome); ?>
+                    <div class="nav-user-avatar<?php echo $navAvatarVisual ? ' nav-avatar-' . htmlspecialchars($navAvatarVisual, ENT_QUOTES, 'UTF-8') : ''; ?>">
+                        <?php if ($navAvatarVisual): ?>
+                            <?php $iconeNav = $mapaIconesNav[$navAvatarVisual] ?? 'fa-user-graduate'; ?>
+                            <?php if ($navAvatarImg): ?>
+                                <img src="<?php echo htmlspecialchars($navAvatarImg, ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                            <?php else: ?>
+                                <i class="fa-solid <?php echo htmlspecialchars($iconeNav, ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true"></i>
+                            <?php endif; ?>
+                        <?php elseif ($navTemFoto): ?>
+                            <img src="<?php echo htmlspecialchars($basePath . 'actions/fotoPerfil.php?id=' . (int) $_SESSION['usuario_id'], ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                        <?php else: ?>
+                            <?php echo htmlspecialchars($inicialNome); ?>
+                        <?php endif; ?>
                     </div>
                     <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                 </div>
@@ -288,22 +352,13 @@ $urlEmBreve = 'javascript:void(0);';
 
                         <?php if ($tipoUsuario === 'aluno'): ?>
                         <li>
-                            <a href="<?php echo htmlspecialchars($urlLoja); ?>">
-                                <i class="fa-solid fa-store"></i> Lojinha de personalização
-                            </a>
-                        </li>
-                        <?php endif; ?>
-
-                        <?php if ($tipoUsuario === 'monitor'): ?>
-                        <!-- Links de gestão acadêmica exclusivos para a conta de Monitor -->
-                        <li>
                             <a href="<?php echo htmlspecialchars($urlHoras); ?>">
                                 <i class="fa-solid fa-clock-rotate-left"></i> Horas Complementares
                             </a>
                         </li>
                         <li>
                             <a href="<?php echo htmlspecialchars($urlCertificados); ?>">
-                                <i class="fa-solid fa-file-certificate"></i> Meus Certificados
+                                <i class="fa-solid fa-award"></i> Meus Certificados
                             </a>
                         </li>
                         <?php endif; ?>
@@ -351,8 +406,8 @@ $urlEmBreve = 'javascript:void(0);';
             <input type="text" id="monitorAppointmentSubject" maxlength="180" required placeholder="Ex.: dúvidas sobre SQL">
         </label>
         <label>
-            <span>Data e horário</span>
-            <input type="datetime-local" id="monitorAppointmentDate" required>
+            <span>Data</span>
+            <input type="date" id="monitorAppointmentDate" required>
         </label>
         <label>
             <span>Duração</span>
@@ -364,10 +419,16 @@ $urlEmBreve = 'javascript:void(0);';
             </select>
         </label>
         <label>
-            <span>URL da reunião</span>
-            <input type="url" id="monitorAppointmentUrl" maxlength="500" required placeholder="https://...">
+            <span>Horário disponível</span>
+            <select id="monitorAppointmentTime" required disabled>
+                <option value="">Escolha uma data primeiro</option>
+            </select>
         </label>
-        <p>O agendamento respeitará os horários e bloqueios cadastrados no seu perfil. O aluno receberá a URL da reunião por mensagem e notificação.</p>
+        <label>
+            <span>URL da reunião</span>
+            <input type="url" id="monitorAppointmentUrl" maxlength="500" required placeholder="https://meet.google.com/...">
+        </label>
+        <p id="monitorAppointmentHint">Escolha a data para consultar seus horários livres cadastrados no perfil.</p>
         <div id="monitorAppointmentFeedback" role="status" aria-live="polite"></div>
         <div class="chat-schedule-actions">
             <button type="button" data-fechar-monitor-agendamento>Cancelar</button>
@@ -375,7 +436,7 @@ $urlEmBreve = 'javascript:void(0);';
         </div>
     </form>
 </dialog>
-<script src="<?php echo htmlspecialchars($basePath . 'assets/js/agendamentoMonitor.js?v=2', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
+<script src="<?php echo htmlspecialchars($basePath . 'assets/js/agendamentoMonitor.js?v=4', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
 <?php endif; ?>
 
 <section
@@ -496,72 +557,360 @@ $urlEmBreve = 'javascript:void(0);';
     </dialog>
 </section>
 
-<script src="<?php echo htmlspecialchars($basePath . 'assets/js/mensagens.js?v=5', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
+<script src="<?php echo htmlspecialchars($basePath . 'assets/js/mensagens.js?v=6', ENT_QUOTES, 'UTF-8'); ?>" defer></script>
 
 <!-- ===== 9. LÓGICA DE INTERATIVIDADE JAVASCRIPT ===== -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Elementos da busca dinâmica
+    const searchWrapper      = document.getElementById('navbarSearchWrapper');
     const searchInput        = document.getElementById('searchInput');
     const searchDropdown     = document.getElementById('searchDropdown');
     const btnCloseDropdown   = document.getElementById('btnCloseDropdown');
     const btnClearSearch     = document.getElementById('btnClearSearch');
-    const categoriesGrid     = document.getElementById('categoriesGrid');
+    const searchKbd          = document.getElementById('searchKbd');
+    const categoriesSection  = document.getElementById('categoriesSection');
     const liveResults        = document.getElementById('liveResults');
-    const monitorSearchResult = document.getElementById('monitorSearchResult');
-    const materiaSearchResult = document.getElementById('materiaSearchResult');
+    const tabButtons         = Array.from(document.querySelectorAll('[data-search-tab]'));
 
-    // Botões dos painéis flutuantes
-    const btnMessages          = document.getElementById('btnMessages');
-    const messagesDropdown     = document.getElementById('messagesDropdown');
-    const btnNotifications     = document.getElementById('btnNotifications');
+    const searchApi          = searchWrapper ? searchWrapper.dataset.searchApi : '';
+    const basePath           = searchWrapper ? searchWrapper.dataset.basePath : '../../';
+    const userType           = searchWrapper ? searchWrapper.dataset.userType : 'aluno';
+    const ehMonitor          = userType === 'monitor';
+
+    const btnMessages           = document.getElementById('btnMessages');
+    const messagesDropdown      = document.getElementById('messagesDropdown');
+    const btnNotifications      = document.getElementById('btnNotifications');
     const notificationsDropdown = document.getElementById('notificationsDropdown');
-    const btnUserMenu          = document.getElementById('btnUserMenu');
-    const userMenuDropdown     = document.getElementById('userMenuDropdown');
+    const btnUserMenu           = document.getElementById('btnUserMenu');
+    const userMenuDropdown      = document.getElementById('userMenuDropdown');
 
-    // Lista unificada para controle de fechamento
     const allDropdowns = [searchDropdown, messagesDropdown, notificationsDropdown, userMenuDropdown];
 
-    // Fecha todos os modais/dropdowns
+    let abaBuscaAtiva = 'todos';
+    let ultimoPayloadBusca = null;
+    let debounceTimer = null;
+    let reqCounter = 0;
+
     function fecharTodos() {
         allDropdowns.forEach(drop => {
             if (drop) drop.classList.remove('active');
         });
     }
 
-    // Comportamento do campo de busca
+    function criarAvatarElemento(item) {
+        const av = document.createElement('div');
+        av.className = 'search-result-avatar';
+        if (item.tem_foto) {
+            const img = document.createElement('img');
+            img.src = basePath + 'actions/fotoPerfil.php?id=' + encodeURIComponent(item.id);
+            img.alt = item.nome;
+            av.appendChild(img);
+        } else {
+            av.textContent = item.iniciais || '?';
+        }
+        return av;
+    }
+
+    function renderizarResultadosBusca(payload) {
+        if (!payload || !liveResults) return;
+        ultimoPayloadBusca = payload;
+        const termo = (searchInput.value || '').trim();
+        const mostrarCategorias = (termo === '' && abaBuscaAtiva === 'todos');
+        if (categoriesSection) {
+            categoriesSection.style.display = mostrarCategorias ? 'block' : 'none';
+        }
+
+        if (ehMonitor && payload.resumo_monitor) {
+            const badgePend = document.getElementById('quickMonitorPendencias');
+            if (badgePend) {
+                const p = Number(payload.resumo_monitor.pendencias_presenca || 0);
+                const s = Number(payload.resumo_monitor.solicitacoes_abertas || 0);
+                const total = p + s;
+                badgePend.textContent = total > 0 ? total + ' pendência(s) ativa(s)' : 'Tudo em dia';
+            }
+        }
+
+        liveResults.replaceChildren();
+        let totalRenderizados = 0;
+
+        function criarTituloSecaoBusca(texto, total) {
+            const secTitle = document.createElement('div');
+            secTitle.className = 'results-section-title';
+            const s1 = document.createElement('span');
+            s1.textContent = texto;
+            const s2 = document.createElement('span');
+            s2.textContent = String(total);
+            secTitle.append(s1, s2);
+            return secTitle;
+        }
+
+        // 1. Seção de Alunos
+        const exibirAlunos = (abaBuscaAtiva === 'todos' || abaBuscaAtiva === 'alunos');
+        const listaAlunos = payload.alunos || [];
+        if (exibirAlunos && listaAlunos.length > 0 && (ehMonitor || termo !== '' || abaBuscaAtiva === 'alunos')) {
+            liveResults.appendChild(criarTituloSecaoBusca(
+                termo === '' ? 'Alunos Recentes / Cadastrados' : 'Alunos Encontrados',
+                listaAlunos.length
+            ));
+
+            listaAlunos.forEach(function (aluno) {
+                totalRenderizados++;
+                const row = document.createElement('div');
+                row.className = 'search-result-row';
+
+                const main = document.createElement('div');
+                main.className = 'search-result-main';
+                const info = document.createElement('div');
+                info.className = 'search-result-info';
+                const nome = document.createElement('strong');
+                nome.textContent = aluno.nome;
+                const sub = document.createElement('small');
+                sub.textContent = aluno.curso + (aluno.total_sessoes > 0 ? ' · ' + aluno.total_sessoes + ' monitoria(s)' : ' · ' + aluno.email);
+                info.append(nome, sub);
+                main.append(criarAvatarElemento(aluno), info);
+
+                const actions = document.createElement('div');
+                actions.className = 'search-result-actions';
+
+                if (ehMonitor) {
+                    const btnChat = document.createElement('button');
+                    btnChat.type = 'button';
+                    btnChat.className = 'search-action-btn';
+                    btnChat.dataset.iniciarConversaAluno = String(aluno.id);
+                    btnChat.innerHTML = '<i class="fa-regular fa-comments"></i> Chat';
+
+                    const btnAgendar = document.createElement('button');
+                    btnAgendar.type = 'button';
+                    btnAgendar.className = 'search-action-btn primary';
+                    btnAgendar.dataset.agendarComAluno = String(aluno.id);
+                    btnAgendar.innerHTML = '<i class="fa-solid fa-calendar-plus"></i> Agendar';
+
+                    actions.append(btnChat, btnAgendar);
+                } else {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-online';
+                    badge.textContent = 'Aluno';
+                    actions.appendChild(badge);
+                }
+
+                row.append(main, actions);
+                liveResults.appendChild(row);
+            });
+        }
+
+        // 2. Seção de Monitores / Professores Orientadores
+        const exibirMonitores = (abaBuscaAtiva === 'todos' || abaBuscaAtiva === 'monitores');
+        const listaMonitores = payload.monitores || [];
+        if (exibirMonitores && listaMonitores.length > 0 && (!ehMonitor || termo !== '' || abaBuscaAtiva === 'monitores')) {
+            liveResults.appendChild(criarTituloSecaoBusca(
+                termo === '' ? 'Monitores e Orientadores Disponíveis' : 'Monitores / Orientadores',
+                listaMonitores.length
+            ));
+
+            listaMonitores.forEach(function (mon) {
+                totalRenderizados++;
+                const row = document.createElement('div');
+                row.className = 'search-result-row';
+
+                const main = document.createElement('a');
+                main.className = 'search-result-main';
+                main.href = basePath + 'views/monitor/perfilMonitor.php?id=' + encodeURIComponent(mon.id);
+
+                const info = document.createElement('div');
+                info.className = 'search-result-info';
+                const nome = document.createElement('strong');
+                nome.textContent = mon.nome + ' ★ ' + mon.nota;
+                const sub = document.createElement('small');
+                sub.textContent = mon.disciplina + ' · ' + mon.area + ' (' + mon.modalidade + ')';
+                info.append(nome, sub);
+                main.append(criarAvatarElemento(mon), info);
+
+                const actions = document.createElement('div');
+                actions.className = 'search-result-actions';
+
+                const btnPerfil = document.createElement('a');
+                btnPerfil.className = 'search-action-btn';
+                btnPerfil.href = basePath + 'views/monitor/perfilMonitor.php?id=' + encodeURIComponent(mon.id);
+                btnPerfil.innerHTML = 'Perfil';
+                actions.appendChild(btnPerfil);
+
+                if (!ehMonitor) {
+                    const btnSolicitar = document.createElement('button');
+                    btnSolicitar.type = 'button';
+                    btnSolicitar.className = 'search-action-btn primary';
+                    btnSolicitar.dataset.solicitarMonitoriaMonitor = String(mon.id);
+                    btnSolicitar.innerHTML = '<i class="fa-regular fa-calendar-plus"></i> Agendar';
+                    actions.appendChild(btnSolicitar);
+                }
+
+                row.append(main, actions);
+                liveResults.appendChild(row);
+            });
+        }
+
+        // 3. Seção de Atendimentos / Sessões e Matérias
+        const exibirAtendimentos = (abaBuscaAtiva === 'todos' || abaBuscaAtiva === 'atendimentos');
+        const listaAtend = payload.atendimentos || [];
+        if (exibirAtendimentos && listaAtend.length > 0 && (termo !== '' || abaBuscaAtiva === 'atendimentos')) {
+            liveResults.appendChild(criarTituloSecaoBusca('Monitorias & Sessões', listaAtend.length));
+
+            listaAtend.forEach(function (atend) {
+                totalRenderizados++;
+                const row = document.createElement('div');
+                row.className = 'search-result-row';
+
+                const main = document.createElement('a');
+                main.className = 'search-result-main';
+                main.href = basePath + 'views/agenda/index.php';
+
+                const icone = document.createElement('div');
+                icone.className = 'result-icon-subject';
+                icone.innerHTML = '<i class="fa-solid fa-calendar-day"></i>';
+
+                const info = document.createElement('div');
+                info.className = 'search-result-info';
+                const titulo = document.createElement('strong');
+                titulo.textContent = atend.assunto;
+                const sub = document.createElement('small');
+                sub.textContent = atend.data + ' · ' + atend.participante;
+                info.append(titulo, sub);
+                main.append(icone, info);
+
+                const actions = document.createElement('div');
+                actions.className = 'search-result-actions';
+                if (atend.concluido) {
+                    const linkCert = document.createElement('a');
+                    linkCert.className = 'search-action-btn primary';
+                    linkCert.href = basePath + 'views/monitor/emissaoCertificado.php?id=' + encodeURIComponent(atend.id);
+                    linkCert.target = '_blank';
+                    linkCert.innerHTML = '<i class="fa-solid fa-award"></i> Certificado';
+                    actions.appendChild(linkCert);
+                } else {
+                    const linkAgenda = document.createElement('a');
+                    linkAgenda.className = 'search-action-btn';
+                    linkAgenda.href = basePath + 'views/agenda/index.php';
+                    linkAgenda.textContent = 'Ver na Agenda';
+                    actions.appendChild(linkAgenda);
+                }
+
+                row.append(main, actions);
+                liveResults.appendChild(row);
+            });
+        }
+
+        const listaMaterias = payload.materias || [];
+        if (exibirAtendimentos && listaMaterias.length > 0 && (termo !== '' || abaBuscaAtiva === 'atendimentos')) {
+            liveResults.appendChild(criarTituloSecaoBusca('Matérias e Disciplinas', listaMaterias.length));
+
+            listaMaterias.slice(0, 4).forEach(function (mat) {
+                totalRenderizados++;
+                const row = document.createElement('div');
+                row.className = 'search-result-row';
+
+                const destino = ehMonitor
+                    ? basePath + 'views/monitor/perfilMonitor.php'
+                    : basePath + 'views/aluno/monitores.php?busca=' + encodeURIComponent(mat.titulo);
+
+                const main = document.createElement('a');
+                main.className = 'search-result-main';
+                main.href = destino;
+
+                const icone = document.createElement('div');
+                icone.className = 'result-icon-subject';
+                const iconeI = document.createElement('i');
+                iconeI.className = 'fa-solid ' + String(mat.icone || 'fa-book').replace(/[^a-z0-9-]/gi, '');
+                icone.appendChild(iconeI);
+
+                const info = document.createElement('div');
+                info.className = 'search-result-info';
+                const titulo = document.createElement('strong');
+                titulo.textContent = mat.titulo;
+                const sub = document.createElement('small');
+                sub.textContent = mat.categoria + ' · ' + mat.disciplina;
+                info.append(titulo, sub);
+                main.append(icone, info);
+
+                const actions = document.createElement('div');
+                actions.className = 'search-result-actions';
+                const btnVer = document.createElement('a');
+                btnVer.className = 'search-action-btn';
+                btnVer.href = destino;
+                btnVer.textContent = ehMonitor ? 'Minha disciplina' : 'Ver monitores';
+                actions.appendChild(btnVer);
+
+                row.append(main, actions);
+                liveResults.appendChild(row);
+            });
+        }
+
+        if (totalRenderizados === 0 && (!mostrarCategorias)) {
+            const empty = document.createElement('div');
+            empty.className = 'search-empty-msg';
+            empty.textContent = 'Nenhum aluno, monitor ou atendimento encontrado para "' + termo + '".';
+            liveResults.appendChild(empty);
+        }
+    }
+
+    async function consultarBuscaGlobal(termo) {
+        if (!searchApi) return;
+        const idReq = ++reqCounter;
+        try {
+            const resp = await fetch(searchApi + '?q=' + encodeURIComponent(termo));
+            const payload = await resp.json();
+            if (idReq !== reqCounter || !resp.ok) return;
+            renderizarResultadosBusca(payload);
+        } catch (e) {
+            // Falha silenciosa de rede
+        }
+    }
+
     if (searchInput && searchDropdown) {
-        searchInput.addEventListener('focus', function () {
+        searchInput.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const jaAberto = searchDropdown.classList.contains('active');
             fecharTodos();
-            searchDropdown.classList.add('active');
+            if (!jaAberto) {
+                searchDropdown.classList.add('active');
+                consultarBuscaGlobal(this.value.trim());
+            }
         });
 
         searchInput.addEventListener('input', function () {
-            if (this.value.trim().length >= 2) {
-                if (monitorSearchResult) {
-                    monitorSearchResult.href = monitorSearchResult.dataset.catalogUrl
-                        + '?busca=' + encodeURIComponent(this.value.trim());
-                }
-                if (materiaSearchResult) {
-                    materiaSearchResult.href = materiaSearchResult.dataset.catalogUrl
-                        + '?busca=' + encodeURIComponent(this.value.trim());
-                }
-                categoriesGrid.style.display = 'none';
-                liveResults.style.display    = 'block';
-                btnClearSearch.style.display = 'block';
-            } else {
-                categoriesGrid.style.display = 'grid';
-                liveResults.style.display    = 'none';
-                btnClearSearch.style.display = (this.value.length > 0) ? 'block' : 'none';
+            const val = this.value.trim();
+            if (!searchDropdown.classList.contains('active')) {
+                fecharTodos();
+                searchDropdown.classList.add('active');
             }
+            btnClearSearch.style.display = this.value.length > 0 ? 'block' : 'none';
+            if (searchKbd) {
+                searchKbd.style.display = this.value.length > 0 ? 'none' : 'block';
+            }
+            window.clearTimeout(debounceTimer);
+            debounceTimer = window.setTimeout(function () {
+                consultarBuscaGlobal(val);
+            }, 160);
+        });
+
+        tabButtons.forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                tabButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                abaBuscaAtiva = this.dataset.searchTab || 'todos';
+                if (ultimoPayloadBusca) {
+                    renderizarResultadosBusca(ultimoPayloadBusca);
+                } else {
+                    consultarBuscaGlobal(searchInput.value.trim());
+                }
+            });
         });
 
         if (btnClearSearch) {
             btnClearSearch.addEventListener('click', function () {
                 searchInput.value = '';
-                categoriesGrid.style.display = 'grid';
-                liveResults.style.display    = 'none';
                 btnClearSearch.style.display = 'none';
+                if (searchKbd) searchKbd.style.display = 'block';
+                consultarBuscaGlobal('');
                 searchInput.focus();
             });
         }
@@ -572,6 +921,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchDropdown.classList.remove('active');
             });
         }
+
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                if (searchDropdown.classList.contains('active')) {
+                    searchDropdown.classList.remove('active');
+                    searchInput.blur();
+                } else {
+                    fecharTodos();
+                    searchInput.focus();
+                    searchDropdown.classList.add('active');
+                    consultarBuscaGlobal(searchInput.value.trim());
+                }
+            } else if (e.key === 'Escape' && searchDropdown.classList.contains('active')) {
+                searchDropdown.classList.remove('active');
+                searchInput.blur();
+            }
+        });
     }
 
     // Toggle de exibição dos dropdowns
@@ -590,9 +957,14 @@ document.addEventListener('DOMContentLoaded', function () {
     setupDropdownToggle(btnNotifications, notificationsDropdown);
     setupDropdownToggle(btnUserMenu, userMenuDropdown);
 
-    // Fechar dropdowns ao clicar fora da navbar
+    // Fechar dropdowns ao clicar fora do painel aberto
     document.addEventListener('click', function (e) {
-        if (!e.target.closest('.navbar-container')) {
+        if (
+            !e.target.closest('.search-dropdown')
+            && !e.target.closest('.navbar-search')
+            && !e.target.closest('.popover-dropdown')
+            && !e.target.closest('.user-menu-dropdown')
+        ) {
             fecharTodos();
         }
     });

@@ -273,6 +273,7 @@ body.monitor-theme .chat-schedule-dialog::backdrop {
 
 body.monitor-theme .monitor-appointment-dialog {
     width: min(500px, calc(100% - 28px));
+    margin: auto;
     background: var(--monitor-surface);
     color: var(--monitor-ink);
 }

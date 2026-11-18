@@ -3,6 +3,7 @@ services:
     build: .
     network_mode: "service:db"
     environment:
+      TZ: America/Cuiaba
       DB_HOST: 127.0.0.1
       DB_NAME: athenas
       DB_USER: athenas_app
@@ -14,12 +15,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
 
   reminders:
     build: .
     network_mode: "service:db"
     command: ["php", "actions/workerLembretes.php"]
     environment:
+      TZ: America/Cuiaba
       DB_HOST: 127.0.0.1
       DB_NAME: athenas
       DB_USER: athenas_app
@@ -33,10 +36,15 @@ services:
 
   db:
     image: mysql:8.4
-    command: ["--bind-address=0.0.0.0"]
+    command:
+      - "--bind-address=0.0.0.0"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+      - "--default-time-zone=-04:00"
     ports:
       - "8000:80"
     environment:
+      TZ: America/Cuiaba
       MYSQL_DATABASE: athenas
       MYSQL_USER: athenas_app
       MYSQL_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD no arquivo .env}
@@ -49,6 +57,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+    restart: unless-stopped
 
 volumes:
   athenas_db_data:

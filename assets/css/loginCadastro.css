@@ -8,7 +8,8 @@
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 24px 16px;
     background-image: url("../img/fundo.png");
     background-size: cover;
     background-position: center;
@@ -16,31 +17,42 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
 }
 
-/* ================= CAMADA DE OVERLAY DINÂMICA ================= */
+/* ================= CAMADA DE OVERLAY DINÂMICA E GEOMÉTRICA ================= */
 body::before {
     content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Overlay translúcido para a tela do ALUNO */
-    background-color: rgba(15, 23, 42, 0.45);
-    transition: background-color 0.5s ease;
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(56, 189, 248, 0.22) 0%, transparent 45%),
+        linear-gradient(135deg, rgba(7, 58, 115, 0.78) 0%, rgba(12, 34, 68, 0.82) 100%);
+    transition: background 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.65s ease;
     z-index: 1;
 }
 
-/* Overlay escuro noturno para a tela do MONITOR */
-body.theme-monitor::before {
-    background-color: rgba(9, 21, 37, 0.9);
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 82% 18%, rgba(56, 189, 248, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 20% 85%, rgba(30, 64, 175, 0.20) 0%, transparent 45%),
+        linear-gradient(145deg, rgba(5, 12, 24, 0.94) 0%, rgba(9, 21, 38, 0.96) 100%);
+    opacity: 0;
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1;
+    pointer-events: none;
+}
+
+body.theme-monitor::after {
+    opacity: 1;
 }
 
 .login-container {
-    width: 390px;
+    width: min(420px, 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -51,40 +63,41 @@ body.theme-monitor::before {
 /* ================= LOGO UNIVAG ATHENAS ================= */
 .logo {
     width: 100%;
-    max-width: 340px;
+    max-width: 310px;
     height: auto;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
     z-index: 10;
-    filter: drop-shadow(0px 6px 14px rgba(0, 0, 0, 0.6)) brightness(1.1);
-    transition: transform 0.3s ease;
+    filter: drop-shadow(0px 8px 18px rgba(0, 0, 0, 0.55)) brightness(1.08);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.45s ease;
 }
 
-.logo:hover {
-    transform: scale(1.02);
+body.theme-monitor .logo {
+    transform: translateY(-2px) scale(1.02);
+    filter: drop-shadow(0px 10px 24px rgba(56, 189, 248, 0.25)) brightness(1.15);
 }
 
-/* ================= ESTRUTURA DOS FORMULÁRIOS ================= */
+/* ================= ESTRUTURA 3D DOS FORMULÁRIOS ================= */
 .forms-wrapper {
     width: 100%;
-    height: 360px;
+    min-height: 465px;
     position: relative;
+    perspective: 1400px;
 }
 
 .wrapper-cadastro {
-    height: 420px;
+    min-height: 550px;
 }
 
 .auth-feedback {
-    position: absolute;
-    top: -52px;
-    left: 0;
-    z-index: 3;
+    margin-bottom: 14px;
     width: 100%;
-    padding: 10px 12px;
+    padding: 11px 14px;
     border: 1px solid;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 13px;
+    font-weight: 600;
     text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .auth-feedback-error {
@@ -111,59 +124,245 @@ body.theme-monitor .auth-feedback-success {
     color: #bbf7d0;
 }
 
+/* Card com Animação 3D Flip + Morph */
 .form {
     width: 100%;
-    height: 100%;
-    border-radius: 18px;
-    padding: 26px 28px;
+    border-radius: 20px;
+    padding: 30px 30px 26px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 24px 54px rgba(2, 8, 23, 0.5);
     position: absolute;
     top: 0;
     left: 0;
-    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-                transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-                visibility 0.35s;
+    overflow: hidden;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    transition:
+        opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.55s;
+}
+
+/* Faixa superior geométrica institucional UNIVAG em cada card */
+.form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #004a8f 0%, #0284c7 50%, #3ca648 100%);
+}
+
+.form-monitor::before {
+    background: linear-gradient(90deg, #1d4ed8 0%, #38bdf8 50%, #6366f1 100%);
+}
+
+/* Brilho que atravessa o card durante a troca */
+.form::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+    transform: skewX(-22deg);
+    transition: left 0.75s ease;
+    pointer-events: none;
+}
+
+.form.active-form::after {
+    left: 140%;
 }
 
 .active-form {
     opacity: 1;
     visibility: visible;
-    transform: scale(1);
+    transform: rotateY(0deg) translateY(0) scale(1);
     z-index: 2;
 }
 
-.hidden-form {
+.form-aluno.hidden-form {
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.94);
+    transform: rotateY(-85deg) translateX(-30px) scale(0.92);
     z-index: 1;
+    pointer-events: none;
+}
+
+.form-monitor.hidden-form {
+    opacity: 0;
+    visibility: hidden;
+    transform: rotateY(85deg) translateX(30px) scale(0.92);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Cabeçalho do Card */
+.auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.form-aluno .auth-badge {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+}
+
+.form-monitor .auth-badge {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.32);
+    color: #7dd3fc;
+}
+
+.titulo-login {
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.subtitulo-login {
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.45;
+}
+
+.form-aluno .titulo-login {
+    color: #0f172a;
+}
+
+.form-aluno .subtitulo-login {
+    color: #64748b;
+}
+
+.form-monitor .titulo-login {
+    color: #f8fafc;
+}
+
+.form-monitor .subtitulo-login {
+    color: #94a3b8;
+}
+
+/* Grupos de Input com Ícone e Olhinho de Senha */
+.input-group {
+    width: 100%;
+    position: relative;
+    margin-bottom: 13px;
+}
+
+.input-group > i.input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.form-aluno .input-group > i.input-icon {
+    color: #64748b;
+}
+
+.form-monitor .input-group > i.input-icon {
+    color: #64748b;
+}
+
+.input-group input {
+    width: 100%;
+    height: 44px;
+    padding: 0 40px 0 40px;
+    margin-bottom: 0 !important;
+    border-radius: 10px;
+    font-size: 13.5px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-group:focus-within > i.input-icon {
+    color: #2563eb;
+}
+
+.form-monitor .input-group:focus-within > i.input-icon {
+    color: #38bdf8;
+}
+
+.btn-eye {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.btn-eye:hover {
+    color: #0f172a;
+    background: rgba(148, 163, 184, 0.15);
+}
+
+.form-monitor .btn-eye:hover {
+    color: #f8fafc;
+    background: rgba(148, 163, 184, 0.15);
+}
+
+/* Indicador de força de senha no cadastro */
+.password-strength {
+    width: 100%;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.22);
+    overflow: hidden;
+    margin: -6px 0 12px;
+}
+
+.password-strength-bar {
+    width: 0%;
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.25s ease, background-color 0.25s ease;
 }
 
 /* ================= CARTÃO DO ALUNO (CLEAN / LIGHT) ================= */
 .form-aluno {
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-}
-
-.form-aluno .titulo-login {
-    color: #0f172a;
-    font-size: 21px;
-    font-weight: 700;
-    margin-bottom: 18px;
+    border: 1px solid #dbe4f0;
 }
 
 .form-aluno input {
     width: 100%;
-    padding: 12px 14px;
-    margin-bottom: 12px;
+    height: 44px;
+    padding: 0 42px 0 42px;
+    margin-bottom: 0;
     background-color: #f8fafc;
     border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    border-radius: 10px;
     color: #0f172a;
-    font-size: 14px;
+    font-size: 13.5px;
     outline: none;
     transition: all 0.2s ease;
 }
@@ -174,126 +373,174 @@ body.theme-monitor .auth-feedback-success {
 
 .form-aluno input:focus {
     background-color: #ffffff;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: #075eaa;
+    box-shadow: 0 0 0 3px rgba(7, 94, 170, 0.15);
 }
 
 .form-aluno .btn-submit {
     width: 100%;
-    padding: 12px;
-    background-color: #2563eb;
+    height: 44px;
+    background: linear-gradient(135deg, #075eaa 0%, #004a8f 100%);
     color: #ffffff;
     border: none;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     margin-top: 4px;
     margin-bottom: 12px;
-    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 16px rgba(7, 94, 170, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .form-aluno .btn-submit:hover {
-    background-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(7, 94, 170, 0.36);
+    filter: brightness(1.06);
 }
 
 .form-aluno a,
 .form-aluno a:visited {
-    color: #475569;
-    font-size: 12px;
-    font-weight: 500;
+    color: #075eaa;
+    font-size: 12.5px;
+    font-weight: 700;
     text-decoration: none;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     transition: color 0.2s ease;
 }
 
 .form-aluno a:hover {
-    color: #2563eb;
+    color: #003b73;
     text-decoration: underline;
+}
+
+/* Divisor e Botão de Alternância Animado */
+.auth-divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 12px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.form-monitor .auth-divider::before,
+.form-monitor .auth-divider::after {
+    background: #233856;
 }
 
 .form-aluno .btn-toggle,
 .form-aluno button.btn-toggle {
+    width: 100%;
+    min-height: 40px;
     background-color: #f1f5f9;
     border: 1px solid #cbd5e1;
     color: #0f172a;
     padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
     cursor: pointer;
     margin-top: auto;
-    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.22s ease;
 }
 
 .form-aluno .btn-toggle:hover,
 .form-aluno button.btn-toggle:hover {
-    background-color: #e2e8f0;
-    border-color: #94a3b8;
+    background-color: #0f172a;
+    border-color: #0f172a;
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
-/* ================= CARTÃO DO MONITOR (DARK PREMIUM) ================= */
+.btn-toggle i {
+    transition: transform 0.35s ease;
+}
+
+.btn-toggle:hover i {
+    transform: rotate(180deg);
+}
+
+/* ================= CARTÃO DO MONITOR (DARK PREMIUM AVA) ================= */
 .form-monitor {
-    background-color: var(--monitor-surface);
-    border: 1px solid var(--monitor-border);
-}
-
-.form-monitor .titulo-login {
-    color: var(--monitor-ink);
-    font-size: 21px;
-    font-weight: 700;
-    margin-bottom: 18px;
+    background: linear-gradient(165deg, #13243b 0%, #0d1a2d 100%);
+    border: 1px solid #294366;
 }
 
 .form-monitor input {
     width: 100%;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-    background-color: var(--monitor-background);
-    border: 1px solid var(--monitor-border-strong);
-    border-radius: 8px;
-    color: var(--monitor-ink);
-    font-size: 14px;
+    height: 44px;
+    padding: 0 42px 0 42px;
+    margin-bottom: 0;
+    background-color: #091424;
+    border: 1px solid #294366;
+    border-radius: 10px;
+    color: #f8fafc;
+    font-size: 13.5px;
     outline: none;
     transition: all 0.2s ease;
 }
 
 .form-monitor input::placeholder {
-    color: var(--monitor-muted);
+    color: #64748b;
 }
 
 .form-monitor input:focus {
-    border-color: var(--monitor-blue);
-    box-shadow: 0 0 0 3px #8ab8eb33;
+    border-color: #38bdf8;
+    background-color: #0c1b30;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
 }
 
 .form-monitor .btn-acessar-monitor {
     width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #315d8b 0%, #3b6ea3 100%);
+    height: 44px;
+    background: linear-gradient(135deg, #0284c7 0%, #005bb5 100%);
     color: #ffffff;
     border: none;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     margin-top: 4px;
     margin-bottom: 12px;
-    transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.32);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .form-monitor .btn-acessar-monitor:hover {
-    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(2, 132, 199, 0.42);
+    filter: brightness(1.08);
 }
 
-/* CORREÇÃO DOS LINKS NO MONITOR (Alto contraste e legibilidade) */
 .form-monitor a,
 .form-monitor a:visited {
-    color: var(--monitor-blue) !important;
-    font-size: 12px;
-    font-weight: 500;
+    color: #7dd3fc !important;
+    font-size: 12.5px;
+    font-weight: 700;
     text-decoration: none;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     transition: color 0.2s ease;
 }
 
@@ -302,24 +549,30 @@ body.theme-monitor .auth-feedback-success {
     text-decoration: underline;
 }
 
-/* CORREÇÃO DO BOTÃO "Sou Aluno" */
 .form-monitor .btn-toggle,
 .form-monitor button.btn-toggle {
-    background-color: var(--monitor-surface-soft);
-    border: 1px solid var(--monitor-border-strong);
-    color: var(--monitor-ink) !important;
+    width: 100%;
+    min-height: 40px;
+    background-color: #172b46;
+    border: 1px solid #304d73;
+    color: #e2e8f0 !important;
     padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
     cursor: pointer;
     margin-top: auto;
-    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.22s ease;
 }
 
 .form-monitor .btn-toggle:hover,
 .form-monitor button.btn-toggle:hover {
-    background-color: var(--monitor-surface-soft);
-    border-color: var(--monitor-blue);
-    color: #ffffff !important;
+    background-color: #f8fafc;
+    border-color: #f8fafc;
+    color: #0f172a !important;
+    transform: translateY(-1px);
 }

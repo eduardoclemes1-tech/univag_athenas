@@ -115,24 +115,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
         $acao = $_GET['acao'] ?? 'inicio';
         if ($acao === 'horarios_disponiveis') {
-            if ($tipoUsuario !== 'aluno') {
-                responderChat(403, ['erro' => 'Somente alunos podem consultar horários disponíveis.']);
-            }
-            $conversaId = filter_var($_GET['conversa_id'] ?? null, FILTER_VALIDATE_INT);
             $dataEntrada = $_GET['data'] ?? '';
             $duracao = filter_var($_GET['duracao'] ?? null, FILTER_VALIDATE_INT);
             if (
-                !$conversaId
-                || !is_string($dataEntrada)
+                !is_string($dataEntrada)
                 || !in_array($duracao, [30, 45, 60, 90], true)
                 || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataEntrada)
             ) {
                 responderChat(422, ['erro' => 'Informe uma data e duração válidas.']);
             }
-            $conversa = participanteConversa($pdo, $conversaId, $usuarioId);
-            if (!$conversa || (int) $conversa['aluno_id'] !== $usuarioId) {
-                responderChat(404, ['erro' => 'Conversa não encontrada.']);
+
+            if ($tipoUsuario === 'aluno') {
+                $conversaId = filter_var($_GET['conversa_id'] ?? null, FILTER_VALIDATE_INT);
+                if (!$conversaId) {
+                    responderChat(422, ['erro' => 'Informe uma conversa válida.']);
+                }
+                $conversa = participanteConversa($pdo, $conversaId, $usuarioId);
+                if (!$conversa || (int) $conversa['aluno_id'] !== $usuarioId) {
+                    responderChat(404, ['erro' => 'Conversa não encontrada.']);
+                }
+                $monitorId = (int) $conversa['monitor_id'];
+                $alunoIdConflito = $usuarioId;
+            } elseif ($tipoUsuario === 'monitor') {
+                $monitorId = $usuarioId;
+                $alunoIdParam = filter_var($_GET['aluno_id'] ?? null, FILTER_VALIDATE_INT);
+                $alunoIdConflito = ($alunoIdParam && $alunoIdParam > 0) ? (int) $alunoIdParam : 0;
+            } else {
+                responderChat(403, ['erro' => 'Acesso negado.']);
             }
+
             $data = DateTimeImmutable::createFromFormat('!Y-m-d', $dataEntrada);
             $errosData = DateTimeImmutable::getLastErrors();
             if (
@@ -145,7 +156,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 responderChat(422, ['erro' => 'Escolha uma data dentro dos próximos 90 dias.']);
             }
 
-            $monitorId = (int) $conversa['monitor_id'];
             $stmt = $pdo->prepare(
                 'SELECT hora_inicio, hora_fim
                  FROM disponibilidades_monitores
@@ -172,9 +182,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                  WHERE status IN ('solicitado', 'confirmado')
                    AND agendado_para < ?
                    AND DATE_ADD(agendado_para, INTERVAL duracao_minutos MINUTE) > ?
-                   AND (monitor_id = ? OR aluno_id = ?)"
+                   AND (monitor_id = ? OR (? > 0 AND aluno_id = ?))"
             );
-            $stmt->execute([$diaFim, $diaInicio, $monitorId, $usuarioId]);
+            $stmt->execute([$diaFim, $diaInicio, $monitorId, $alunoIdConflito, $alunoIdConflito]);
             $ocupados = $stmt->fetchAll();
 
             $inicioMinutos = ((int) substr($janela['hora_inicio'], 0, 2) * 60)
@@ -258,20 +268,17 @@ try {
                      ORDER BY u.nome ASC
                      LIMIT 100"
                 );
+                $stmt->execute([$usuarioId]);
             } else {
                 $stmt = $pdo->prepare(
                     "SELECT u.id, u.nome, u.email
                      FROM usuarios u
                      WHERE u.tipo = 'aluno' AND u.id <> ?
-                       AND EXISTS (
-                           SELECT 1 FROM conversas c
-                           WHERE c.monitor_id = ? AND c.aluno_id = u.id
-                       )
                      ORDER BY u.nome ASC
                      LIMIT 100"
                 );
+                $stmt->execute([$usuarioId]);
             }
-            $stmt->execute($tipoUsuario === 'aluno' ? [$usuarioId] : [$usuarioId, $usuarioId]);
             $contatos = $stmt->fetchAll();
 
             responderChat(200, [
@@ -416,28 +423,44 @@ try {
     $pdo->beginTransaction();
 
     if ($acao === 'iniciar') {
-        if ($tipoUsuario !== 'aluno') {
+        if ($tipoUsuario === 'aluno') {
+            $monitorId = filter_var($entrada['monitor_id'] ?? ($entrada['contato_id'] ?? null), FILTER_VALIDATE_INT);
+            if (!$monitorId || $monitorId === $usuarioId) {
+                $pdo->rollBack();
+                responderChat(400, ['erro' => 'Selecione um monitor válido.']);
+            }
+            $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE id = ? AND tipo = 'monitor'");
+            $stmt->execute([$monitorId]);
+            if (!$stmt->fetch()) {
+                $pdo->rollBack();
+                responderChat(404, ['erro' => 'Monitor não encontrado.']);
+            }
+            $alunoIdConversa = $usuarioId;
+            $monitorIdConversa = $monitorId;
+        } elseif ($tipoUsuario === 'monitor') {
+            $alunoId = filter_var($entrada['aluno_id'] ?? ($entrada['contato_id'] ?? null), FILTER_VALIDATE_INT);
+            if (!$alunoId || $alunoId === $usuarioId) {
+                $pdo->rollBack();
+                responderChat(400, ['erro' => 'Selecione um aluno válido.']);
+            }
+            $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE id = ? AND tipo = 'aluno'");
+            $stmt->execute([$alunoId]);
+            if (!$stmt->fetch()) {
+                $pdo->rollBack();
+                responderChat(404, ['erro' => 'Aluno não encontrado.']);
+            }
+            $alunoIdConversa = $alunoId;
+            $monitorIdConversa = $usuarioId;
+        } else {
             $pdo->rollBack();
-            responderChat(403, ['erro' => 'Somente alunos podem iniciar novas conversas.']);
-        }
-        $monitorId = filter_var($entrada['monitor_id'] ?? null, FILTER_VALIDATE_INT);
-        if (!$monitorId || $monitorId === $usuarioId) {
-            $pdo->rollBack();
-            responderChat(400, ['erro' => 'Selecione um monitor válido.']);
-        }
-
-        $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE id = ? AND tipo = 'monitor'");
-        $stmt->execute([$monitorId]);
-        if (!$stmt->fetch()) {
-            $pdo->rollBack();
-            responderChat(404, ['erro' => 'Monitor não encontrado.']);
+            responderChat(403, ['erro' => 'Acesso negado.']);
         }
 
         $stmt = $pdo->prepare(
             'INSERT INTO conversas (aluno_id, monitor_id) VALUES (?, ?)
              ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)'
         );
-        $stmt->execute([$usuarioId, $monitorId]);
+        $stmt->execute([$alunoIdConversa, $monitorIdConversa]);
         $conversaId = (int) $pdo->lastInsertId();
         $pdo->commit();
         responderChat(200, ['conversa_id' => $conversaId]);

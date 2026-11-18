@@ -1,7 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../includes/auth.php';
+iniciarSessaoSegura();
 
 $tipo = $_POST['tipo'] ?? 'aluno';
 if (!is_string($tipo) || !in_array($tipo, ['aluno', 'monitor'], true)) {
@@ -21,6 +20,17 @@ if (!is_string($token) || empty($_SESSION['csrf_token']) || !hash_equals($_SESSI
     exit;
 }
 
+// Proteção contra força bruta por sessão (máx. 5 falhas em 60 segundos)
+$agora = time();
+$tentativas = $_SESSION['login_tentativas'] ?? [];
+$tentativas = array_values(array_filter($tentativas, static fn(int $ts): bool => ($agora - $ts) < 60));
+if (count($tentativas) >= 5) {
+    $_SESSION['login_tentativas'] = $tentativas;
+    $_SESSION['erro'] = 'Muitas tentativas seguidas. Aguarde 1 minuto antes de tentar novamente.';
+    header('Location: ' . $urlLogin);
+    exit;
+}
+
 $identificacaoEntrada = $_POST['identificacao'] ?? '';
 $senha = $_POST['senha'] ?? '';
 if (!is_string($identificacaoEntrada) || !is_string($senha)) {
@@ -30,7 +40,7 @@ if (!is_string($identificacaoEntrada) || !is_string($senha)) {
 }
 
 $identificacao = trim($identificacaoEntrada);
-if ($identificacao === '' || $senha === '') {
+if ($identificacao === '' || $senha === '' || strlen($senha) > 72) {
     $_SESSION['erro'] = 'Preencha e-mail/CPF e senha para continuar.';
     header('Location: ' . $urlLogin);
     exit;
@@ -50,7 +60,15 @@ try {
     $stmt->execute([$email, $cpf, $tipo]);
     $usuario = $stmt->fetch();
 
-    if (!$usuario || !password_verify($senha, $usuario['senha'])) {
+    // Previne enumeração de usuários por diferença de tempo (timing attack)
+    $hashAlvo = is_array($usuario) && isset($usuario['senha'])
+        ? $usuario['senha']
+        : '$2y$10$ea0oZHkIso5NZftQABwAt.dcRutq9gn01r4CiTgxOYME9bVuOBGse';
+    $senhaValida = password_verify($senha, $hashAlvo);
+
+    if (!$usuario || !$senhaValida) {
+        $tentativas[] = $agora;
+        $_SESSION['login_tentativas'] = $tentativas;
         unset(
             $_SESSION['usuario_id'],
             $_SESSION['usuario_nome'],
@@ -62,6 +80,7 @@ try {
         exit;
     }
 
+    unset($_SESSION['login_tentativas']);
     session_regenerate_id(true);
     $_SESSION['usuario_id'] = (int) $usuario['id'];
     $_SESSION['usuario_nome'] = $usuario['nome'];

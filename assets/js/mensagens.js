@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
         placeholder.value = '';
         placeholder.textContent = currentUserType === 'aluno'
             ? 'Escolha um monitor'
-            : 'Alunos das suas conversas';
+            : 'Escolha um aluno';
         contactSelect.appendChild(placeholder);
 
         contacts.forEach(function (contact) {
@@ -233,8 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
             option.textContent = contact.nome;
             contactSelect.appendChild(option);
         });
-        contactSelect.disabled = currentUserType !== 'aluno' || contacts.length === 0;
-        contactSelect.parentElement.hidden = currentUserType !== 'aluno';
+        contactSelect.disabled = contacts.length === 0;
+        contactSelect.parentElement.hidden = false;
     }
 
     async function loadBootstrap() {
@@ -554,6 +554,57 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    async function openWithMonitor(contatoId, abrirAgendamento) {
+        const idNumerico = Number(contatoId);
+        if (!idNumerico) return;
+        try {
+            const payload = currentUserType === 'monitor'
+                ? { acao: 'iniciar', aluno_id: idNumerico }
+                : { acao: 'iniciar', monitor_id: idNumerico };
+            const data = await post(api, payload);
+            await loadBootstrap();
+            const conversation = conversations.find(function (item) {
+                return Number(item.id) === Number(data.conversa_id);
+            });
+            if (conversation) {
+                await selectConversation(conversation);
+                if (abrirAgendamento && currentUserType === 'aluno') {
+                    document.getElementById('requestAppointment').click();
+                }
+            }
+        } catch (error) {
+            showToast(error.message, true);
+        }
+    }
+
+    window.AthenasChat = {
+        openWithMonitor: openWithMonitor,
+        openWithUser: openWithMonitor
+    };
+
+    document.addEventListener('click', function (event) {
+        const btnConversa = event.target.closest('[data-iniciar-conversa-monitor], [data-iniciar-conversa-aluno]');
+        if (btnConversa) {
+            event.preventDefault();
+            const dialogAberto = btnConversa.closest('dialog[open]');
+            if (dialogAberto) dialogAberto.close();
+            const searchDropdown = document.getElementById('searchDropdown');
+            if (searchDropdown) searchDropdown.classList.remove('active');
+            const idAlvo = btnConversa.dataset.iniciarConversaMonitor || btnConversa.dataset.iniciarConversaAluno;
+            openWithMonitor(idAlvo, false);
+            return;
+        }
+        const btnAgendar = event.target.closest('[data-solicitar-monitoria-monitor]');
+        if (btnAgendar) {
+            event.preventDefault();
+            const dialogAberto = btnAgendar.closest('dialog[open]');
+            if (dialogAberto) dialogAberto.close();
+            const searchDropdown = document.getElementById('searchDropdown');
+            if (searchDropdown) searchDropdown.classList.remove('active');
+            openWithMonitor(btnAgendar.dataset.solicitarMonitoriaMonitor, true);
+        }
+    });
+
     document.getElementById('chatClose').addEventListener('click', closeChat);
     document.getElementById('chatToggleSize').addEventListener('click', function () {
         const expanded = app.classList.toggle('chat-fullscreen');
@@ -568,7 +619,10 @@ document.addEventListener('DOMContentLoaded', function () {
     contactSelect.addEventListener('change', async function () {
         if (!this.value) return;
         try {
-            const data = await post(api, { acao: 'iniciar', monitor_id: Number(this.value) });
+            const payload = currentUserType === 'monitor'
+                ? { acao: 'iniciar', aluno_id: Number(this.value) }
+                : { acao: 'iniciar', monitor_id: Number(this.value) };
+            const data = await post(api, payload);
             await loadBootstrap();
             const conversation = conversations.find(function (item) {
                 return Number(item.id) === Number(data.conversa_id);

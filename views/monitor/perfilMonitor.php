@@ -5,7 +5,14 @@ require_once __DIR__ . '/../../config/conexao.php';
 
 $tituloPagina = "Perfil do Monitor - UNIVAG ATHENAS";
 $tipoUsuario = $_SESSION['usuario_tipo'];
-$ehDono = ($tipoUsuario === 'monitor');
+$idUrl = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
+if ($tipoUsuario === 'monitor' && (!$idUrl || $idUrl === (int) $_SESSION['usuario_id'])) {
+    $monitorIdAlvo = (int) $_SESSION['usuario_id'];
+    $ehDono = true;
+} else {
+    $ehDono = false;
+    $monitorIdAlvo = ($idUrl && $idUrl > 0) ? (int) $idUrl : 0;
+}
 $diasSemana = [
     1 => ['chave' => 'Seg', 'nome' => 'Segunda-feira'],
     2 => ['chave' => 'Ter', 'nome' => 'Terça-feira'],
@@ -53,46 +60,51 @@ if (!in_array($metodo, ['GET', 'POST'], true)) {
     exit('Método não permitido.');
 }
 
-if ($ehDono) {
-    try {
-        $stmt = $pdo->prepare(
-            'SELECT u.nome, u.bio, u.curso, u.periodo, u.foto_mime,
-                    pm.area_atuacao, pm.disciplina, pm.local_atendimento,
-                    pm.duracao_monitoria, pm.modalidade, pm.metodologia,
-                    pm.ideal_para, pm.topicos
-             FROM usuarios u
-             LEFT JOIN perfis_monitores pm ON pm.monitor_id = u.id
-             WHERE u.id = ? AND u.tipo = ?'
-        );
-        $stmt->execute([$_SESSION['usuario_id'], 'monitor']);
-        $dadosBanco = $stmt->fetch();
-        if (!$dadosBanco) {
-            http_response_code(404);
-            exit('Perfil de monitor não encontrado.');
-        }
-        foreach (array_keys($perfil) as $campo) {
-            if ($dadosBanco[$campo] !== null) {
-                $perfil[$campo] = $dadosBanco[$campo];
-            }
-        }
+try {
+    if (!$ehDono && $monitorIdAlvo <= 0) {
+        $stmtPrimeiro = $pdo->query("SELECT id FROM usuarios WHERE tipo = 'monitor' ORDER BY id ASC LIMIT 1");
+        $monitorIdAlvo = (int) ($stmtPrimeiro->fetchColumn() ?: 0);
+    }
 
-        $stmt = $pdo->prepare(
-            'SELECT dia_semana, disponivel, hora_inicio, hora_fim
-             FROM disponibilidades_monitores
-             WHERE monitor_id = ?'
-        );
-        $stmt->execute([$_SESSION['usuario_id']]);
-        foreach ($stmt->fetchAll() as $horario) {
-            $dia = (int) $horario['dia_semana'];
-            if (isset($horariosSemana[$dia])) {
-                $horariosSemana[$dia] = [
-                    'disponivel' => (bool) $horario['disponivel'],
-                    'inicio' => $horario['hora_inicio'] ? substr($horario['hora_inicio'], 0, 5) : '',
-                    'fim' => $horario['hora_fim'] ? substr($horario['hora_fim'], 0, 5) : '',
-                ];
-            }
+    $stmt = $pdo->prepare(
+        'SELECT u.id, u.nome, u.bio, u.curso, u.periodo, u.foto_mime,
+                pm.area_atuacao, pm.disciplina, pm.local_atendimento,
+                pm.duracao_monitoria, pm.modalidade, pm.metodologia,
+                pm.ideal_para, pm.topicos
+         FROM usuarios u
+         LEFT JOIN perfis_monitores pm ON pm.monitor_id = u.id
+         WHERE u.id = ? AND u.tipo = ?'
+    );
+    $stmt->execute([$monitorIdAlvo, 'monitor']);
+    $dadosBanco = $stmt->fetch();
+    if (!$dadosBanco) {
+        http_response_code(404);
+        exit('Perfil de monitor não encontrado.');
+    }
+    foreach (array_keys($perfil) as $campo) {
+        if ($dadosBanco[$campo] !== null) {
+            $perfil[$campo] = $dadosBanco[$campo];
         }
+    }
 
+    $stmt = $pdo->prepare(
+        'SELECT dia_semana, disponivel, hora_inicio, hora_fim
+         FROM disponibilidades_monitores
+         WHERE monitor_id = ?'
+    );
+    $stmt->execute([$monitorIdAlvo]);
+    foreach ($stmt->fetchAll() as $horario) {
+        $dia = (int) $horario['dia_semana'];
+        if (isset($horariosSemana[$dia])) {
+            $horariosSemana[$dia] = [
+                'disponivel' => (bool) $horario['disponivel'],
+                'inicio' => $horario['hora_inicio'] ? substr($horario['hora_inicio'], 0, 5) : '',
+                'fim' => $horario['hora_fim'] ? substr($horario['hora_fim'], 0, 5) : '',
+            ];
+        }
+    }
+
+    if ($ehDono) {
         $stmt = $pdo->prepare(
             'SELECT id, inicio, fim, motivo
              FROM bloqueios_disponibilidade
@@ -100,48 +112,30 @@ if ($ehDono) {
              ORDER BY inicio
              LIMIT 30'
         );
-        $stmt->execute([$_SESSION['usuario_id']]);
+        $stmt->execute([$monitorIdAlvo]);
         $bloqueiosAgenda = $stmt->fetchAll();
+    }
 
-        $stmt = $pdo->prepare(
-            'SELECT COUNT(*), ROUND(AVG(nota), 1)
-             FROM avaliacoes_monitorias WHERE monitor_id = ?'
-        );
-        $stmt->execute([$_SESSION['usuario_id']]);
-        [$totalAvaliacoesMonitor, $mediaAvaliacaoMonitor] = $stmt->fetch(PDO::FETCH_NUM);
-        $stmt = $pdo->prepare(
-            'SELECT av.nota, av.comentario, av.criada_em, aluno.nome AS aluno_nome
-             FROM avaliacoes_monitorias av
-             JOIN usuarios aluno ON aluno.id = av.aluno_id
-             WHERE av.monitor_id = ?
-             ORDER BY av.criada_em DESC
-             LIMIT 5'
-        );
-        $stmt->execute([$_SESSION['usuario_id']]);
-        $avaliacoesMonitor = $stmt->fetchAll();
-    } catch (PDOException $e) {
-        error_log($e->getMessage());
-        http_response_code(500);
-        exit('Não foi possível carregar o perfil do monitor.');
-    }
-} else {
-    $perfil = array_merge($perfil, [
-        'nome' => 'Perfil de exemplo',
-        'bio' => 'Sou estudante e monitor. Gosto de explicar os conteúdos de forma simples e prática.',
-        'curso' => 'Técnico em Informática',
-        'periodo' => '',
-        'area_atuacao' => 'Técnico em Informática',
-        'disciplina' => 'Banco de Dados',
-        'local_atendimento' => 'Online e presencial',
-        'duracao_monitoria' => '1 hora',
-        'modalidade' => 'Individual ou em grupo',
-        'metodologia' => 'Explicações passo a passo, exemplos práticos e exercícios.',
-        'ideal_para' => 'Estudantes que querem tirar dúvidas ou reforçar o conteúdo.',
-        'topicos' => 'SQL, Modelagem de Banco de Dados, DER, Normalização',
-    ]);
-    foreach ([1 => ['19:00', '21:00'], 2 => ['19:00', '21:00'], 3 => ['14:00', '16:00'], 4 => ['15:00', '18:00']] as $dia => [$inicio, $fim]) {
-        $horariosSemana[$dia] = ['disponivel' => true, 'inicio' => $inicio, 'fim' => $fim];
-    }
+    $stmt = $pdo->prepare(
+        'SELECT COUNT(*), ROUND(AVG(nota), 1)
+         FROM avaliacoes_monitorias WHERE monitor_id = ?'
+    );
+    $stmt->execute([$monitorIdAlvo]);
+    [$totalAvaliacoesMonitor, $mediaAvaliacaoMonitor] = $stmt->fetch(PDO::FETCH_NUM);
+    $stmt = $pdo->prepare(
+        'SELECT av.nota, av.comentario, av.criada_em, aluno.nome AS aluno_nome
+         FROM avaliacoes_monitorias av
+         JOIN usuarios aluno ON aluno.id = av.aluno_id
+         WHERE av.monitor_id = ?
+         ORDER BY av.criada_em DESC
+         LIMIT 5'
+    );
+    $stmt->execute([$monitorIdAlvo]);
+    $avaliacoesMonitor = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    http_response_code(500);
+    exit('Não foi possível carregar o perfil do monitor.');
 }
 
 if ($metodo === 'POST' && $ehDono) {
@@ -503,8 +497,8 @@ $topicos = array_filter(array_map('trim', explode(',', $perfil['topicos'])));
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- CSS Unificado do Perfil do Monitor -->
-    <link rel="stylesheet" href="../../assets/css/monitorTheme.css?v=5">
-    <link rel="stylesheet" href="../../assets/css/perfilMonitor.css?v=5">
+    <link rel="stylesheet" href="../../assets/css/monitorTheme.css?v=6">
+    <link rel="stylesheet" href="../../assets/css/perfilMonitor.css?v=7">
 </head>
 <body class="monitor-theme perfil-monitor-page">
 
@@ -521,7 +515,7 @@ $topicos = array_filter(array_map('trim', explode(',', $perfil['topicos'])));
                     <?php if ($ehDono): ?>
                         Mantenha sua apresentação e disponibilidade atualizadas para que os alunos encontrem as informações corretas.
                     <?php else: ?>
-                        Este é um perfil demonstrativo. As informações exibidas ainda não correspondem a um cadastro real de monitor.
+                        Confira a apresentação, metodologia e horários disponíveis deste monitor para iniciar uma conversa ou agendar sua monitoria.
                     <?php endif; ?>
                 </p>
             </div>
@@ -551,8 +545,8 @@ $topicos = array_filter(array_map('trim', explode(',', $perfil['topicos'])));
                         <div class="perfil-apresentacao">
                             <div class="perfil-identidade-linha">
                                 <div class="monitor-avatar" id="displayAvatar">
-                                    <?php if ($ehDono && $perfil['foto_mime']): ?>
-                                        <img src="../../actions/fotoPerfil.php?v=<?php echo (int) $_SESSION['usuario_id']; ?>" alt="Foto de perfil">
+                                    <?php if ($perfil['foto_mime']): ?>
+                                        <img src="../../actions/fotoPerfil.php?id=<?php echo (int) $monitorIdAlvo; ?>" alt="Foto de perfil">
                                     <?php else: ?>
                                         <span aria-hidden="true"><?php echo htmlspecialchars($inicialNome, ENT_QUOTES, 'UTF-8'); ?></span>
                                     <?php endif; ?>
@@ -573,7 +567,7 @@ $topicos = array_filter(array_map('trim', explode(',', $perfil['topicos'])));
                                             <i class="fa-solid fa-pen-to-square"></i> Editar perfil
                                         </button>
                                     <?php else: ?>
-                                        <button type="button" class="btn-acao-primario" id="btnAgendarMonitoriaPerfil">
+                                        <button type="button" class="btn-acao-primario" id="btnAgendarMonitoriaPerfil" data-solicitar-monitoria-monitor="<?php echo (int) $monitorIdAlvo; ?>">
                                             <i class="fa-solid fa-calendar-plus"></i> Solicitar monitoria
                                         </button>
                                     <?php endif; ?>
@@ -685,7 +679,7 @@ $topicos = array_filter(array_map('trim', explode(',', $perfil['topicos'])));
                         <?php if ($ehDono): ?>
                             Esses horários ficam vinculados à sua conta e podem ser alterados quando precisar.
                         <?php else: ?>
-                            Estes horários são ilustrativos e ainda não representam a disponibilidade real do monitor.
+                            Grade semanal informada pelo monitor para agendamento de atendimentos.
                         <?php endif; ?>
                     </p>
 
@@ -760,10 +754,10 @@ $topicos = array_filter(array_map('trim', explode(',', $perfil['topicos'])));
 
                         <?php if (!$ehDono): ?>
                             <div class="container-fale-comigo">
-                                <button type="button" class="btn-acao-primario btn-bloco" id="btnIniciarConversaPerfil">
+                                <button type="button" class="btn-acao-primario btn-bloco" id="btnIniciarConversaPerfil" data-iniciar-conversa-monitor="<?php echo (int) $monitorIdAlvo; ?>">
                                     <i class="fa-solid fa-comments"></i> Iniciar conversa
                                 </button>
-                                <button type="button" class="btn-acao-outline btn-bloco" id="btnSolicitarMonitoriaPerfil">
+                                <button type="button" class="btn-acao-outline btn-bloco" id="btnSolicitarMonitoriaPerfil" data-solicitar-monitoria-monitor="<?php echo (int) $monitorIdAlvo; ?>">
                                     <i class="fa-solid fa-calendar-check"></i> Solicitar monitoria
                                 </button>
                             </div>
@@ -777,7 +771,7 @@ $topicos = array_filter(array_map('trim', explode(',', $perfil['topicos'])));
                                 <h2>Avaliações</h2>
                             </div>
                         </div>
-                        <?php if ($ehDono && $totalAvaliacoesMonitor > 0): ?>
+                        <?php if ($totalAvaliacoesMonitor > 0): ?>
                             <div class="avaliacao-resumo">
                                 <strong><?php echo number_format((float) $mediaAvaliacaoMonitor, 1, ',', '.'); ?> / 5</strong>
                                 <span><?php echo (int) $totalAvaliacoesMonitor; ?> <?php echo (int) $totalAvaliacoesMonitor === 1 ? 'avaliação recebida' : 'avaliações recebidas'; ?></span>

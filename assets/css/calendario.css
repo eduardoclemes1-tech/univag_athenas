@@ -93,8 +93,8 @@ body.monitor-theme .badge-dia-semana {
     background-color: var(--monitor-surface-soft);
 }
 
-.calendario-main-container { padding: 24px 20px; }
-.calendario-content-wrapper { max-width: 1280px; margin: 0 auto; }
+.calendario-main-container { padding: 24px 28px; }
+.calendario-content-wrapper { max-width: 1560px; margin: 0 auto; }
 
 /* ===== 3. GRID E CARDS ===== */
 .calendario-grid {

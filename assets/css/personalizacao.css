@@ -1,31 +1,372 @@
-.visual-nebulosa,
-.perfil-aluno-capa.perfil-fundo-nebulosa {
+/* ================= 12 BANNERS ANIMADOS DOS CONJUNTOS ATHENAS ================= */
+
+/* 1. Conjunto Ciberespaço Root (20 pts) */
+.visual-matrix-cyber,
+.perfil-aluno-capa.perfil-fundo-matrix-cyber {
     background-image:
-        radial-gradient(ellipse at 18% 72%, #f987e2 0, transparent 38%),
-        radial-gradient(ellipse at 82% 28%, #51c7ed 0, transparent 40%),
-        linear-gradient(125deg, #17113e, #392778 52%, #111b46);
-    background-size: 180% 180%;
-    animation: loja-nebulosa 15s ease-in-out infinite;
+        linear-gradient(rgba(16, 185, 129, 0.26) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 185, 129, 0.26) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.35) 0%, transparent 65%),
+        linear-gradient(135deg, #02140c 0%, #052e1c 50%, #041d29 100%);
+    background-size: 26px 26px, 26px 26px, 100% 100%, 100% 100%;
+    animation: loja-matrix 7s linear infinite;
 }
 
-.visual-aurora-animada,
-.perfil-aluno-capa.perfil-fundo-aurora-animada {
+/* 2. Conjunto Fossa de Poseidon (25 pts) */
+.visual-oceano-abissal,
+.perfil-aluno-capa.perfil-fundo-oceano-abissal {
     background-image:
-        radial-gradient(ellipse at 10% 110%, #50e3c2 0, transparent 45%),
-        radial-gradient(ellipse at 90% -10%, #81a9ff 0, transparent 45%),
-        linear-gradient(120deg, #0d3444, #17345b 48%, #38285f);
-    background-size: 190% 190%;
-    animation: loja-aurora 12s ease-in-out infinite alternate;
+        radial-gradient(circle at 25% 75%, rgba(34, 211, 238, 0.45) 0%, transparent 45%),
+        radial-gradient(circle at 80% 25%, rgba(14, 165, 233, 0.48) 0%, transparent 48%),
+        radial-gradient(circle, rgba(165, 243, 252, 0.55) 0 1.2px, transparent 2.4px),
+        linear-gradient(135deg, #021024 0%, #052659 48%, #0891b2 100%);
+    background-size: 165% 165%, 165% 165%, 54px 54px, 100% 100%;
+    animation: loja-aurora 7.5s ease-in-out infinite alternate;
 }
 
-.visual-estrelas,
-.perfil-aluno-capa.perfil-fundo-estrelas {
+/* 3. Conjunto Guardião do Olimpo (30 pts) */
+.visual-templo-atena,
+.perfil-aluno-capa.perfil-fundo-templo-atena {
     background-image:
-        radial-gradient(circle, #fff8cc 0 1px, transparent 2px),
-        radial-gradient(circle, #c2d7ff 0 1px, transparent 2px),
-        linear-gradient(145deg, #10182f, #25274e 55%, #111a38);
-    background-size: 72px 72px, 113px 113px, 100% 100%;
-    animation: loja-estrelas 22s linear infinite;
+        radial-gradient(circle, #e0f2fe 0 1.2px, transparent 2.2px),
+        radial-gradient(circle, #7dd3fc 0 1px, transparent 2px),
+        radial-gradient(ellipse at 78% 22%, rgba(56, 189, 248, 0.42) 0%, transparent 48%),
+        linear-gradient(135deg, #081c38 0%, #0c356a 52%, #1e3a8a 100%);
+    background-size: 64px 64px, 98px 98px, 160% 160%, 100% 100%;
+    animation: loja-estrelas 18s linear infinite;
+}
+
+/* 4. Conjunto Santuário Bio-Tech (40 pts) */
+.visual-floresta-runica,
+.perfil-aluno-capa.perfil-fundo-floresta-runica {
+    background-image:
+        radial-gradient(circle, rgba(253, 224, 71, 0.7) 0 1.4px, transparent 2.6px),
+        radial-gradient(ellipse at 30% 70%, rgba(16, 185, 129, 0.5) 0%, transparent 46%),
+        radial-gradient(ellipse at 75% 30%, rgba(132, 204, 22, 0.42) 0%, transparent 44%),
+        linear-gradient(135deg, #022c22 0%, #064e3b 52%, #115e59 100%);
+    background-size: 58px 58px, 160% 160%, 160% 160%, 100% 100%;
+    animation: loja-estrelas 14s linear infinite;
+}
+
+/* 5. Conjunto Outrun Synthwave (50 pts) */
+.visual-horizonte-synth,
+.perfil-aluno-capa.perfil-fundo-horizonte-synth {
+    background-image:
+        radial-gradient(circle at 50% 92%, #ff6b6b 0%, #f06595 24%, transparent 50%),
+        linear-gradient(rgba(236, 72, 153, 0.2) 1px, transparent 1px),
+        linear-gradient(135deg, #1b0a3a 0%, #3b0ca3 48%, #7209b7 100%);
+    background-size: 150% 150%, 24px 24px, 160% 160%;
+    animation: loja-nebulosa 9s ease-in-out infinite alternate;
+}
+
+/* 6. Conjunto Sobrecarga Quântica (55 pts) */
+.visual-tempestade-plasma,
+.perfil-aluno-capa.perfil-fundo-tempestade-plasma {
+    background-image:
+        radial-gradient(ellipse at 20% 25%, rgba(56, 189, 248, 0.55) 0%, transparent 42%),
+        radial-gradient(ellipse at 80% 75%, rgba(168, 85, 247, 0.55) 0%, transparent 42%),
+        linear-gradient(125deg, #090d24 0%, #1e1b4b 45%, #31105f 100%);
+    background-size: 175% 175%, 175% 175%, 100% 100%;
+    animation: loja-aurora 7s ease-in-out infinite alternate;
+}
+
+/* 7. Conjunto Protocolo Fantasma (65 pts) */
+.visual-protocolo-fantasma,
+.perfil-aluno-capa.perfil-fundo-protocolo-fantasma {
+    background-image:
+        linear-gradient(135deg, transparent 44%, rgba(168, 85, 247, 0.28) 49%, rgba(236, 72, 153, 0.32) 51%, transparent 56%),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.45) 0%, transparent 44%),
+        linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(135deg, #09090b 0%, #18181b 48%, #2e1065 100%);
+    background-size: 180% 180%, 150% 150%, 22px 22px, 100% 100%;
+    animation: loja-nebulosa 6.5s ease-in-out infinite;
+}
+
+/* 8. Conjunto Horizonte de Eventos (70 pts) */
+.visual-singularidade,
+.perfil-aluno-capa.perfil-fundo-singularidade {
+    background-image:
+        radial-gradient(circle at 50% 50%, #030712 0 15%, #fbbf24 17%, #ea580c 22%, transparent 44%),
+        radial-gradient(ellipse at 25% 30%, rgba(56, 189, 248, 0.35) 0, transparent 50%),
+        linear-gradient(135deg, #030712 0%, #0f172a 50%, #1e1b4b 100%);
+    background-size: 130% 130%, 180% 180%, 100% 100%;
+    animation: loja-aurora 8s ease-in-out infinite alternate;
+}
+
+/* 9. Conjunto Fúria do Compilador (80 pts) */
+.visual-forja-dragao,
+.perfil-aluno-capa.perfil-fundo-forja-dragao {
+    background-image:
+        radial-gradient(circle at 30% 85%, rgba(251, 191, 36, 0.5) 0%, transparent 38%),
+        radial-gradient(circle at 75% 20%, rgba(239, 68, 68, 0.55) 0%, transparent 42%),
+        linear-gradient(130deg, #2a0606 0%, #7f1d1d 48%, #b45309 100%);
+    background-size: 170% 170%, 170% 170%, 100% 100%;
+    animation: loja-nebulosa 7s ease-in-out infinite;
+}
+
+/* 10. Conjunto Lua de Sangue (85 pts) */
+.visual-eclipse-carmesim,
+.perfil-aluno-capa.perfil-fundo-eclipse-carmesim {
+    background-image:
+        radial-gradient(circle at 50% 50%, #050508 0 17%, #ef4444 19%, #991b1b 26%, transparent 48%),
+        radial-gradient(circle, rgba(254, 202, 202, 0.55) 0 1px, transparent 2px),
+        linear-gradient(135deg, #05050a 0%, #1f0812 52%, #450a0a 100%);
+    background-size: 125% 125%, 80px 80px, 100% 100%;
+    animation: loja-aurora 8s ease-in-out infinite alternate;
+}
+
+/* 11. Conjunto Supernova Prismática (90 pts) */
+.visual-supernova-prisma,
+.perfil-aluno-capa.perfil-fundo-supernova-prisma {
+    background-image:
+        radial-gradient(circle at 20% 80%, rgba(34, 211, 238, 0.55) 0%, transparent 42%),
+        radial-gradient(circle at 80% 20%, rgba(244, 114, 182, 0.58) 0%, transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.42) 0%, transparent 48%),
+        linear-gradient(125deg, #0f172a 0%, #3b0764 38%, #be185d 72%, #0284c7 100%);
+    background-size: 175% 175%, 175% 175%, 140% 140%, 180% 180%;
+    animation: loja-nebulosa 6s ease-in-out infinite;
+}
+
+/* 12. Conjunto Honra Suprema UNIVAG (100 pts) */
+.visual-chama-olimpica,
+.perfil-aluno-capa.perfil-fundo-chama-olimpica {
+    background-image:
+        radial-gradient(ellipse at 22% 78%, #fef08a 0%, transparent 42%),
+        radial-gradient(ellipse at 78% 22%, #f59e0b 0%, transparent 45%),
+        linear-gradient(125deg, #422006 0%, #92400e 38%, #d97706 74%, #fde047 100%);
+    background-size: 185% 185%;
+    animation: loja-nebulosa 7.5s ease-in-out infinite;
+}
+
+/* ================= 12 AVATARES COM AURAS COMBINADAS ================= */
+
+/* 1. Mestre do Terminal */
+.loja-preview-avatar.visual-hacker-neon,
+.perfil-aluno-avatar-premium.perfil-avatar-hacker-neon {
+    border-color: #22c55e;
+    background: radial-gradient(circle at 50% 50%, #064e3b, #022c22);
+    color: #4ade80;
+    box-shadow: 0 0 18px rgba(34, 197, 94, 0.5);
+}
+
+/* 2. Senhor dos Mares */
+.loja-preview-avatar.visual-leviata-dados,
+.perfil-aluno-avatar-premium.perfil-avatar-leviata-dados {
+    border-color: #22d3ee;
+    background: radial-gradient(circle at 35% 35%, #0891b2, #021024);
+    color: #cffafe;
+    box-shadow: 0 0 18px rgba(34, 211, 238, 0.55);
+}
+
+/* 3. Coruja Sábia de Atena */
+.loja-preview-avatar.visual-coruja-atena,
+.perfil-aluno-avatar-premium.perfil-avatar-coruja-atena {
+    border-color: #38bdf8;
+    background: radial-gradient(circle at 30% 30%, #0284c7, #1e3a8a);
+    color: #e0f2fe;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.5);
+}
+
+/* 4. Guardião Bio-Tech */
+.loja-preview-avatar.visual-espirito-pantanal,
+.perfil-aluno-avatar-premium.perfil-avatar-espirito-pantanal {
+    border-color: #a3e635;
+    background: radial-gradient(circle at 35% 35%, #059669, #022c22);
+    color: #fef08a;
+    box-shadow: 0 0 18px rgba(163, 230, 53, 0.5);
+}
+
+/* 5. Visor Cyber-Synth */
+.loja-preview-avatar.visual-piloto-synth,
+.perfil-aluno-avatar-premium.perfil-avatar-piloto-synth {
+    border-color: #f472b6;
+    background: linear-gradient(135deg, #3b0ca3 0%, #7209b7 55%, #f72585 100%);
+    color: #7dd3fc;
+    box-shadow: 0 0 18px rgba(244, 114, 182, 0.55);
+}
+
+/* 6. Núcleo Quântico */
+.loja-preview-avatar.visual-nucleo-quantico,
+.perfil-aluno-avatar-premium.perfil-avatar-nucleo-quantico {
+    border-color: #a855f7;
+    background: radial-gradient(circle at 50% 50%, #3b0764, #0f172a);
+    color: #38bdf8;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.55);
+}
+
+/* 7. Sombra Furtiva */
+.loja-preview-avatar.visual-ninja-cyber,
+.perfil-aluno-avatar-premium.perfil-avatar-ninja-cyber {
+    border-color: #c084fc;
+    background: linear-gradient(135deg, #09090b 0%, #2e1065 65%, #701a75 100%);
+    color: #f5d0fe;
+    box-shadow: 0 0 20px rgba(192, 132, 252, 0.55);
+}
+
+/* 8. Viajante Interestelar */
+.loja-preview-avatar.visual-viajante-astral,
+.perfil-aluno-avatar-premium.perfil-avatar-viajante-astral {
+    border-color: #fbbf24;
+    background: radial-gradient(circle at 40% 40%, #1e293b, #030712);
+    color: #fcd34d;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+/* 9. Dragão Compilador */
+.loja-preview-avatar.visual-dragao-codigo,
+.perfil-aluno-avatar-premium.perfil-avatar-dragao-codigo {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 60%, #f59e0b 100%);
+    color: #fef08a;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+/* 10. Soberano do Eclipse */
+.loja-preview-avatar.visual-soberano-eclipse,
+.perfil-aluno-avatar-premium.perfil-avatar-soberano-eclipse {
+    border-color: #ef4444;
+    background: radial-gradient(circle at 50% 50%, #450a0a, #09050a);
+    color: #fca5a5;
+    box-shadow: 0 0 22px rgba(239, 68, 68, 0.6);
+}
+
+/* 11. Cristal de Supernova */
+.loja-preview-avatar.visual-fenix-cosmica,
+.perfil-aluno-avatar-premium.perfil-avatar-fenix-cosmica {
+    border-color: #38bdf8;
+    background: linear-gradient(135deg, #4c1d95 0%, #db2777 52%, #0284c7 100%);
+    color: #fef08a;
+    box-shadow: 0 0 22px rgba(236, 72, 153, 0.65);
+}
+
+/* 12. Lenda do Campus UNIVAG */
+.loja-preview-avatar.visual-coroa-lendaria,
+.perfil-aluno-avatar-premium.perfil-avatar-coroa-lendaria {
+    border-color: #fde047;
+    background: linear-gradient(135deg, #92400e 0%, #d97706 48%, #facc15 100%);
+    color: #ffffff;
+    box-shadow: 0 0 24px rgba(250, 204, 21, 0.7);
+}
+
+/* ================= 5 PRÊMIOS EXCLUSIVOS DE MAESTRIA NV. 10 (MEMES ACADÊMICOS) ================= */
+
+/* M1. Banco de Dados: "O Literal Banco de Dados" (Banco de praça feito de dados 🎲 + Lupa analisando dados) */
+.visual-maestria-banco-dados,
+.perfil-aluno-capa.perfil-fundo-maestria-banco-dados {
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 120'%3E%3Cg fill='none'%3E%3Crect x='14' y='12' width='168' height='22' rx='6' fill='%23022c22' stroke='%2334d399' stroke-width='1.2'/%3E%3Ctext x='22' y='27' fill='%236ee7b7' font-family='monospace' font-weight='bold' font-size='10'%3ESELECT * FROM BANCO_DADOS%3C/text%3E%3C!-- Encosto do Banco feito de Dados --%3E%3Cg stroke='%23064e3b' stroke-width='1.5'%3E%3Crect x='195' y='24' width='26' height='26' rx='5' fill='%23fef08a'/%3E%3Crect x='223' y='24' width='26' height='26' rx='5' fill='%23ffffff'/%3E%3Crect x='251' y='24' width='26' height='26' rx='5' fill='%23fef08a'/%3E%3Crect x='279' y='24' width='26' height='26' rx='5' fill='%23ffffff'/%3E%3C!-- Assento do Banco feito de Dados --%3E%3Crect x='185' y='52' width='26' height='24' rx='5' fill='%23ffffff'/%3E%3Crect x='213' y='52' width='26' height='24' rx='5' fill='%23fef08a'/%3E%3Crect x='241' y='52' width='26' height='24' rx='5' fill='%23ffffff'/%3E%3Crect x='269' y='52' width='26' height='24' rx='5' fill='%23fef08a'/%3E%3Crect x='297' y='52' width='26' height='24' rx='5' fill='%23ffffff'/%3E%3C!-- Pés do Banco feitos de Dados --%3E%3Crect x='192' y='78' width='22' height='22' rx='4' fill='%23fbbf24'/%3E%3Crect x='290' y='78' width='22' height='22' rx='4' fill='%23fbbf24'/%3E%3C/g%3E%3C!-- Pontinhos dos Dados --%3E%3Cg fill='%23064e3b'%3E%3Ccircle cx='208' cy='37' r='2.5'/%3E%3Ccircle cx='231' cy='32' r='2.2'/%3E%3Ccircle cx='241' cy='42' r='2.2'/%3E%3Ccircle cx='259' cy='32' r='2'/%3E%3Ccircle cx='264' cy='37' r='2'/%3E%3Ccircle cx='269' cy='42' r='2'/%3E%3Ccircle cx='286' cy='31' r='2'/%3E%3Ccircle cx='298' cy='31' r='2'/%3E%3Ccircle cx='286' cy='43' r='2'/%3E%3Ccircle cx='298' cy='43' r='2'/%3E%3Ccircle cx='198' cy='64' r='2.5'/%3E%3Ccircle cx='226' cy='64' r='2.5'/%3E%3Ccircle cx='254' cy='64' r='2.5'/%3E%3Ccircle cx='282' cy='64' r='2.5'/%3E%3Ccircle cx='310' cy='64' r='2.5'/%3E%3C/g%3E%3C!-- Analista de Dados (Lupa analisando dado flutuante) --%3E%3Cg transform='translate(342, 22)'%3E%3Crect x='10' y='12' width='30' height='30' rx='6' transform='rotate(-12 25 27)' fill='%23ffffff' stroke='%23f59e0b' stroke-width='2'/%3E%3Ccircle cx='21' cy='23' r='2.3' fill='%23dc2626'/%3E%3Ccircle cx='30' cy='31' r='2.3' fill='%23dc2626'/%3E%3Ccircle cx='24' cy='28' r='22' stroke='%2338bdf8' stroke-width='3.5' fill='rgba(56,189,248,0.15)'/%3E%3Cline x1='40' y1='44' x2='55' y2='59' stroke='%23fbbf24' stroke-width='5' stroke-linecap='round'/%3E%3C/g%3E%3Ctext x='190' y='112' fill='%23fde047' font-family='sans-serif' font-weight='900' font-size='10' letter-spacing='1'%3EUM BANCO FEITO DE DADOS%3C/text%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(circle at 70% 50%, rgba(16, 185, 129, 0.45) 0%, transparent 55%),
+        linear-gradient(135deg, #022c22 0%, #065f46 50%, #0f172a 100%);
+    background-size: contain, 160% 160%, 100% 100%;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-position: right center, 50% 50%, 0 0;
+    animation: loja-maestria-glow 6s ease-in-out infinite alternate;
+}
+
+/* M2. Lógica & Algoritmos: "Na Minha Máquina Funciona™" (Insetos de cartola tomando café) */
+.visual-maestria-cacador-bugs,
+.perfil-aluno-capa.perfil-fundo-maestria-cacador-bugs {
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 120'%3E%3Cg fill='none'%3E%3Crect x='14' y='14' width='186' height='22' rx='6' fill='%231e1b4b' stroke='%23a3e635' stroke-width='1.2'/%3E%3Ctext x='22' y='29' fill='%23bef264' font-family='monospace' font-weight='bold' font-size='9.5'%3ENA MINHA MAQUINA FUNCIONA!%3C/text%3E%3C!-- Besouro de Cartola (O Bug de Gala) --%3E%3Cg transform='translate(225, 22)'%3E%3Cline x1='8' y1='38' x2='0' y2='32' stroke='%23a3e635' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='6' y1='48' x2='-2' y2='48' stroke='%23a3e635' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='8' y1='58' x2='0' y2='64' stroke='%23a3e635' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='52' y1='38' x2='60' y2='32' stroke='%23a3e635' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='54' y1='48' x2='62' y2='48' stroke='%23a3e635' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='52' y1='58' x2='60' y2='64' stroke='%23a3e635' stroke-width='2.5' stroke-linecap='round'/%3E%3Cellipse cx='30' cy='48' rx='22' ry='24' fill='%2316a34a' stroke='%23bef264' stroke-width='2'/%3E%3Cline x1='30' y1='26' x2='30' y2='72' stroke='%23052e16' stroke-width='2'/%3E%3Ccircle cx='22' cy='42' r='3' fill='%23052e16'/%3E%3Ccircle cx='38' cy='42' r='3' fill='%23052e16'/%3E%3Ccircle cx='24' cy='56' r='2.5' fill='%23052e16'/%3E%3Ccircle cx='36' cy='56' r='2.5' fill='%23052e16'/%3E%3C!-- Cartola do Bug --%3E%3Crect x='14' y='18' width='32' height='5' rx='2' fill='%230f172a' stroke='%23fbbf24' stroke-width='1.2'/%3E%3Crect x='20' y='4' width='20' height='15' rx='2' fill='%230f172a' stroke='%23fbbf24' stroke-width='1.2'/%3E%3C!-- Gravata Borboleta --%3E%3Cpolygon points='22,25 30,29 22,33' fill='%23ef4444'/%3E%3Cpolygon points='38,25 30,29 38,33' fill='%23ef4444'/%3E%3C/g%3E%3C!-- Caneca de Café Fumegante --%3E%3Cg transform='translate(325, 34)'%3E%3Cpath d='M12 6 Q8 0 14 -6 M24 6 Q20 0 26 -6' stroke='%23fde047' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='4' y='12' width='34' height='36' rx='6' fill='%23f59e0b' stroke='%23fef08a' stroke-width='2'/%3E%3Cpath d='M38 18 H46 A6 6 0 0 1 46 38 H38' stroke='%23fef08a' stroke-width='3' fill='none'/%3E%3Ctext x='9' y='34' fill='%23451a03' font-family='monospace' font-weight='900' font-size='9'%3ECAFE%3C/text%3E%3C/g%3E%3Ctext x='206' y='110' fill='%23fde047' font-family='sans-serif' font-weight='900' font-size='9.5' letter-spacing='0.8'%3ENAO E BUG, E FEATURE VIP!%3C/text%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(circle at 75% 45%, rgba(132, 204, 22, 0.38) 0%, transparent 55%),
+        linear-gradient(135deg, #1a2e05 0%, #365314 48%, #0f172a 100%);
+    background-size: contain, 160% 160%, 100% 100%;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-position: right center, 50% 50%, 0 0;
+    animation: loja-maestria-glow 6s ease-in-out infinite alternate;
+}
+
+/* M3. Estruturas de Dados: "Árvore de Ponta-Cabeça & Pilha Alcalina" */
+.visual-maestria-arvore-pilha,
+.perfil-aluno-capa.perfil-fundo-maestria-arvore-pilha {
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 120'%3E%3Cg fill='none'%3E%3Crect x='14' y='12' width='162' height='22' rx='6' fill='%232e1065' stroke='%23c084fc' stroke-width='1.2'/%3E%3Ctext x='22' y='27' fill='%23e9d5ff' font-family='monospace' font-weight='bold' font-size='9.5'%3ERAIZ NO CEU, FOLHA NO CHAO%3C/text%3E%3C!-- Árvore Literal de Cabeça para Baixo --%3E%3Cg transform='translate(205, 10)'%3E%3C!-- Raízes no topo! --%3E%3Cpath d='M35 18 L18 4 M35 18 L35 2 M35 18 L52 4 M27 12 L12 12 M43 12 L58 12' stroke='%23d97706' stroke-width='3' stroke-linecap='round'/%3E%3Crect x='29' y='16' width='12' height='32' rx='3' fill='%23b45309'/%3E%3C!-- Copa de folhas embaixo! --%3E%3Ccircle cx='35' cy='68' r='22' fill='%2310b981' stroke='%236ee7b7' stroke-width='2'/%3E%3Ccircle cx='20' cy='58' r='14' fill='%23059669'/%3E%3Ccircle cx='50' cy='58' r='14' fill='%23059669'/%3E%3Ctext x='21' y='72' fill='%23ffffff' font-family='monospace' font-weight='bold' font-size='9'%3E0101%3C/text%3E%3C/g%3E%3C!-- Pilha Alcalina Duracell (Stack LIFO) --%3E%3Cg transform='translate(318, 18)'%3E%3Crect x='18' y='2' width='16' height='6' rx='2' fill='%23fde047'/%3E%3Crect x='8' y='8' width='36' height='26' rx='4' fill='%23d97706' stroke='%23fef08a' stroke-width='1.5'/%3E%3Crect x='8' y='34' width='36' height='42' rx='4' fill='%2318181b' stroke='%23fef08a' stroke-width='1.5'/%3E%3Ctext x='22' y='25' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='12'%3E+%3C/text%3E%3Ctext x='14' y='58' fill='%23fde047' font-family='monospace' font-weight='900' font-size='10'%3EPILHA%3C/text%3E%3C/g%3E%3Ctext x='188' y='112' fill='%23fde047' font-family='sans-serif' font-weight='900' font-size='9.5' letter-spacing='0.8'%3EARVORE INVERTIDA + PILHA LIFO%3C/text%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(circle at 75% 45%, rgba(168, 85, 247, 0.42) 0%, transparent 55%),
+        linear-gradient(135deg, #2e1065 0%, #4c1d95 48%, #064e3b 100%);
+    background-size: contain, 160% 160%, 100% 100%;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-position: right center, 50% 50%, 0 0;
+    animation: loja-maestria-glow 6s ease-in-out infinite alternate;
+}
+
+/* M4. Web & Mobile Full-Stack: "O Escolhido que Centralizou a <div>" + Panquecas Full-Stack */
+.visual-maestria-centralizador-div,
+.perfil-aluno-capa.perfil-fundo-maestria-centralizador-div {
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 120'%3E%3Cg fill='none'%3E%3C!-- Linhas de Mira Laser Centralizando a DIV --%3E%3Cline x1='245' y1='0' x2='245' y2='120' stroke='%2338bdf8' stroke-width='1.2' stroke-dasharray='4 3'/%3E%3Cline x1='150' y1='56' x2='335' y2='56' stroke='%2338bdf8' stroke-width='1.2' stroke-dasharray='4 3'/%3E%3Ccircle cx='245' cy='56' r='38' stroke='%23f472b6' stroke-width='1.5' stroke-dasharray='6 4'/%3E%3C!-- A Lendária DIV Centralizada --%3E%3Crect x='195' y='34' width='100' height='44' rx='8' fill='%230f172a' stroke='%23fde047' stroke-width='2.5'/%3E%3Ctext x='207' y='53' fill='%23fde047' font-family='monospace' font-weight='900' font-size='11'%3E%26lt;div%26gt;100%25%3C/text%3E%3Ctext x='204' y='68' fill='%2338bdf8' font-family='monospace' font-weight='bold' font-size='8.5'%3ECENTRALIZADA!%3C/text%3E%3C!-- Pilha de Panquecas (Full-Stack Literal) --%3E%3Cg transform='translate(332, 30)'%3E%3Cellipse cx='32' cy='52' rx='28' ry='7' fill='%23e2e8f0'/%3E%3Cellipse cx='32' cy='45' rx='22' ry='6' fill='%23d97706' stroke='%23fef08a' stroke-width='1'/%3E%3Cellipse cx='32' cy='37' rx='22' ry='6' fill='%23b45309' stroke='%23fef08a' stroke-width='1'/%3E%3Cellipse cx='32' cy='29' rx='22' ry='6' fill='%23d97706' stroke='%23fef08a' stroke-width='1'/%3E%3Crect x='26' y='21' width='12' height='7' rx='2' fill='%23fde047'/%3E%3Ctext x='6' y='70' fill='%23f472b6' font-family='sans-serif' font-weight='900' font-size='8.5'%3EFULL-STACK%3C/text%3E%3C/g%3E%3Ctext x='182' y='112' fill='%23fde047' font-family='sans-serif' font-weight='900' font-size='9.5' letter-spacing='0.8'%3EMESTRE SUPREMO DO MARGIN: AUTO%3C/text%3E%3C/g%3E%3C/svg%3E"),
+        linear-gradient(rgba(56, 189, 248, 0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.14) 1px, transparent 1px),
+        linear-gradient(135deg, #090d24 0%, #1e3a8a 48%, #701a75 100%);
+    background-size: contain, 20px 20px, 20px 20px, 100% 100%;
+    background-repeat: no-repeat, repeat, repeat, no-repeat;
+    background-position: right center, 0 0, 0 0, 0 0;
+    animation: loja-maestria-glow 6s ease-in-out infinite alternate;
+}
+
+/* M5. Redes & Cibersegurança: "Rede de Dormir na Varanda & Parede Pegando Fogo (Firewall)" */
+.visual-maestria-rede-dormir,
+.perfil-aluno-capa.perfil-fundo-maestria-rede-dormir {
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 120'%3E%3Cg fill='none'%3E%3C!-- Rede de Varanda / Praia (A Rede LAN) --%3E%3Crect x='176' y='20' width='6' height='72' rx='3' fill='%2394a3b8'/%3E%3Crect x='296' y='20' width='6' height='72' rx='3' fill='%2394a3b8'/%3E%3Cpath d='M182 36 Q239 88 296 36' stroke='%23fde047' stroke-width='4' fill='rgba(56,189,248,0.35)'/%3E%3Cpath d='M182 36 Q239 64 296 36' stroke='%2338bdf8' stroke-width='2.5' fill='none'/%3E%3Ctext x='215' y='32' fill='%237dd3fc' font-family='monospace' font-weight='bold' font-size='9.5'%3EREDE (Zzz...)%3C/text%3E%3C!-- Parede de Tijolos Pegando Fogo (FIRE-WALL Literal) --%3E%3Cg transform='translate(322, 26)'%3E%3Cpath d='M8 18 Q14 0 22 14 Q30 -4 38 14 Q46 2 54 18 Z' fill='%23f59e0b' stroke='%23ef4444' stroke-width='1.5'/%3E%3Crect x='6' y='18' width='50' height='48' rx='4' fill='%23991b1b' stroke='%23fca5a5' stroke-width='1.5'/%3E%3Cline x1='6' y1='34' x2='56' y2='34' stroke='%23fecaca' stroke-width='1.5'/%3E%3Cline x1='6' y1='50' x2='56' y2='50' stroke='%23fecaca' stroke-width='1.5'/%3E%3Cline x1='31' y1='18' x2='31' y2='34' stroke='%23fecaca' stroke-width='1.5'/%3E%3Cline x1='18' y1='34' x2='18' y2='50' stroke='%23fecaca' stroke-width='1.5'/%3E%3Cline x1='44' y1='34' x2='44' y2='50' stroke='%23fecaca' stroke-width='1.5'/%3E%3Ctext x='8' y='78' fill='%23fde047' font-family='sans-serif' font-weight='900' font-size='8.5'%3EFIRE-WALL%3C/text%3E%3C/g%3E%3Ctext x='178' y='112' fill='%23fde047' font-family='sans-serif' font-weight='900' font-size='9.5' letter-spacing='0.8'%3EAD. DE REDE (DE DORMIR) + FIREWALL%3C/text%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(circle at 80% 35%, rgba(239, 68, 68, 0.45) 0%, transparent 50%),
+        linear-gradient(135deg, #082f49 0%, #0369a1 45%, #7c2d12 100%);
+    background-size: contain, 160% 160%, 100% 100%;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-position: right center, 50% 50%, 0 0;
+    animation: loja-maestria-glow 6s ease-in-out infinite alternate;
+}
+
+/* Avatares Exclusivos de Maestria Nv. 10 */
+.loja-preview-avatar.visual-maestria-analista-dados,
+.perfil-aluno-avatar-premium.perfil-avatar-maestria-analista-dados {
+    border-color: #fde047;
+    background: linear-gradient(135deg, #064e3b 0%, #10b981 55%, #f59e0b 100%);
+    color: #ffffff;
+    box-shadow: 0 0 22px rgba(250, 204, 21, 0.7);
+}
+
+.loja-preview-avatar.visual-maestria-domador-bugs,
+.perfil-aluno-avatar-premium.perfil-avatar-maestria-domador-bugs {
+    border-color: #a3e635;
+    background: linear-gradient(135deg, #1a2e05 0%, #4d7c0f 55%, #ca8a04 100%);
+    color: #fef08a;
+    box-shadow: 0 0 22px rgba(163, 230, 53, 0.7);
+}
+
+.loja-preview-avatar.visual-maestria-lenhador-binario,
+.perfil-aluno-avatar-premium.perfil-avatar-maestria-lenhador-binario {
+    border-color: #c084fc;
+    background: linear-gradient(135deg, #3b0764 0%, #059669 65%, #f59e0b 100%);
+    color: #fef08a;
+    box-shadow: 0 0 22px rgba(192, 132, 252, 0.7);
+}
+
+/* Na Árvore Binária da Computação a árvore fica de cabeça para baixo! */
+.loja-preview-avatar.visual-maestria-lenhador-binario i,
+.perfil-aluno-avatar-premium.perfil-avatar-maestria-lenhador-binario i,
+.nav-user-avatar.nav-avatar-maestria-lenhador-binario i {
+    transform: rotate(180deg);
+}
+
+.loja-preview-avatar.visual-maestria-mestre-div,
+.perfil-aluno-avatar-premium.perfil-avatar-maestria-mestre-div {
+    border-color: #38bdf8;
+    background: linear-gradient(135deg, #0f172a 0%, #0284c7 52%, #db2777 100%);
+    color: #fde047;
+    box-shadow: 0 0 22px rgba(56, 189, 248, 0.75);
+}
+
+.loja-preview-avatar.visual-maestria-admin-rede,
+.perfil-aluno-avatar-premium.perfil-avatar-maestria-admin-rede {
+    border-color: #fb923c;
+    background: linear-gradient(135deg, #0369a1 0%, #ea580c 60%, #dc2626 100%);
+    color: #fef08a;
+    box-shadow: 0 0 22px rgba(251, 146, 60, 0.75);
+}
+
+@keyframes loja-maestria-glow {
+    from { background-position: right center, 0% 40%, 0 0; }
+    to { background-position: right center, 100% 60%, 0 0; }
 }
 
 @keyframes loja-nebulosa {
@@ -40,17 +381,18 @@
 }
 
 @keyframes loja-estrelas {
-    from { background-position: 0 0, 0 0, 50% 50%; }
-    to { background-position: 72px 72px, -113px 113px, 50% 50%; }
+    from { background-position: 0 0, 0 0, 50% 50%, 0 0; }
+    to { background-position: 64px 64px, -98px 98px, 50% 50%, 0 0; }
+}
+
+@keyframes loja-matrix {
+    from { background-position: 0 0, 0 0, 50% 50%, 0 0; }
+    to { background-position: 0 26px, 26px 0, 50% 50%, 0 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .visual-nebulosa,
-    .visual-aurora-animada,
-    .visual-estrelas,
-    .perfil-aluno-capa.perfil-fundo-nebulosa,
-    .perfil-aluno-capa.perfil-fundo-aurora-animada,
-    .perfil-aluno-capa.perfil-fundo-estrelas {
-        animation: none;
+    [class*="visual-"],
+    [class*="perfil-fundo-"] {
+        animation: none !important;
     }
 }

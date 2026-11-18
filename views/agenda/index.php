@@ -113,13 +113,13 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                                 <i class="fa-solid fa-layer-group"></i> Todos
                             </button>
                             <button type="button" class="item-legenda" data-filtro="aula">
-                                <i class="fa-solid fa-circle dot-aula"></i> <?php echo $ehMonitor ? 'Atendimentos' : 'Aulas / Monitorias'; ?>
-                            </button>
-                            <button type="button" class="item-legenda" data-filtro="reuniao">
-                                <i class="fa-solid fa-circle dot-reuniao"></i> Reuniões
+                                <i class="fa-solid fa-circle dot-aula"></i> Próximas
                             </button>
                             <button type="button" class="item-legenda" data-filtro="tarefa">
-                                <i class="fa-solid fa-circle dot-tarefa"></i> Tarefas
+                                <i class="fa-solid fa-circle dot-tarefa"></i> Pendentes
+                            </button>
+                            <button type="button" class="item-legenda" data-filtro="reuniao">
+                                <i class="fa-solid fa-circle dot-reuniao"></i> Concluídas
                             </button>
                         </div>
 
@@ -215,10 +215,15 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                             padZero(inicio.getMonth() + 1),
                             padZero(inicio.getDate())
                         ].join('-');
+                        const agora = new Date();
+                        const concluida = Number(agendamento.presenca_aluno) === 1 && Number(agendamento.presenca_monitor) === 1;
+                        const categoriaItem = inicio > agora
+                            ? 'aula'
+                            : (concluida ? 'reuniao' : 'tarefa');
                         bancoCompromissos[chave] = bancoCompromissos[chave] || [];
                         bancoCompromissos[chave].push({
                             id: Number(agendamento.id),
-                            tipo: 'aula',
+                            tipo: categoriaItem,
                             titulo: agendamento.assunto,
                             desc: ehMonitor ? agendamento.aluno_nome : agendamento.monitor_nome,
                             horario: padZero(inicio.getHours()) + ':' + padZero(inicio.getMinutes())
@@ -232,6 +237,9 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                             avaliacaoComentario: agendamento.avaliacao_comentario,
                             assuntoEstudado: agendamento.assunto_estudado,
                             registroObservacoes: agendamento.registro_observacoes,
+                            duracaoMinutos: Number(agendamento.duracao_minutos || 60),
+                            bonusMonitorConcedido: Number(agendamento.bonus_monitor_concedido) === 1,
+                            bonusMaterialConcedido: Number(agendamento.bonus_material_concedido) === 1,
                             materiais: agendamento.materiais || []
                         });
                     });
@@ -336,12 +344,15 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                 }
 
                 if (item.fim < new Date() && presencaPropria === null) {
+                    const ptsSessao = Math.max(10, Math.round((item.duracaoMinutos || 60) / 3));
                     const confirmar = document.createElement('button');
                     confirmar.type = 'button';
                     confirmar.className = 'btn-agenda-acao';
                     confirmar.dataset.presenca = '1';
                     confirmar.dataset.appointmentId = String(item.id);
-                    confirmar.textContent = 'Registrar presença';
+                    confirmar.textContent = ehMonitor
+                        ? 'Registrar presença (libera +' + ptsSessao + ' pts ao aluno)'
+                        : 'Registrar presença (+' + ptsSessao + ' pts)';
                     const ausencia = document.createElement('button');
                     ausencia.type = 'button';
                     ausencia.className = 'btn-agenda-acao btn-agenda-secundario';
@@ -349,6 +360,26 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                     ausencia.dataset.appointmentId = String(item.id);
                     ausencia.textContent = 'Registrar ausência';
                     acoes.append(confirmar, ausencia);
+                }
+
+                if (item.inicio > new Date()) {
+                    const btnCancelar = document.createElement('button');
+                    btnCancelar.type = 'button';
+                    btnCancelar.className = 'btn-agenda-acao btn-agenda-secundario';
+                    btnCancelar.dataset.cancelarAgendamento = '1';
+                    btnCancelar.dataset.appointmentId = String(item.id);
+                    btnCancelar.dataset.inicioIso = item.inicio.toISOString();
+                    btnCancelar.textContent = 'Cancelar monitoria';
+                    acoes.appendChild(btnCancelar);
+                }
+
+                if (Number(item.presencaAluno) === 1 && Number(item.presencaMonitor) === 1) {
+                    const linkCert = document.createElement('a');
+                    linkCert.href = '../monitor/emissaoCertificado.php?id=' + encodeURIComponent(item.id);
+                    linkCert.target = '_blank';
+                    linkCert.className = 'btn-link-sala';
+                    linkCert.textContent = 'Emitir certificado';
+                    acoes.appendChild(linkCert);
                 }
 
                 if (ehMonitor && item.avaliacaoNota !== null) {
@@ -383,13 +414,13 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                         const enviarAvaliacao = document.createElement('button');
                         enviarAvaliacao.type = 'submit';
                         enviarAvaliacao.className = 'btn-agenda-acao';
-                        enviarAvaliacao.textContent = 'Enviar avaliação';
+                        enviarAvaliacao.textContent = 'Enviar avaliação (+5 pts)';
                         avaliacaoForm.append(nota, comentario, enviarAvaliacao);
                         acoes.appendChild(avaliacaoForm);
                     } else {
                         const avaliacao = document.createElement('p');
                         avaliacao.className = 'compromisso-avaliacao';
-                        avaliacao.textContent = 'Sua avaliação: ' + item.avaliacaoNota + '/5'
+                        avaliacao.textContent = 'Sua avaliação: ' + item.avaliacaoNota + '/5 (+5 pts recebidos)'
                             + (item.avaliacaoComentario ? ' · ' + item.avaliacaoComentario : '');
                         acoes.appendChild(avaliacao);
                     }
@@ -411,11 +442,33 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                     observacoes.maxLength = 2000;
                     observacoes.placeholder = 'Observações e próximos passos (opcional)';
                     observacoes.value = item.registroObservacoes || '';
+
+                    const bonusLabel = document.createElement('label');
+                    bonusLabel.style.display = 'flex';
+                    bonusLabel.style.alignItems = 'center';
+                    bonusLabel.style.gap = '7px';
+                    bonusLabel.style.fontSize = '12px';
+                    bonusLabel.style.fontWeight = '700';
+                    bonusLabel.style.margin = '4px 0';
+                    const bonusCheck = document.createElement('input');
+                    bonusCheck.type = 'checkbox';
+                    bonusCheck.name = 'conceder_bonus';
+                    bonusCheck.value = '1';
+                    if (item.bonusMonitorConcedido) {
+                        bonusCheck.checked = true;
+                        bonusCheck.disabled = true;
+                    }
+                    const bonusSpan = document.createElement('span');
+                    bonusSpan.textContent = item.bonusMonitorConcedido
+                        ? '🌟 Bônus de dedicação (+10 pts) já concedido ao aluno'
+                        : '🌟 Conceder bônus de participação exemplar ao aluno (+10 pts)';
+                    bonusLabel.append(bonusCheck, bonusSpan);
+
                     const salvarRegistro = document.createElement('button');
                     salvarRegistro.type = 'submit';
                     salvarRegistro.className = 'btn-agenda-acao btn-agenda-secundario';
                     salvarRegistro.textContent = item.assuntoEstudado ? 'Atualizar registro' : 'Salvar registro';
-                    registroForm.append(assuntoEstudado, observacoes, salvarRegistro);
+                    registroForm.append(assuntoEstudado, observacoes, bonusLabel, salvarRegistro);
                     acoes.appendChild(registroForm);
                 }
 
@@ -458,10 +511,11 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                 arquivoInput.accept = '.pdf,.png,.jpg,.jpeg,.webp,.txt,.docx,.xlsx,.pptx';
                 arquivoInput.required = true;
                 arquivoInput.setAttribute('aria-label', 'Arquivo para compartilhar');
+                const sufixoMatPts = (!ehMonitor && !item.bonusMaterialConcedido) ? ' (+5 pts)' : '';
                 const enviarArquivo = document.createElement('button');
                 enviarArquivo.type = 'submit';
                 enviarArquivo.className = 'btn-agenda-acao btn-agenda-secundario';
-                enviarArquivo.textContent = 'Anexar arquivo';
+                enviarArquivo.textContent = 'Anexar arquivo' + sufixoMatPts;
                 formArquivo.append(arquivoInput, enviarArquivo);
 
                 const formLink = document.createElement('form');
@@ -481,7 +535,7 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                 const enviarLink = document.createElement('button');
                 enviarLink.type = 'submit';
                 enviarLink.className = 'btn-agenda-acao btn-agenda-secundario';
-                enviarLink.textContent = 'Compartilhar link';
+                enviarLink.textContent = 'Compartilhar link' + sufixoMatPts;
                 formLink.append(nomeLink, urlLink, enviarLink);
                 acoes.append(formArquivo, formLink);
                 el.appendChild(acoes);
@@ -521,6 +575,30 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
         }
 
         listaCompromissos.addEventListener('click', async function (event) {
+            const botaoCancelar = event.target.closest('button[data-cancelar-agendamento]');
+            if (botaoCancelar) {
+                const inicio = new Date(botaoCancelar.dataset.inicioIso || '');
+                const avisoTardio = !ehMonitor && (inicio.getTime() - Date.now() < 24 * 60 * 60 * 1000);
+                const msgConfirm = avisoTardio
+                    ? 'Faltam menos de 24 horas para a monitoria. O cancelamento descontará 10 pontos. Deseja continuar?'
+                    : 'Deseja cancelar esta monitoria agendada?';
+                if (!window.confirm(msgConfirm)) return;
+                botaoCancelar.disabled = true;
+                try {
+                    const resultado = await enviarAcao('cancelar', {
+                        agendamento_id: Number(botaoCancelar.dataset.appointmentId)
+                    });
+                    informarAcao(resultado.pontos_descontados > 0
+                        ? 'Monitoria cancelada. Foram descontados 10 pontos.'
+                        : 'Monitoria cancelada com sucesso.');
+                    await carregarAgendamentos();
+                } catch (error) {
+                    informarAcao(error.message);
+                    botaoCancelar.disabled = false;
+                }
+                return;
+            }
+
             const botao = event.target.closest('button[data-presenca]');
             if (!botao) return;
             botao.disabled = true;
@@ -529,11 +607,12 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
                     agendamento_id: Number(botao.dataset.appointmentId),
                     presente: botao.dataset.presenca === '1'
                 });
-                informarAcao(resultado.pontos_ganhos === 10
+                const ptsGanhos = Number(resultado.pontos_ganhos || 0);
+                informarAcao(ptsGanhos > 0
                     ? (tipoUsuario === 'aluno'
-                        ? 'Presença confirmada: você ganhou 10 pontos!'
-                        : 'Presença confirmada: o aluno ganhou 10 pontos.')
-                    : 'Sua confirmação de presença foi registrada.');
+                        ? '🎉 Presença confirmada por ambos: você ganhou +' + ptsGanhos + ' pontos Athenas!'
+                        : '🎉 Presença confirmada por ambos: o aluno ganhou +' + ptsGanhos + ' pontos Athenas!')
+                    : 'Sua confirmação de presença foi registrada. Assim que a outra parte confirmar, os pontos serão creditados!');
                 await carregarAgendamentos();
             } catch (error) {
                 informarAcao(error.message);
@@ -549,36 +628,45 @@ $tituloPagina = "Agenda - UNIVAG ATHENAS";
             botao.disabled = true;
             try {
                 if (formulario.matches('[data-avaliacao-form]')) {
-                    await enviarAcao('avaliar', {
+                    const resAv = await enviarAcao('avaliar', {
                         agendamento_id: Number(formulario.dataset.appointmentId),
                         nota: Number(formulario.elements.nota.value),
                         comentario: formulario.elements.comentario.value.trim()
                     });
-                    informarAcao('Obrigado pela avaliação da monitoria.');
+                    informarAcao(Number(resAv.pontos_ganhos || 0) > 0
+                        ? '🎉 Obrigado pela avaliação! Você ganhou +' + resAv.pontos_ganhos + ' pontos Athenas!'
+                        : 'Obrigado pela avaliação da monitoria.');
                 } else if (formulario.matches('[data-registro-form]')) {
-                    await enviarAcao('registrar_atendimento', {
+                    const resReg = await enviarAcao('registrar_atendimento', {
                         agendamento_id: Number(formulario.dataset.appointmentId),
                         assunto_estudado: formulario.elements.assunto_estudado.value.trim(),
-                        observacoes: formulario.elements.observacoes.value.trim()
+                        observacoes: formulario.elements.observacoes.value.trim(),
+                        conceder_bonus: Boolean(formulario.elements.conceder_bonus && formulario.elements.conceder_bonus.checked && !formulario.elements.conceder_bonus.disabled)
                     });
-                    informarAcao('Registro do atendimento salvo e compartilhado com o aluno.');
+                    informarAcao(Number(resReg.pontos_bonus || 0) > 0
+                        ? '🌟 Registro salvo! Foram concedidos +' + resReg.pontos_bonus + ' pontos de bônus ao aluno!'
+                        : 'Registro do atendimento salvo e compartilhado com o aluno.');
                 } else if (formulario.matches('[data-material-upload]')) {
                     const arquivo = formulario.elements.arquivo.files[0];
                     if (!arquivo || arquivo.size > 10 * 1024 * 1024) {
                         throw new Error('Selecione um arquivo de até 10 MB.');
                     }
-                    await enviarAcao('material', {
+                    const resMat = await enviarAcao('material', {
                         acao: 'material',
                         agendamento_id: Number(formulario.dataset.appointmentId)
                     }, arquivo);
-                    informarAcao('Material anexado e compartilhado com o participante.');
+                    informarAcao(Number(resMat.pontos_ganhos || 0) > 0
+                        ? '🎉 Material anexado! Você ganhou +' + resMat.pontos_ganhos + ' pontos de Aluno Preparado!'
+                        : 'Material anexado e compartilhado com o participante.');
                 } else {
-                    await enviarAcao('material', {
+                    const resLink = await enviarAcao('material', {
                         agendamento_id: Number(formulario.dataset.appointmentId),
                         nome: formulario.elements.nome.value.trim(),
                         url: formulario.elements.url.value.trim()
                     });
-                    informarAcao('Link compartilhado com o participante.');
+                    informarAcao(Number(resLink.pontos_ganhos || 0) > 0
+                        ? '🎉 Link compartilhado! Você ganhou +' + resLink.pontos_ganhos + ' pontos de Aluno Preparado!'
+                        : 'Link compartilhado com o participante.');
                 }
                 await carregarAgendamentos();
             } catch (error) {
