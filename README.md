@@ -205,18 +205,9 @@ Você pode rodar o **UNIVAG Athenas** tanto no **Windows** quanto no **Linux**, 
 
 ---
 
-### 🔑 Contas Prontas para Teste (Ambiente de Demonstração)
-
-Ao subir o projeto, o banco de dados já vem populado com monitores, alunos, conjuntos da lojinha e monitorias de exemplo. Use qualquer uma das contas abaixo na tela de login:
-
-| Perfil | E-mail de Acesso | CPF (Alternativo) | Senha | Curso / Disciplina |
-| :--- | :--- | :--- | :--- | :--- |
-| **🧑‍🎓 Aluno Principal** | `aluno@univag.br` | `11111111111` | `123456` | Engenharia de Software (3º sem.) |
-| **👨‍🏫 Monitor Principal** | `admin@univag.br` | `00000000000` | `123456` | Banco de Dados (Sistemas de Inf.) |
-| **👩‍🏫 Monitora (Lógica)** | `ana.costa@univag.br` | `22222222222` | `123456` | Lógica de Programação & Python |
-| **👨‍🏫 Monitor (Web)** | `lucas.rocha@univag.br` | `33333333333` | `123456` | Desenvolvimento Web |
-| **👩‍🏫 Monitora (Estruturas)** | `juliana.lima@univag.br` | `44444444444` | `123456` | Estruturas de Dados |
-| **👨‍🏫 Monitor (Redes)** | `rafael.santos@univag.br` | `55555555555` | `123456` | Redes de Computadores |
+### Contas de Demonstração (Ambiente de Desenvolvimento)
+* **Aluno:** `aluno@univag.br` | Senha: `123456`
+* **Monitor:** `admin@univag.br` | Senha: `123456`
 
 ---
 
