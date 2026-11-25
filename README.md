@@ -97,31 +97,126 @@ univag_athenas/
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Como Executar o Projeto (Passo a Passo Detalhado)
 
-### Opção 1: Via Docker Compose (Recomendado)
+Você pode rodar o **UNIVAG Athenas** tanto no **Windows** quanto no **Linux**, usando **Docker** (que configura tudo sozinho automaticamente) ou usando **XAMPP** (modo tradicional).
 
-1. **Clone o repositório:**
+---
+
+### 🪟 No Windows
+
+#### Opção A: Usando Docker Desktop no Windows (Mais Fácil e Automático)
+> **Pré-requisito:** Ter o [Git](https://git-scm.com/download/win) e o [Docker Desktop para Windows](https://www.docker.com/products/docker-desktop/) instalados e com o Docker Desktop aberto.
+
+1. **Abra o terminal do Windows** (aperte a tecla `Windows`, digite **PowerShell** ou **CMD** e dê Enter).
+2. **Baixe o projeto e entre na pasta:**
+   ```powershell
+   git clone https://github.com/eduardoclemes1-tech/univag_athenas.git
+   cd univag_athenas
+   ```
+3. **Crie o arquivo `.env` copiando o arquivo de modelo:**
+   * No **Prompt de Comando (CMD)**:
+     ```cmd
+     copy .env.example .env
+     ```
+   * Ou no **PowerShell**:
+     ```powershell
+     Copy-Item .env.example .env
+     ```
+   > 💡 **Importante:** Você **não precisa editar nem descobrir nenhuma senha**! O arquivo `.env.example` já vem com as senhas de teste configuradas (`change-this-app-password`). Só de copiar para `.env`, o Docker já cria o banco e conecta o sistema sozinho.
+4. **Ligue o sistema (Banco de Dados + Servidor PHP + Lembretes):**
+   ```powershell
+   docker compose up -d --build
+   ```
+   *(Na primeira vez pode levar de 1 a 2 minutos enquanto o Docker baixa o PHP e o MySQL e cria as tabelas automaticamente).*
+5. **Abra no navegador:**
+   👉 Acesse **[http://localhost:8000](http://localhost:8000)**
+
+---
+
+#### Opção B: Usando XAMPP no Windows (Sem Docker)
+> **Pré-requisito:** Ter o [XAMPP](https://www.apachefriends.org/pt_br/index.html) instalado.
+
+1. Coloque a pasta `univag_athenas` dentro da pasta `C:\xampp\htdocs\` (ficando `C:\xampp\htdocs\univag_athenas`).
+2. Abra o **XAMPP Control Panel** e clique em **Start** no **Apache** e no **MySQL**.
+3. Abra o navegador e acesse **[http://localhost/phpmyadmin](http://localhost/phpmyadmin)**.
+4. Clique na aba **Importar** (no topo), escolha o arquivo `sqlAthenas/schema.sql` que está dentro da pasta do projeto e clique em **Executar** (ele criará o banco `athenas` com todas as tabelas e dados de teste).
+5. Acesse o sistema no navegador em:
+   👉 **[http://localhost/univag_athenas](http://localhost/univag_athenas)**
+
+---
+
+### 🐧 No Linux (Ubuntu / Debian / Mint)
+
+#### Opção A: Usando Docker no Linux (Mais Fácil e Automático)
+> **Pré-requisito:** Ter `git`, `docker` e `docker-compose-plugin` instalados.
+
+1. **Abra o terminal** (`Ctrl + Alt + T`).
+2. **Baixe o projeto e entre na pasta:**
    ```bash
    git clone https://github.com/eduardoclemes1-tech/univag_athenas.git
    cd univag_athenas
    ```
-
-2. **Configure o arquivo `.env`:**
+3. **Copie o arquivo de configuração `.env`:**
    ```bash
    cp .env.example .env
    ```
-   Defina as variáveis `DB_PASSWORD` e `DB_ROOT_PASSWORD` no arquivo `.env`.
-
-3. **Suba os containers:**
+   > 💡 **Importante:** Não é necessário alterar nada dentro do `.env`. O comando acima já prepara a configuração padrão para o banco de dados do Docker.
+4. **Inicie os containers em segundo plano:**
    ```bash
    docker compose up -d --build
    ```
-   * Acesse a aplicação em: **`http://localhost:8000`**
+5. **Abra no navegador:**
+   👉 Acesse **[http://localhost:8000](http://localhost:8000)**
 
-### Contas de Demonstração (Ambiente de Desenvolvimento)
-* **Aluno:** `aluno@univag.br` | Senha: `123456`
-* **Monitor:** `admin@univag.br` | Senha: `123456`
+---
+
+#### Opção B: Usando PHP + MySQL/XAMPP Local no Linux (Sem Docker)
+1. **Inicie o MySQL/MariaDB local** (ou o MySQL do XAMPP com `sudo /opt/lampp/lampp startmysql`).
+2. **Importe o banco de dados `sqlAthenas/schema.sql`:**
+   ```bash
+   mysql -u root < sqlAthenas/schema.sql
+   ```
+   *(Caso use o MySQL do XAMPP: `/opt/lampp/bin/mysql -u root < sqlAthenas/schema.sql`)*.
+3. **Inicie o servidor embutido do PHP dentro da pasta `univag_athenas`:**
+   ```bash
+   php -S localhost:8000
+   ```
+4. **Abra no navegador:**
+   👉 Acesse **[http://localhost:8000](http://localhost:8000)**
+
+---
+
+### 🔄 Comandos Úteis para o Dia a Dia
+
+* **Para desligar o sistema (Docker):**
+  ```bash
+  docker compose down
+  ```
+* **Para atualizar o projeto em uma máquina que já tem a pasta clonada:**
+  ```bash
+  git pull origin main
+  ```
+* **Para resetar o banco do Docker do zero e recarregar o `schema.sql`:**
+  ```bash
+  docker compose down -v
+  docker compose up -d --build
+  ```
+
+---
+
+### 🔑 Contas Prontas para Teste (Ambiente de Demonstração)
+
+Ao subir o projeto, o banco de dados já vem populado com monitores, alunos, conjuntos da lojinha e monitorias de exemplo. Use qualquer uma das contas abaixo na tela de login:
+
+| Perfil | E-mail de Acesso | CPF (Alternativo) | Senha | Curso / Disciplina |
+| :--- | :--- | :--- | :--- | :--- |
+| **🧑‍🎓 Aluno Principal** | `aluno@univag.br` | `11111111111` | `123456` | Engenharia de Software (3º sem.) |
+| **👨‍🏫 Monitor Principal** | `admin@univag.br` | `00000000000` | `123456` | Banco de Dados (Sistemas de Inf.) |
+| **👩‍🏫 Monitora (Lógica)** | `ana.costa@univag.br` | `22222222222` | `123456` | Lógica de Programação & Python |
+| **👨‍🏫 Monitor (Web)** | `lucas.rocha@univag.br` | `33333333333` | `123456` | Desenvolvimento Web |
+| **👩‍🏫 Monitora (Estruturas)** | `juliana.lima@univag.br` | `44444444444` | `123456` | Estruturas de Dados |
+| **👨‍🏫 Monitor (Redes)** | `rafael.santos@univag.br` | `55555555555` | `123456` | Redes de Computadores |
 
 ---
 
