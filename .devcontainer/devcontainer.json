@@ -1,0 +1,11 @@
+{
+    "name": "UNIVAG Athenas",
+    "forwardPorts": [8000],
+    "portsAttributes": {
+        "8000": {
+            "label": "UNIVAG Athenas Web",
+            "onAutoForward": "openBrowser"
+        }
+    },
+    "postStartCommand": "docker compose up -d --build"
+}

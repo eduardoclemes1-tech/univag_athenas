@@ -22,10 +22,10 @@ $univagIndex = array_search('univag_athenas', $scriptPath);
 
 if ($univagIndex !== false) {
     $depth = count($scriptPath) - 2 - $univagIndex;
-    $basePath = ($depth > 0) ? str_repeat('../', $depth) : './';
 } else {
-    $basePath = '../../';
+    $depth = count($scriptPath) - 1;
 }
+$basePath = ($depth > 0) ? str_repeat('../', $depth) : './';
 
 $navTemFoto = false;
 $navAvatarVisual = '';

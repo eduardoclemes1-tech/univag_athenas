@@ -206,6 +206,14 @@ ON DUPLICATE KEY UPDATE
     visual = VALUES(visual),
     ativo = VALUES(ativo);
 
+UPDATE loja_itens SET ativo = 0
+WHERE slug IN (
+    'fundo-oceano', 'fundo-aurora', 'fundo-por-do-sol',
+    'fundo-nebulosa', 'fundo-aurora-animada', 'fundo-chuva-estrelas', 'fundo-estrelas',
+    'avatar-lilas', 'avatar-esmeralda', 'avatar-dourado',
+    'avatar-asas-capelo', 'avatar-capivara'
+);
+
 CREATE TABLE IF NOT EXISTS pontos_transacoes (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
